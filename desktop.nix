@@ -167,6 +167,12 @@ in
   programs.firefox.enable = true;
   programs.nix-ld.enable = true; # vorkompilierte Fremd-Binaries lauffähig machen
 
+  programs._1password.enable = true;
+  programs._1password-gui.enable = {
+    enable = true;
+    polkitPolicyOwners = [ user ];
+  };
+
   # Dateimanager Nautilus mit "In Kitty öffnen" im Rechtsklickmenü
   programs.nautilus-open-any-terminal = {
     enable = true;

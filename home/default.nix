@@ -37,6 +37,7 @@ in
     file-roller # Archive (zip, tar …)
     pavucontrol # Lautstärke & Audiogeräte (Klick auf das Lautsprecher-Icon)
     playerctl # Medientasten
+    vscode
   ];
 
   programs.claude-code.enable = true;
