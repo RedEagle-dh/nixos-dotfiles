@@ -9,6 +9,11 @@
 
 let
   user = "dave"; # ← dein Benutzername aus dem Installer
+
+  # Theme für den Login-Bildschirm. Weitere Varianten statt "astronaut":
+  # purple_leaves, black_hole, cyberpunk, japanese_aesthetic, hyprland_kath (Video) …
+  # Vorschaubilder: https://github.com/Keyitdev/sddm-astronaut-theme
+  loginTheme = pkgs.sddm-astronaut.override { embeddedTheme = "astronaut"; };
 in
 {
   # ───────────────────────── Unfreie Pakete ─────────────────────────
@@ -57,15 +62,21 @@ in
   systemd.user.services.hyprpolkitagent.wantedBy = [ "graphical-session.target" ];
 
   # ───────────────────────── Login ─────────────────────────
-  # Normaler Text-Login auf der ersten Konsole (Ctrl+Alt+F1). Nach dem Login
-  # startet Hyprland automatisch. Auf den anderen Konsolen (F2–F6) bleibt es
-  # bei einer normalen Shell – praktisch zum Reparieren.
-  systemd.defaultUnit = "graphical.target"; # braucht uwsm für den Start
-  environment.loginShellInit = ''
-    if uwsm check may-start; then
-      exec uwsm start -e -D Hyprland hyprland.desktop
-    fi
-  '';
+  # Grafischer Login-Bildschirm (SDDM) mit Uhr, Datum und Buttons zum
+  # Ausschalten/Neustarten. SDDM läuft selbst unter Wayland – ein X-Server ist
+  # nicht nötig. Auf den Konsolen Ctrl+Alt+F2–F6 gibt es weiterhin einen
+  # Text-Login – praktisch zum Reparieren.
+  services.displayManager = {
+    sddm = {
+      enable = true;
+      wayland.enable = true;
+      theme = "${loginTheme}/share/sddm/themes/sddm-astronaut-theme";
+      extraPackages = [ loginTheme ]; # Qt-Module, die das Theme braucht
+    };
+    # Hyprland wie bisher über UWSM starten. Die "nackte" Hyprland-Sitzung
+    # startet graphical-session.target nicht – dann fehlen Waybar & Polkit-Agent.
+    defaultSession = "hyprland-uwsm";
+  };
 
   # ───────────────────────── Sound ─────────────────────────
   security.rtkit.enable = true;
@@ -93,6 +104,7 @@ in
     noto-fonts
     noto-fonts-color-emoji
     nerd-fonts.jetbrains-mono # Icons für Waybar & Terminal
+    open-sans # Schrift des Login-Themes
   ];
 
   # ───────────────────────── Programme ─────────────────────────
