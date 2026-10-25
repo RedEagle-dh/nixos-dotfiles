@@ -283,11 +283,13 @@ for i = 1, 5 do
     hl.workspace_rule({ workspace = tostring(i), persistent = true })
 end
 
--- Notizblock-Fläche (Super+S) mit mehr Rand, damit sie wie ein Overlay wirkt
-hl.workspace_rule({ workspace = "special:scratchpad", gaps_out = 60 })
+-- Spezial-Flächen (Super+S, Super+M …) mit mehr Rand, damit sie wie ein Overlay wirken
+for _, name in ipairs({ "special", "sysmon", "music", "communication", "todo" }) do
+    hl.workspace_rule({ workspace = "special:" .. name, gaps_out = 60 })
+end
 
 -- Milchglas hinter Leiste, Starter und Benachrichtigungen
-for _, layer in ipairs({ "waybar", "launcher", "notifications" }) do
+for _, layer in ipairs({ "bar", "launcher", "notifications" }) do
     hl.layer_rule({
         name         = "blur-" .. layer,
         match        = { namespace = "^" .. layer .. "$" },

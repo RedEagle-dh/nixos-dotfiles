@@ -9,10 +9,10 @@
 {
   imports = [
     ./apps.nix # Programme
-    ./appearance.nix # GTK-Theme, Icons, Mauszeiger
+    ./appearance.nix # GTK- & Qt-Theme, Icons, Mauszeiger
     ./xdg.nix # Ordner & Standardprogramme
     ./hyprland # Fenster, Tastenkürzel, Sperrbildschirm, Leerlauf, Hintergrund
-    ./waybar # Statusleiste
+    ./quickshell # Leiste oben (Quickshell)
     ./menus # Starter, Power-Menü, Emojis, Kürzel-Übersicht
     ./notifications.nix # Benachrichtigungen & "Nicht stören"
     ./clipboard.nix # Zwischenablage-Verlauf

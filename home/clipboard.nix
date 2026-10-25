@@ -1,4 +1,4 @@
-# home/clipboard.nix – Zwischenablage-Verlauf (Super+V).
+# home/clipboard.nix – Zwischenablage-Verlauf (Super+V, Löschen: Super+Alt+V).
 # cliphist merkt sich alles Kopierte; das Menü holt einen Eintrag zurück.
 
 { pkgs, ... }:
@@ -12,11 +12,17 @@ let
       pkgs.wl-clipboard
     ];
     text = ''
-      # Gewählter Eintrag landet wieder in der Zwischenablage → Strg+V fügt ihn ein
-      cliphist list \
-        | fuzzel --dmenu --minimal-lines --with-nth 2 --prompt "󰅍  " --placeholder "Zwischenablage durchsuchen …" --width 60 \
-        | cliphist decode \
-        | wl-copy
+      pick() {
+        cliphist list \
+          | fuzzel --dmenu --minimal-lines --with-nth 2 --prompt "$1" --placeholder "$2" --width 60
+      }
+
+      case "''${1:-}" in
+        # Gewählter Eintrag wird aus dem Verlauf entfernt
+        delete) pick "󰆴  " "Eintrag zum Löschen wählen …" | cliphist delete ;;
+        # Gewählter Eintrag landet wieder in der Zwischenablage → Strg+V fügt ihn ein
+        *) pick "󰅍  " "Zwischenablage durchsuchen …" | cliphist decode | wl-copy ;;
+      esac
     '';
   };
 in

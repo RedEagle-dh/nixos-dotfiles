@@ -3,6 +3,7 @@
 #   zsh.nix        Shell, Aliase (nhs/nhb …)
 #   prompt.nix     Prompt mit Git-Status (starship)
 #   cli-tools.nix  z, ls mit Icons, bat, Strg+R-Suche, btop
+#   fastfetch.nix  Begrüßung mit Systeminfos beim Öffnen eines Terminals
 
 { ... }:
 
@@ -12,5 +13,6 @@
     ./zsh.nix
     ./prompt.nix
     ./cli-tools.nix
+    ./fastfetch.nix
   ];
 }

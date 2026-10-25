@@ -13,6 +13,7 @@
     gnome-text-editor # einfacher Texteditor
     file-roller # Archive (zip, tar …)
     vscode # Erweiterungen & Einstellungen pflegst du in VS Code selbst
+    hyprmod # Hyprland-Einstellungen live ausprobieren; Ergebnis dann in home/hyprland/ übernehmen
   ];
 
   programs.claude-code.enable = true;

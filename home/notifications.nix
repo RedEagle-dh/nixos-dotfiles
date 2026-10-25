@@ -15,16 +15,9 @@ let
       case "''${1:-}" in
         toggle-dnd)
           makoctl mode -t do-not-disturb >/dev/null
-          pkill -RTMIN+8 waybar || true # Glocke in der Leiste sofort aktualisieren
+          qs ipc call notifications refresh >/dev/null 2>&1 || true # Glocke in der Leiste sofort aktualisieren
           ;;
-        status) # für die Leiste
-          if makoctl mode | grep -qx do-not-disturb; then
-            printf '%s\n' '{"text": "󰂛", "class": "dnd", "tooltip": "Nicht stören ist an\nKlick: wieder einschalten"}'
-          else
-            printf '%s\n' '{"text": "󰂚", "class": "normal", "tooltip": "Benachrichtigungen\nKlick: nicht stören · Rechtsklick: letzte zurückholen"}'
-          fi
-          ;;
-        *) echo "Aufruf: notifications toggle-dnd|status" >&2; exit 1 ;;
+        *) echo "Aufruf: notifications toggle-dnd" >&2; exit 1 ;;
       esac
     '';
   };

@@ -22,9 +22,6 @@
   # entsperrt deshalb auch den Schlüsselbund
   security.pam.services.hyprlock.enableGnomeKeyring = true;
 
-  # Statusleiste als Dienst der Sitzung (Aussehen: home/waybar/)
-  programs.waybar.enable = true;
-
   # Passwortabfragen grafischer Programme (z. B. Mounten, GParted)
   systemd.packages = [ pkgs.hyprpolkitagent ];
   systemd.user.services.hyprpolkitagent.wantedBy = [ "graphical-session.target" ];

@@ -14,7 +14,7 @@
     ./locale.nix # Sprache, Zeitzone, Tastatur
     ./users.nix # Benutzerkonto & Shell
     ./nvidia.nix # Grafiktreiber RTX 4080
-    ./hyprland.nix # Hyprland, Sperrbildschirm, Leiste, Polkit
+    ./hyprland.nix # Hyprland, Sperrbildschirm, Polkit
     ./login.nix # Autologin, hyprlock dient als Login
     ./sound.nix # PipeWire
     ./services.nix # Netzwerk, Schlüsselbund, USB-Sticks …
@@ -22,6 +22,7 @@
     ./programs.nix # systemweite Programme
     ./1password.nix # 1Password mit Browser- & System-Anbindung
     ./docker.nix # Docker mit GPU
+    ./gaming.nix # Steam, Proton, Gamemode
     ./storage.nix # Swap & Btrfs-Pflege
   ];
 

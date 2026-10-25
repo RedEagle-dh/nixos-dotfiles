@@ -56,9 +56,14 @@ in
       size = 11;
     };
     mono = {
-      name = "JetBrainsMono Nerd Font"; # enthält auch die Icons für Leiste & Menüs
+      name = "JetBrainsMono Nerd Font"; # enthält auch die Icons für Menüs
       package = pkgs.nerd-fonts.jetbrains-mono;
       size = 12;
+    };
+    # Symbole der Leiste (https://fonts.google.com/icons), per Name gesetzt
+    icons = {
+      name = "Material Symbols Rounded";
+      package = pkgs.material-symbols;
     };
   };
 
@@ -79,6 +84,12 @@ in
   gtk = {
     name = "adw-gtk3-dark";
     package = pkgs.adw-gtk3;
+  };
+
+  # Qt-Programme (Kvantum-Stil): Rosé Pine mit Iris-Akzent, passend zu GTK
+  qt = {
+    name = "rose-pine-iris";
+    package = pkgs.rose-pine-kvantum;
   };
 
   inherit wallpaper bootWallpaper;

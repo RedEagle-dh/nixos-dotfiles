@@ -9,7 +9,8 @@
     noto-fonts
     noto-fonts-color-emoji
     theme.fonts.ui.package # Inter – Oberflächen
-    theme.fonts.mono.package # JetBrains Mono mit Icons – Terminal, Leiste
+    theme.fonts.mono.package # JetBrains Mono mit Icons – Terminal, Menüs
+    theme.fonts.icons.package # Material Symbols – Leiste
   ];
 
   # Programme ohne eigene Schriftwahl bekommen dieselben Schriften
