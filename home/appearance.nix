@@ -21,6 +21,7 @@
   };
 
   home.pointerCursor = {
+    enable = true;
     inherit (theme.cursor) name package size;
     gtk.enable = true;
     x11.enable = true; # für ältere X11-Programme (XWayland)

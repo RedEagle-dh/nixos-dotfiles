@@ -11,6 +11,8 @@
 #
 # Anwenden:          nhs  (bzw. sudo nixos-rebuild switch)
 # Aktualisieren:     nix flake update  →  danach nhs
+#                    Bricht danach etwas: im Bootmenü die vorherige Generation
+#                    wählen oder `git checkout flake.lock` und erneut nhs.
 #
 # Wichtig: Neue Dateien erst mit `git add` hinzufügen – ein Flake sieht nur
 # Dateien, die Git kennt.
@@ -19,11 +21,15 @@
   description = "NixOS-Konfiguration von David – Hyprland-Desktop";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    # Rolling Release: neueste Pakete, die die NixOS-Tests bestanden haben.
+    # Zurück auf eine stabile Version: z. B. "nixos-26.05" (dann Home Manager
+    # unten auf "release-26.05").
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    # Home Manager verwaltet alles im Home-Verzeichnis (~/.config usw.)
+    # Home Manager verwaltet alles im Home-Verzeichnis (~/.config usw.).
+    # Der Hauptzweig gehört zu nixos-unstable.
     home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs"; # dieselbe nixpkgs-Version wie das System
     };
   };
