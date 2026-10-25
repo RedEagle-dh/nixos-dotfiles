@@ -126,6 +126,9 @@ hl.config({
         -- Link im Terminal anklicken → Browser kommt nach vorne
         focus_on_activate = true,
 
+        -- Mittlere Maustaste fügt NICHT die markierte Auswahl ein
+        middle_click_paste = false,
+
         -- Startet man z. B. mpv aus Kitty, ersetzt das Video das Terminalfenster
         enable_swallow = true,
         swallow_regex  = "^(kitty)$",
