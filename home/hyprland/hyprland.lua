@@ -293,6 +293,15 @@ for i, match in ipairs(floating) do
     })
 end
 
+-- Passwortabfrage (Soteria, system/hyprland.nix): klein, mittig, im Vordergrund
+hl.window_rule({
+    name   = "float-polkit",
+    match  = { class = "(?i).*soteria.*" },
+    float  = true,
+    center = true,
+    pin    = true,
+})
+
 -- Systemmonitor (Klick auf CPU/RAM/GPU in der Leiste): groß und mittig
 hl.window_rule({
     name   = "float-btop",

@@ -6,8 +6,8 @@
 
 let
   # Qt-Farbpalette (qt5ct/qt6ct-Format). Kvantum färbt normale Qt-Programme
-  # schon selbst; die Palette braucht es für Qt-Quick-Programme wie den
-  # Passwort-Dialog (hyprpolkitagent). Reihenfolge der Rollen wie in qt6ct:
+  # schon selbst; die Palette braucht es für Qt-Quick-Programme.
+  # Reihenfolge der Rollen wie in qt6ct:
   # WindowText, Button, Light, Midlight, Dark, Mid, Text, BrightText,
   # ButtonText, Base, Window, Shadow, Highlight, HighlightedText, Link,
   # LinkVisited, AlternateBase, NoRole, ToolTipBase, ToolTipText, PlaceholderText
