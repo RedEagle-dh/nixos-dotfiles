@@ -1,14 +1,32 @@
-# home/hyprland/lock.nix – Sperrbildschirm (Super+L).
+# home/hyprland/lock.nix – Sperrbildschirm (Super+L) und Login.
 # Verschwommenes Hintergrundbild, große Uhr, Passwortfeld.
 # Die Passwortprüfung (PAM) richtet system/hyprland.nix ein.
+#
+# Beim Start der Sitzung sperrt er sich sofort: Weil system/login.nix
+# automatisch anmeldet, ist der Sperrbildschirm zugleich der Login.
 
-{ theme, ... }:
+{
+  config,
+  lib,
+  theme,
+  ...
+}:
 
 let
   c = theme.colors;
   font = theme.fonts.ui.name;
 in
 {
+  systemd.user.services.lock-on-login = {
+    Unit = {
+      Description = "Sperrbildschirm direkt nach dem Login";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session-pre.target" ];
+    };
+    Service.ExecStart = "${lib.getExe config.programs.hyprlock.package} --immediate";
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
   programs.hyprlock = {
     enable = true;
     settings = {

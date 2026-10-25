@@ -7,7 +7,7 @@
   security.polkit.enable = true; # erlaubt Programmen, nach Rechten zu fragen
 
   services.gnome.gnome-keyring.enable = true; # Passwortspeicher (Browser, VS Code, WLAN)
-  security.pam.services.login.enableGnomeKeyring = true; # beim Login entsperren
+  security.pam.services.login.enableGnomeKeyring = true; # beim Text-Login entsperren (sonst: hyprlock)
 
   programs.dconf.enable = true; # GTK-Einstellungen
   services.udisks2.enable = true; # USB-Sticks einhängen

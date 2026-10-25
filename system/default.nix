@@ -8,14 +8,14 @@
 
 {
   imports = [
-    ./boot.nix # Bootloader
+    ./boot.nix # Bootmenü (rEFInd) & Bootloader
     ./boot-splash.nix # Startbildschirm statt Textmeldungen
     ./nix.nix # Nix selbst: Flakes, Aufräumen, nh
     ./locale.nix # Sprache, Zeitzone, Tastatur
     ./users.nix # Benutzerkonto & Shell
     ./nvidia.nix # Grafiktreiber RTX 4080
     ./hyprland.nix # Hyprland, Sperrbildschirm, Leiste, Polkit
-    ./login.nix # Login-Bildschirm (SDDM)
+    ./login.nix # Autologin, hyprlock dient als Login
     ./sound.nix # PipeWire
     ./services.nix # Netzwerk, Schlüsselbund, USB-Sticks …
     ./fonts.nix # Schriften

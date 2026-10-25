@@ -3,7 +3,7 @@
 # Zeigt das Hintergrundbild mit dem NixOS-Logo in den Akzentfarben und einem
 # dezenten Spinner darunter. Fragt das System nach einem Passwort (z. B. für
 # eine verschlüsselte Festplatte), erscheint dort stattdessen ein Eingabefeld.
-# SDDM nutzt dasselbe Hintergrundbild – der Übergang zum Login ist nahtlos.
+# Danach übernimmt Hyprland mit demselben Hintergrundbild (Sperrbildschirm).
 #
 # Alle Grafiken entstehen beim Bauen aus SVG und sind für eine Bildhöhe von
 # 1440 Pixeln gerendert; auf anderen Monitoren skaliert das Skript sie mit.
@@ -12,6 +12,7 @@
   pkgs,
   colors,
   wallpaper,
+  nixosLogo,
 }:
 
 let
@@ -29,13 +30,6 @@ let
     lib.concatMapStringsSep ", " (
       i: toString (lib.fromHexString (builtins.substring i 2 c.${color}) / 255.0)
     ) [ 0 2 4 ];
-
-  # Offizielles NixOS-Logo, die zwei Blautöne ersetzt durch Iris und Rosé
-  logo = pkgs.runCommand "plymouth-logo.svg" { } ''
-    sed -e 's/#415e9a/#${c.iris}/I; s/#4a6baf/#${c.iris}/I; s/#5277c3/#${c.iris}/I' \
-        -e 's/#699ad7/#${c.rose}/I; s/#7eb1dd/#${c.rose}/I; s/#7ebae4/#${c.rose}/I' \
-        ${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg > $out
-  '';
 
   # Spinner: blasser Ring, darauf ein umlaufender Bogen – als Einzelbilder
   spinnerFrames = 60;
@@ -216,7 +210,7 @@ pkgs.runCommand "plymouth-theme-${name}"
     mkdir -p $dir
 
     cp ${wallpaper} $dir/background.png
-    resvg --width 200 --height 200 ${logo} $dir/logo.png
+    resvg --width 200 --height 200 ${nixosLogo} $dir/logo.png
     resvg ${field} $dir/field.png
     resvg ${bullet} $dir/bullet.png
     ${lib.concatMapStrings (i: ''

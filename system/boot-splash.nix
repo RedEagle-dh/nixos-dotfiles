@@ -7,7 +7,7 @@
 # Bootet etwas nicht und man will die Meldungen sehen: im Startbildschirm
 # Esc drücken – oder hinterher `journalctl -b -1` (letzter Start).
 
-{ theme, ... }:
+{ config, theme, ... }:
 
 {
   boot.plymouth = {
@@ -16,6 +16,13 @@
     themePackages = [ theme.plymouth ];
     font = theme.plymouth.fontFile;
   };
+
+  # Beim Beenden das letzte Bild stehen lassen, bis der Login-Bildschirm
+  # übernimmt – sonst ist es dazwischen kurz schwarz
+  systemd.services.plymouth-quit.serviceConfig.ExecStart = [
+    "" # Original-Befehl ersetzen statt ergänzen
+    "-${config.boot.plymouth.package}/bin/plymouth quit --retain-splash"
+  ];
 
   # Meldungen von Kernel und systemd nur noch bei echten Fehlern
   # ("splash" für Plymouth setzt NixOS selbst)

@@ -18,6 +18,10 @@
   # Aussehen und Zeiten: home/hyprland/lock.nix und idle.nix
   programs.hyprlock.enable = true; # aktiviert automatisch auch hypridle
 
+  # hyprlock ist auch der Login (system/login.nix) – das Passwort dort
+  # entsperrt deshalb auch den Schlüsselbund
+  security.pam.services.hyprlock.enableGnomeKeyring = true;
+
   # Statusleiste als Dienst der Sitzung (Aussehen: home/waybar/)
   programs.waybar.enable = true;
 

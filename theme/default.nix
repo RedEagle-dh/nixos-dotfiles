@@ -38,6 +38,13 @@ let
     width = 2560;
     height = 1440;
   };
+
+  # Offizielles NixOS-Logo (SVG), die zwei Blautöne ersetzt durch Iris und Rosé
+  nixosLogo = pkgs.runCommand "nixos-logo.svg" { } ''
+    sed -e 's/#415e9a/#${colors.iris}/I; s/#4a6baf/#${colors.iris}/I; s/#5277c3/#${colors.iris}/I' \
+        -e 's/#699ad7/#${colors.rose}/I; s/#7eb1dd/#${colors.rose}/I; s/#7ebae4/#${colors.rose}/I' \
+        ${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg > $out
+  '';
 in
 {
   inherit colors;
@@ -76,9 +83,15 @@ in
 
   inherit wallpaper bootWallpaper;
 
+  # Bootmenü (rEFInd): Hintergrund, Icons, Auswahlrahmen, Schrift
+  refind = import ./refind.nix {
+    inherit pkgs colors nixosLogo;
+    wallpaper = bootWallpaper;
+  };
+
   # Startbildschirm (Plymouth): Hintergrundbild, Logo und Spinner
   plymouth = import ./plymouth.nix {
-    inherit pkgs colors;
+    inherit pkgs colors nixosLogo;
     wallpaper = bootWallpaper;
   };
 }
