@@ -8,7 +8,7 @@
 { config, pkgs, ... }:
 
 let
-  user = "david"; # ← dein Benutzername aus dem Installer
+  user = "dave"; # ← dein Benutzername aus dem Installer
 in
 {
   # ───────────────────────── Unfreie Pakete ─────────────────────────
