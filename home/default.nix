@@ -39,6 +39,8 @@ in
     playerctl # Medientasten
   ];
 
+  programs.claude-code.enable = true;
+
   # ───────────────────────── Aussehen der Programme ─────────────────────────
   gtk = {
     enable = true;
