@@ -192,9 +192,9 @@ let
           ;;
         status) # für die Leiste
           if makoctl mode | grep -qx do-not-disturb; then
-            echo '{"text": "󰂛", "class": "dnd", "tooltip": "Nicht stören ist an\nKlick: wieder einschalten"}'
+            printf '%s\n' '{"text": "󰂛", "class": "dnd", "tooltip": "Nicht stören ist an\nKlick: wieder einschalten"}'
           else
-            echo '{"text": "󰂚", "class": "normal", "tooltip": "Benachrichtigungen\nKlick: nicht stören · Rechtsklick: letzte zurückholen"}'
+            printf '%s\n' '{"text": "󰂚", "class": "normal", "tooltip": "Benachrichtigungen\nKlick: nicht stören · Rechtsklick: letzte zurückholen"}'
           fi
           ;;
         *) echo "Aufruf: notifications toggle-dnd|status" >&2; exit 1 ;;
