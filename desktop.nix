@@ -185,7 +185,6 @@ in
   };
 
   programs.zsh.enable = true;
-  users.users.${user}.shell = pkgs.zsh;
 
   environment.systemPackages = with pkgs; [
     nautilus # Dateimanager (Super+E)
@@ -203,8 +202,11 @@ in
   # ───────────────────────── Docker mit GPU ─────────────────────────
   virtualisation.docker.enable = true;
   hardware.nvidia-container-toolkit.enable = true; # GPU im Container: --device nvidia.com/gpu=all
-  users.users.${user}.extraGroups = [ "docker" ]; # wird zu den Gruppen aus dem Installer ergänzt
 
+  users.users.${user} = {
+    shell = pkgs.zsh;
+    extraGroups = [ "docker" ]; # wird zu den Gruppen aus dem Installer ergänzt
+  };
   # ───────────────────────── Swap ─────────────────────────
   # Komprimierter Swap im RAM statt Swap-Partition: fängt Lastspitzen ab
   # (große Builds, LLM-Experimente), ohne dass das System einfriert.
