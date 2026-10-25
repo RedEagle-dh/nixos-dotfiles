@@ -12,7 +12,12 @@
 # Notausgang, falls rEFInd nicht startet: im Boot-Menü des Mainboards
 # (meist F8 oder F11) "Linux Boot Manager" (= systemd-boot) wählen.
 
-{ pkgs, theme, ... }:
+{
+  lib,
+  pkgs,
+  theme,
+  ...
+}:
 
 let
   menuTimeout = 5; # Sekunden bis NixOS von selbst startet
@@ -30,11 +35,21 @@ let
     timeout ${toString menuTimeout}
     default_selection NixOS
     scanfor manual
-    showtools
-    hideui hints,badges,arrows,editor
-    resolution max
+    hideui hints,badges,arrows,editor,label
     use_graphics_for linux,windows
 
+    # Höchste Auflösung der Grafikkarte nutzen – die NVIDIA-Firmware startet
+    # sonst in niedriger Auflösung und alles wirkt hochskaliert
+    resolution max
+
+    # Keine Werkzeugzeile (Shell, Neustart …) unter den Icons. Ein leeres
+    # "showtools" reicht in rEFInd 0.14.2 nicht: Jeder Eintrag überschreibt nur
+    # einen der 12 Standardplätze. Also alle mit einem Werkzeug füllen, das es
+    # nicht gibt.
+    showtools ${lib.concatStringsSep "," (lib.replicate 12 "gdisk")}
+
+    # Ohne vorhandenen Icon-Ordner schaltet rEFInd in den Textmodus
+    icons_dir theme
     banner theme/background.png
     banner_scale fillscreen
     big_icon_size ${toString theme.refind.iconSize}
@@ -157,7 +172,7 @@ in
         ]
     );
 
-    extraInstallCommands = "${pkgs.lib.getExe refindUpdate}";
+    extraInstallCommands = lib.getExe refindUpdate;
   };
 
   boot.loader.efi.canTouchEfiVariables = true;

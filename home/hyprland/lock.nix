@@ -21,9 +21,14 @@ in
     Unit = {
       Description = "Sperrbildschirm direkt nach dem Login";
       PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session-pre.target" ];
+      After = [ "graphical-session.target" ]; # erst wenn Hyprland läuft
     };
-    Service.ExecStart = "${lib.getExe config.programs.hyprlock.package} --immediate";
+    Service = {
+      ExecStart = lib.getExe config.programs.hyprlock.package;
+      # Nach dem Entsperren endet hyprlock normal; stürzt er ab, sofort wieder sperren
+      Restart = "on-failure";
+      RestartSec = 1;
+    };
     Install.WantedBy = [ "graphical-session.target" ];
   };
 

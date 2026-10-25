@@ -45,7 +45,8 @@ let
     '';
 
   # rEFInd kann nur Bitmap-Schriften: ein PNG mit 96 gleich breiten Zeichen
-  # (ASCII 32–126 plus ein Ersatzzeichen für alles andere)
+  # (ASCII 32–126 plus ein Ersatzzeichen für alles andere). Die Zeichen müssen
+  # schwarz sein – auf dunklem Grund invertiert rEFInd sie selbst zu weiß.
   fontScript = pkgs.writeText "make-font.py" ''
     import sys
     from PIL import Image, ImageDraw, ImageFont
@@ -85,5 +86,5 @@ pkgs.runCommand "refind-theme"
     resvg ${selection selectionSize} $out/selection_big.png
     resvg ${selection 64} $out/selection_small.png
 
-    python3 ${fontScript} ${fontFile} 26 ${c.text} $out/font.png
+    python3 ${fontScript} ${fontFile} 26 000000 $out/font.png
   ''

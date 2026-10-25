@@ -17,8 +17,14 @@
 }:
 
 let
-  # Wie die Desktop-Sitzung "Hyprland (uwsm-managed)" Hyprland startet
-  hyprland = "${lib.getExe config.programs.uwsm.package} start -e -D Hyprland hyprland.desktop";
+  # Startet Hyprland wie die Desktop-Sitzung "Hyprland (uwsm-managed)".
+  # uwsm schreibt seine Statusmeldungen sonst auf den Bildschirm – sie
+  # landen ohnehin im Journal (journalctl -b -t uwsm).
+  hyprland = toString (
+    pkgs.writeShellScript "hyprland-session" ''
+      exec ${lib.getExe config.programs.uwsm.package} start -e -D Hyprland hyprland.desktop > /dev/null 2>&1
+    ''
+  );
 in
 {
   services.greetd = {
