@@ -1,19 +1,62 @@
-# desktop.nix – Hyprland-Desktop für NixOS 26.05
+# desktop.nix – Hyprland-Desktop für NixOS 26.05, System-Teil
 # Zielhardware: Ryzen 7 5800X3D, RTX 4080, Btrfs auf NVMe
 #
-# Einbinden: in /etc/nixos/configuration.nix bei `imports` ergänzen:
-#   imports = [ ./hardware-configuration.nix ./desktop.nix ];
-# Danach: sudo nixos-rebuild switch  →  reboot
+# Hier steht alles, was das System betrifft: Treiber, Dienste, Login, Schriften.
+# Wie der Desktop aussieht und sich bedient (Hyprland, Leiste, Tastenkürzel …),
+# steht unter home/ – das verwaltet Home Manager.
 
 { config, pkgs, ... }:
 
 let
   user = "dave"; # ← dein Benutzername aus dem Installer
+  theme = import ./theme { inherit pkgs; };
 
-  # Theme für den Login-Bildschirm. Weitere Varianten statt "astronaut":
-  # purple_leaves, black_hole, cyberpunk, japanese_aesthetic, hyprland_kath (Video) …
-  # Vorschaubilder: https://github.com/Keyitdev/sddm-astronaut-theme
-  loginTheme = pkgs.sddm-astronaut.override { embeddedTheme = "astronaut"; };
+  # Login-Bildschirm: Theme "sddm-astronaut", umgefärbt auf die Palette aus
+  # theme/ und mit demselben Hintergrundbild wie der Desktop
+  loginTheme = pkgs.sddm-astronaut.override {
+    embeddedTheme = "astronaut";
+    themeConfig =
+      let
+        c = name: ''"#${theme.colors.${name}}"'';
+      in
+      {
+        Background = ''"${theme.wallpaper}"'';
+        Font = ''"${theme.fonts.ui.name}"'';
+        DateFormat = ''"dddd, d. MMMM"'';
+        HideVirtualKeyboard = "true";
+
+        HeaderTextColor = c "text";
+        DateTextColor = c "subtle";
+        TimeTextColor = c "text";
+        FormBackgroundColor = c "base";
+        BackgroundColor = c "base";
+        DimBackgroundColor = c "base";
+        LoginFieldBackgroundColor = c "overlay";
+        PasswordFieldBackgroundColor = c "overlay";
+        LoginFieldTextColor = c "text";
+        PasswordFieldTextColor = c "text";
+        UserIconColor = c "iris";
+        PasswordIconColor = c "iris";
+        PlaceholderTextColor = c "subtle";
+        WarningColor = c "love";
+        LoginButtonTextColor = c "base";
+        LoginButtonBackgroundColor = c "iris";
+        SystemButtonsIconsColor = c "text";
+        SessionButtonTextColor = c "subtle";
+        VirtualKeyboardButtonTextColor = c "subtle";
+        DropdownTextColor = c "text";
+        DropdownSelectedBackgroundColor = c "highlightMed";
+        DropdownBackgroundColor = c "surface";
+        HighlightTextColor = c "base";
+        HighlightBackgroundColor = c "iris";
+        HighlightBorderColor = c "iris";
+        HoverUserIconColor = c "rose";
+        HoverPasswordIconColor = c "rose";
+        HoverSystemButtonsIconsColor = c "rose";
+        HoverSessionButtonTextColor = c "rose";
+        HoverVirtualKeyboardButtonTextColor = c "rose";
+      };
+  };
 in
 {
   # ───────────────────────── Unfreie Pakete ─────────────────────────
@@ -50,10 +93,11 @@ in
   # Electron-/Chromium-Apps (VS Code, Discord, Obsidian …) nativ unter Wayland
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
-  # Bildschirmsperre (Tastenkürzel selbst binden) + Idle-Daemon
+  # Bildschirmsperre + Idle-Daemon. Das Aussehen steht in home/hyprland.nix;
+  # hier geht es nur um die Passwortprüfung (PAM) und den Dienst.
   programs.hyprlock.enable = true; # aktiviert automatisch auch hypridle
 
-  # Statusleiste – startet automatisch mit der Hyprland-Sitzung
+  # Statusleiste – startet automatisch mit der Hyprland-Sitzung (Aussehen: home/waybar.nix)
   programs.waybar.enable = true;
 
   # Passwortabfragen grafischer Programme (z. B. Mounten, GParted) –
@@ -97,35 +141,40 @@ in
   programs.dconf.enable = true; # GTK-Einstellungen
   services.udisks2.enable = true; # USB-Sticks einhängen
   services.gvfs.enable = true; # Papierkorb, Netzlaufwerke im Dateimanager
+  services.gnome.sushi.enable = true; # Leertaste im Dateimanager = Schnellvorschau
   # hardware.bluetooth.enable = true;  # falls dein PC Bluetooth hat
 
   # ───────────────────────── Schriften ─────────────────────────
+  # Systemweit, damit auch der Login-Bildschirm sie findet
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-color-emoji
-    nerd-fonts.jetbrains-mono # Icons für Waybar & Terminal
-    open-sans # Schrift des Login-Themes
+    theme.fonts.ui.package # Inter – Oberflächen
+    theme.fonts.mono.package # JetBrains Mono mit Icons – Terminal, Leiste
   ];
+  # Programme ohne eigene Schriftwahl bekommen dieselben Schriften
+  fonts.fontconfig.defaultFonts = {
+    sansSerif = [
+      theme.fonts.ui.name
+      "Noto Sans"
+    ];
+    monospace = [ theme.fonts.mono.name ];
+    emoji = [ "Noto Color Emoji" ];
+  };
 
   # ───────────────────────── Programme ─────────────────────────
+  # Desktop-Programme (Terminal, Starter, Screenshots …) stehen in home/.
   programs.firefox.enable = true;
   programs.nix-ld.enable = true; # vorkompilierte Fremd-Binaries lauffähig machen
 
-  environment.systemPackages = with pkgs; [
-    # Was die Hyprland-Standardconfig per Tastenkürzel aufruft
-    kitty # Terminal          (Super+Q)
-    hyprlauncher # App-Starter (Super+R)
-    kdePackages.dolphin # Dateimanager (Super+E)
+  # Dateimanager Nautilus mit "In Kitty öffnen" im Rechtsklickmenü
+  programs.nautilus-open-any-terminal = {
+    enable = true;
+    terminal = "kitty";
+  };
 
-    # Bausteine für einen kompletten Desktop
-    mako # Benachrichtigungen   (in hyprland.lua autostarten)
-    hyprpaper # Hintergrundbild (in hyprland.lua autostarten)
-    grim # Screenshot
-    slurp # Bereich auswählen (für Screenshots)
-    wl-clipboard # Zwischenablage: wl-copy / wl-paste
-    networkmanagerapplet # WLAN/LAN im Tray
-    pavucontrol # Lautstärke & Audiogeräte
-    playerctl # Medientasten
+  environment.systemPackages = with pkgs; [
+    nautilus # Dateimanager (Super+E)
 
     # Basics
     git
@@ -163,4 +212,8 @@ in
     options = "--delete-older-than 14d";
   };
   nix.settings.auto-optimise-store = true; # identische Dateien im /nix/store zusammenlegen
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ]; # dieses Repo ist ein Flake
 }
