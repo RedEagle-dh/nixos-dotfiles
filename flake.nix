@@ -32,10 +32,17 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs"; # dieselbe nixpkgs-Version wie das System
     };
+
+    # caelestia-Shell (Leiste, Starter, Benachrichtigungen, Sperrbildschirm …).
+    # Eingebunden in home/caelestia.
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    { nixpkgs, home-manager, ... }:
+    { nixpkgs, home-manager, ... }@inputs:
     let
       # Benutzername – steht nur hier und wird an alle Module als `user` übergeben
       user = "dave";
@@ -53,7 +60,7 @@
               useUserPackages = true; # Programme landen im Benutzerprofil statt in ~/.nix-profile
               # Vorhandene Dateien nicht blockieren, sondern als *.hm-backup zur Seite legen
               backupFileExtension = "hm-backup";
-              extraSpecialArgs = { inherit user; };
+              extraSpecialArgs = { inherit user inputs; }; # inputs: für home/caelestia
               users.${user} = import ./home;
             };
           }

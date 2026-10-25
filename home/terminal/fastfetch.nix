@@ -1,28 +1,24 @@
 # home/terminal/fastfetch.nix – Begrüßung beim Öffnen eines Terminals:
 # NixOS-Schriftzug und eine Box mit Systeminfos (Layout wie bei caelestia,
-# Farben aus theme/default.nix). Von Hand aufrufen: fastfetch
+# Farben vom Farbschema von caelestia). Von Hand aufrufen: fastfetch
 
-{
-  lib,
-  pkgs,
-  theme,
-  ...
-}:
+{ lib, pkgs, ... }:
 
 let
-  # Terminal-Farbcode (True Color) für eine Farbe aus der Palette
-  color =
-    name:
-    let
-      hex = theme.colors.${name};
-      channel = i: toString (lib.fromHexString (builtins.substring i 2 hex));
-    in
-    "\\u001b[38;2;${channel 0};${channel 2};${channel 4}m";
+  # Terminal-Farbcodes. 16–18 belegt caelestia mit den Akzentfarben seines
+  # Farbschemas – sie wechseln also mit dem Hintergrundbild.
+  slots = {
+    text = "37";
+    primary = "38;5;16";
+    secondary = "38;5;17";
+    tertiary = "38;5;18";
+  };
+  color = name: "\\u001b[${slots.${name}}m";
 in
 {
   home.packages = [ pkgs.fastfetch ];
 
-  # Platzhalter in den Einträgen: {$1} Text, {$2} Iris, {$3} Foam, {$4} Rosé
+  # Platzhalter in den Einträgen: {$1} Text, {$2}–{$4} erste bis dritte Akzentfarbe
   xdg.configFile."fastfetch/config.jsonc".text = ''
     {
         "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
@@ -30,7 +26,7 @@ in
         "display": {
             "separator": "  ",
             "color": "white",
-            "constants": ["${color "text"}", "${color "iris"}", "${color "foam"}", "${color "rose"}"]
+            "constants": ["${color "text"}", "${color "primary"}", "${color "secondary"}", "${color "tertiary"}"]
         },
         "modules": [
             "break",
@@ -54,9 +50,9 @@ in
     }
   '';
 
-  # Schriftzug in Iris, darunter die Box – bei jedem neuen Terminal
+  # Schriftzug in der Akzentfarbe, darunter die Box – bei jedem neuen Terminal
   programs.zsh.initContent = lib.mkOrder 1500 ''
-    printf '${builtins.replaceStrings [ "\\u001b" ] [ "\\e" ] (color "iris")}'
+    printf '${builtins.replaceStrings [ "\\u001b" ] [ "\\e" ] (color "primary")}'
     cat <<'EOF'
          _   ___      ____  _____
         / | / (_)  __/ __ \/ ___/

@@ -1,7 +1,8 @@
 -- keybinds.lua – alle Tastenkürzel. SUPER = Windows-Taste.
 --
 -- Belegung wie bei caelestia (github.com/caelestia-dots/caelestia), mit Kitty
--- als Terminal und den Werkzeugen dieses Systems (fuzzel, mako, grimblast).
+-- als Terminal. Starter, Benachrichtigungen, Sitzungsmenü usw. kommen von der
+-- caelestia-Shell; sie wird über `caelestia shell …` gesteuert.
 -- Auf die deutsche Tastatur übertragen: US-Minus/Gleich/Backslash liegen hier
 -- auf ß, ´ und # (gleiche Stelle auf der Tastatur).
 --
@@ -16,7 +17,7 @@ local browser       = "firefox"
 local editor        = "code"
 local files         = "nautilus --new-window"
 local audioSettings = "pavucontrol"
-local launcher      = "pkill -x fuzzel || fuzzel" -- zweiter Druck schließt den Starter wieder
+local launcher      = "caelestia shell drawers toggle launcher" -- zweiter Druck schließt ihn wieder
 
 -- Super allein (antippen) öffnet den Starter. Hyprland löst das beim Loslassen
 -- von Super aus – auch nach Super+1 o. Ä. Deshalb merkt sich jedes Kürzel hier,
@@ -325,7 +326,7 @@ bind("CTRL + " .. mod .. " + SHIFT + down",
 -- Aufnahmen unter ~/Videos/Recordings. Gleiches Kürzel beendet die Aufnahme.
 
 bind("Print",                         exec("screenshot screen"), "Screenshot: ganzer Bildschirm", locked)
-bind(mod .. " + SHIFT + S",           exec("screenshot area"),   "Screenshot: Bereich oder Fenster anklicken")
+bind(mod .. " + SHIFT + S",           exec("caelestia shell picker openFreeze"), "Screenshot: Bereich oder Fenster anklicken")
 bind(mod .. " + SHIFT + ALT + S",     exec("screenshot edit"),   "Screenshot: Bereich beschriften (Pfeile, Text …)")
 bind("ALT + Print",                   exec("screenshot active"), "Screenshot: aktives Fenster")
 bind("CTRL + ALT + R",                exec("record"),            "Bildschirm aufnehmen (an/aus)")
@@ -337,29 +338,31 @@ bind(mod .. " + SHIFT + ALT + R",     exec("record region"),     "Bereich aufneh
 ---- SYSTEM ----
 ----------------
 
-bind("CTRL + ALT + Delete",    exec("power-menu"),             "Sperren, Abmelden, Neustart, Ausschalten")
+bind("CTRL + ALT + Delete",    exec("caelestia shell drawers toggle session"), "Sperren, Abmelden, Neustart, Ausschalten")
 bind(mod .. " + L",            exec("loginctl lock-session"),  "Bildschirm sperren", locked)
 bind(mod .. " + SHIFT + L",    exec("systemctl suspend"),      "Bereitschaft (Standby)", locked)
 bind(mod .. " + F1",           exec("keybind-help"),           "Diese Übersicht")
-bind(mod .. " + SHIFT + B",    exec("qs ipc call bar toggle"), "Leiste ein-/ausblenden")
-bind("CTRL + " .. mod .. " + SHIFT + R", exec("systemctl --user stop quickshell"),    "Leiste beenden", release)
-bind("CTRL + " .. mod .. " + ALT + R",   exec("systemctl --user restart quickshell"), "Leiste neu starten", release)
-
-bind(mod .. " + N",            exec("makoctl restore"),          "Letzte Benachrichtigung zurückholen")
-bind(mod .. " + SHIFT + N",    exec("makoctl dismiss"),          "Benachrichtigung schließen")
-bind("CTRL + ALT + C",         exec("makoctl dismiss --all"),    "Alle Benachrichtigungen schließen", locked)
-bind("CTRL + " .. mod .. " + N", exec("notifications toggle-dnd"), "Nicht stören an/aus")
+bind(mod .. " + N",            exec("caelestia shell drawers toggle sidebar"),   "Seitenleiste mit Benachrichtigungen")
+bind(mod .. " + K",            exec("caelestia shell drawers toggle dashboard"), "Dashboard (Medien, Wetter, System)")
+bind("CTRL + ALT + C",         exec("caelestia shell notifs clear"),             "Alle Benachrichtigungen schließen", locked)
+bind("CTRL + " .. mod .. " + N",         exec("caelestia shell notifs toggleDnd"),     "Nicht stören an/aus")
+bind("CTRL + " .. mod .. " + SHIFT + R", exec("systemctl --user stop caelestia"),    "Oberfläche beenden", release)
+bind("CTRL + " .. mod .. " + ALT + R",   exec("systemctl --user restart caelestia"), "Oberfläche neu starten", release)
 
 
 ---------------
 ---- MEDIEN ----
 ---------------
 
-bind("XF86AudioRaiseVolume",   exec("volume-osd up"),       "Lauter",          lockedHeld)
-bind("XF86AudioLowerVolume",   exec("volume-osd down"),     "Leiser",          lockedHeld)
+-- caelestia zeigt die Lautstärke selbst an, sobald sie sich ändert
+local sink = "@DEFAULT_AUDIO_SINK@"
+bind("XF86AudioRaiseVolume",   exec("wpctl set-mute " .. sink .. " 0; wpctl set-volume -l 1 " .. sink .. " 5%+"),
+                               "Lauter",          lockedHeld)
+bind("XF86AudioLowerVolume",   exec("wpctl set-mute " .. sink .. " 0; wpctl set-volume " .. sink .. " 5%-"),
+                               "Leiser",          lockedHeld)
 bind({ "XF86AudioMute", mod .. " + SHIFT + M" },
-                               exec("volume-osd mute"),     "Ton aus/an",      locked)
-bind("XF86AudioMicMute",       exec("volume-osd mic-mute"), "Mikrofon aus/an", locked)
+                               exec("wpctl set-mute " .. sink .. " toggle"),          "Ton aus/an",      locked)
+bind("XF86AudioMicMute",       exec("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), "Mikrofon aus/an", locked)
 
 bind({ "CTRL + " .. mod .. " + space", "XF86AudioPlay", "XF86AudioPause" },
                                exec("playerctl play-pause"), "Wiedergabe/Pause",  locked)

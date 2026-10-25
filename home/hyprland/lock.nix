@@ -1,9 +1,11 @@
-# home/hyprland/lock.nix – Sperrbildschirm (Super+L) und Login.
+# home/hyprland/lock.nix – Sperrbildschirm beim Login (hyprlock).
 # Verschwommenes Hintergrundbild, große Uhr, Passwortfeld.
 # Die Passwortprüfung (PAM) richtet system/hyprland.nix ein.
 #
 # Beim Start der Sitzung sperrt er sich sofort: Weil system/login.nix
-# automatisch anmeldet, ist der Sperrbildschirm zugleich der Login.
+# automatisch anmeldet, ist der Sperrbildschirm zugleich der Login – und
+# entsperrt dabei auch den Schlüsselbund. Später (Super+L, Leerlauf) sperrt
+# caelestia mit seinem eigenen Sperrbildschirm.
 
 {
   config,

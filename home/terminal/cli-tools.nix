@@ -3,7 +3,10 @@
 #   ls, ll …   mit Icons und Git-Status (eza)
 #   bat        wie cat, mit Syntaxfarben
 #   Strg+R     Verlauf durchsuchen (fzf)
-#   btop       Systemmonitor (auch per Klick auf CPU/RAM/GPU in der Leiste)
+#   btop       Systemmonitor (auch Strg+Umschalt+Esc)
+#   direnv     lädt in Projektordnern mit .envrc die passende Umgebung
+#              (z. B. "use flake" → Werkzeuge aus dem devShell des Projekts);
+#              einmal pro Ordner freigeben: direnv allow
 
 { theme, ... }:
 
@@ -12,6 +15,12 @@ let
 in
 {
   programs.zoxide.enable = true;
+
+  programs.direnv = {
+    enable = true; # bindet sich automatisch in zsh ein
+    nix-direnv.enable = true; # merkt sich Nix-Umgebungen → schneller, übersteht Aufräumen
+    silent = true; # keine Meldungen beim Betreten eines Ordners
+  };
 
   programs.eza = {
     enable = true;

@@ -11,13 +11,12 @@
     ./apps.nix # Programme
     ./appearance.nix # GTK- & Qt-Theme, Icons, Mauszeiger
     ./xdg.nix # Ordner & Standardprogramme
-    ./hyprland # Fenster, Tastenkürzel, Sperrbildschirm, Leerlauf, Hintergrund
-    ./quickshell # Leiste oben (Quickshell)
-    ./menus # Starter, Power-Menü, Emojis, Kürzel-Übersicht
-    ./notifications.nix # Benachrichtigungen & "Nicht stören"
+    ./hyprland # Fenster, Tastenkürzel, Login-Sperre, Leerlauf
+    ./caelestia # Oberfläche: Leiste, Starter, Benachrichtigungen, Hintergrund, Farbschema
+    ./menus # Emojis, Kürzel-Übersicht (fuzzel)
     ./clipboard.nix # Zwischenablage-Verlauf
     ./screenshots.nix # Screenshots & Farbpipette
-    ./audio.nix # Lautstärke-Anzeige & Medientasten
+    ./audio.nix # Lautstärke-Einstellungen & Medientasten
     ./terminal # Kitty, zsh, Prompt, Kommandozeilen-Werkzeuge
   ];
 

@@ -60,11 +60,6 @@ in
       package = pkgs.nerd-fonts.jetbrains-mono;
       size = 12;
     };
-    # Symbole der Leiste (https://fonts.google.com/icons), per Name gesetzt
-    icons = {
-      name = "Material Symbols Rounded";
-      package = pkgs.material-symbols;
-    };
   };
 
   cursor = {

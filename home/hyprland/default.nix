@@ -10,9 +10,8 @@
 
 {
   imports = [
-    ./lock.nix # Sperrbildschirm (Super+L)
+    ./lock.nix # Sperrbildschirm beim Login (hyprlock)
     ./idle.nix # Sperren & Monitore aus bei Inaktivität
-    ./wallpaper.nix # Hintergrundbild
   ];
 
   xdg.configFile = {

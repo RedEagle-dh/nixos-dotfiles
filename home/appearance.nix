@@ -1,77 +1,10 @@
 # home/appearance.nix – Aussehen der Programme: GTK- und Qt-Theme, Icons, Mauszeiger.
-# Welche es sind, steht in theme/default.nix; die Farben kommen aus der Palette dort.
+# Welche es sind, steht in theme/default.nix. Die Farben der GTK-Programme kommen
+# aus dem Farbschema von caelestia (home/caelestia), Qt bleibt in Rosé Pine.
 
 { lib, pkgs, theme, ... }:
 
 let
-  c = name: "#${theme.colors.${name}}";
-
-  # GTK/libadwaita-Farben (Namen: https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/css-variables.html).
-  # Ohne sie sind GTK-Programme (Nautilus, Loupe, pavucontrol …) GNOME-grau,
-  # und eine Akzentfarbe bekommen sie unter Hyprland auch nicht.
-  shade = "rgba(0, 0, 0, 0.36)";
-  gtkColors = {
-    accent_color = c "iris";
-    accent_bg_color = c "iris";
-    accent_fg_color = c "base";
-    destructive_color = c "love";
-    destructive_bg_color = c "love";
-    destructive_fg_color = c "base";
-    success_color = c "foam";
-    success_bg_color = c "pine";
-    success_fg_color = c "text";
-    warning_color = c "gold";
-    warning_bg_color = c "gold";
-    warning_fg_color = c "base";
-    error_color = c "love";
-    error_bg_color = c "love";
-    error_fg_color = c "base";
-
-    window_bg_color = c "base";
-    window_fg_color = c "text";
-    view_bg_color = c "base";
-    view_fg_color = c "text";
-    headerbar_bg_color = c "surface";
-    headerbar_fg_color = c "text";
-    headerbar_border_color = c "highlightMed";
-    headerbar_backdrop_color = c "base";
-    headerbar_shade_color = shade;
-    headerbar_darker_shade_color = "rgba(0, 0, 0, 0.9)";
-    sidebar_bg_color = c "surface";
-    sidebar_fg_color = c "text";
-    sidebar_backdrop_color = c "base";
-    sidebar_border_color = c "highlightLow";
-    sidebar_shade_color = shade;
-    secondary_sidebar_bg_color = c "highlightLow";
-    secondary_sidebar_fg_color = c "text";
-    secondary_sidebar_backdrop_color = c "base";
-    secondary_sidebar_border_color = c "highlightLow";
-    secondary_sidebar_shade_color = shade;
-    card_bg_color = c "surface";
-    card_fg_color = c "text";
-    card_shade_color = shade;
-    dialog_bg_color = c "surface";
-    dialog_fg_color = c "text";
-    popover_bg_color = c "overlay";
-    popover_fg_color = c "text";
-    popover_shade_color = shade;
-    thumbnail_bg_color = c "overlay";
-    thumbnail_fg_color = c "text";
-    shade_color = shade;
-    scrollbar_outline_color = "rgba(0, 0, 0, 0.5)";
-  };
-
-  # GTK 3 (adw-gtk3) kennt nur die alten benannten Farben
-  definedColors = lib.concatStrings (
-    lib.mapAttrsToList (name: value: "@define-color ${name} ${value};\n") gtkColors
-  );
-  # libadwaita (GTK 4) liest seit 1.6 CSS-Variablen: accent_bg_color → --accent-bg-color
-  cssVariables = lib.concatStrings (
-    lib.mapAttrsToList (
-      name: value: "  --${builtins.replaceStrings [ "_" ] [ "-" ] name}: ${value};\n"
-    ) gtkColors
-  );
-
   # Qt-Farbpalette (qt5ct/qt6ct-Format). Kvantum färbt normale Qt-Programme
   # schon selbst; die Palette braucht es für Qt-Quick-Programme wie den
   # Passwort-Dialog (hyprpolkitagent). Reihenfolge der Rollen wie in qt6ct:
@@ -140,8 +73,6 @@ in
     font = {
       inherit (theme.fonts.ui) name package size;
     };
-    gtk3.extraCss = definedColors;
-    gtk4.extraCss = definedColors + ":root {\n${cssVariables}}\n";
   };
 
   dconf.settings."org/gnome/desktop/interface" = {

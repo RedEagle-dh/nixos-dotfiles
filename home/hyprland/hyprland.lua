@@ -13,6 +13,26 @@
 local theme = require("theme")
 local c = theme.colors
 
+-- Die Farben folgen dem Schema von caelestia (z. B. aus dem Hintergrundbild
+-- berechnet): hypr/scheme/current.lua, schreibt caelestia bei jedem Wechsel
+-- neu – Hyprland lädt die Config dann selbst neu. Fehlt die Datei noch,
+-- gelten die Farben aus theme/default.nix.
+local schemeFile = io.open(os.getenv("HOME") .. "/.config/hypr/scheme/current.lua")
+if schemeFile then
+    schemeFile:close()
+    local ok, scheme = pcall(require, "scheme.current")
+    if ok and type(scheme) == "table" and scheme.primary then
+        c = setmetatable({
+            iris    = scheme.primary,
+            rose    = scheme.tertiary,
+            gold    = scheme.secondary,
+            overlay = scheme.surfaceContainerHighest,
+            subtle  = scheme.onSurfaceVariant,
+            base    = scheme.surface,
+        }, { __index = theme.colors })
+    end
+end
+
 -- Farbe aus der Palette als Hyprland-Farbwert, optional mit Deckkraft "00"–"ff"
 local function rgba(name, alpha)
     return "rgba(" .. c[name] .. (alpha or "ff") .. ")"
@@ -26,11 +46,20 @@ end
 -- Höchste Auflösung, dabei die höchste Bildwiederholrate (z. B. 1440p @ 165 Hz).
 -- Für mehrere Monitore: `hyprctl monitors` zeigt die Namen, dann z. B.
 -- hl.monitor({ output = "DP-1", mode = "2560x1440@165", position = "0x0", scale = 1 })
+--
+-- HDR: Der Monitor (Dell S2721DGF, DisplayHDR 400, bis ca. 420 Nits) kann HDR10.
+-- Der Desktop bleibt in SDR; sobald ein Vollbild-Programm HDR liefert (Spiel,
+-- Video in mpv), schaltet Hyprland von selbst auf HDR (render.cm_auto_hdr).
+-- 10 Bit pro Farbe verhindert Farbstufen in Verläufen und im HDR-Modus.
+-- HDR dauerhaft, auch auf dem Desktop: cm = "hdr" ergänzen. Wirken normale
+-- Programme dann blass oder dunkel: sdrbrightness (z. B. 1.2) und
+-- sdrsaturation (z. B. 1.1) nachregeln.
 hl.monitor({
     output   = "",
     mode     = "highres",
     position = "auto",
     scale    = "auto",
+    bitdepth = 10,
 })
 
 
@@ -136,6 +165,11 @@ hl.config({
         -- Adaptive Sync (G-Sync/FreeSync) nur bei Vollbild – ideal für Spiele.
         -- Bei Flackern auf 0 setzen.
         vrr = 2,
+    },
+
+    render = {
+        -- Vollbild-Programm liefert HDR → Monitor schaltet auf HDR (1 = an)
+        cm_auto_hdr = 1,
     },
 
     cursor = {
@@ -288,19 +322,14 @@ for _, name in ipairs({ "special", "sysmon", "music", "communication", "todo" })
     hl.workspace_rule({ workspace = "special:" .. name, gaps_out = 60 })
 end
 
--- Milchglas hinter Leiste, Starter und Benachrichtigungen
-for _, layer in ipairs({ "bar", "launcher", "notifications" }) do
-    hl.layer_rule({
-        name         = "blur-" .. layer,
-        match        = { namespace = "^" .. layer .. "$" },
-        blur         = true,
-        ignore_alpha = 0.3,
-    })
-end
--- Benachrichtigungen gleiten von rechts herein
-hl.layer_rule({ name = "slide-notifications", match = { namespace = "^notifications$" }, animation = "slide" })
+-- Milchglas hinter den fuzzel-Menüs (Zwischenablage, Emojis, Super+F1)
+hl.layer_rule({ name = "blur-launcher", match = { namespace = "^launcher$" }, blur = true, ignore_alpha = 0.3 })
 -- Auswahlrahmen beim Screenshot ohne Einblendanimation
 hl.layer_rule({ name = "no-anim-selection", match = { namespace = "^(selection|hyprpicker)$" }, no_anim = true })
+-- caelestia-Shell: Flächen blenden weich ein, Hilfsflächen sofort
+-- (Milchglas hinter den Panels setzt die Shell selbst)
+hl.layer_rule({ name = "caelestia-fade",    match = { namespace = "^caelestia-(drawers|background)$" }, animation = "fade" })
+hl.layer_rule({ name = "caelestia-no-anim", match = { namespace = "^caelestia-(border-exclusion|area-picker)$" }, no_anim = true })
 
 
 ---------------------

@@ -23,8 +23,9 @@ in
   home.packages = [ display-power ];
 
   xdg.configFile."hypr/hypridle.conf".text = ''
+    # loginctl lock-session zeigt caelestias Sperrbildschirm (caelestia hört
+    # selbst darauf) – deshalb hier kein lock_cmd
     general {
-        lock_cmd = pidof hyprlock || hyprlock
         before_sleep_cmd = loginctl lock-session
         after_sleep_cmd = ${display} on
     }

@@ -7,6 +7,10 @@
 #   mangohud %command%        Einblendung mit FPS, CPU- und GPU-Last
 #   gamescope -f -- %command% eigener Mini-Compositor, hilft bei Spielen mit
 #                             Problemen bei Auflösung, Vollbild oder Maus
+#   PROTON_ENABLE_WAYLAND=1 PROTON_ENABLE_HDR=1 %command%
+#                             HDR (mit GE-Proton): dann im Spiel HDR einschalten
+#                             und im Vollbild spielen – der Monitor schaltet
+#                             von selbst um (hyprland.lua, Abschnitt BILDSCHIRM)
 # Die 32-Bit-Grafiktreiber, die Steam braucht, stehen in nvidia.nix.
 
 { pkgs, user, ... }:

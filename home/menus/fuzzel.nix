@@ -1,5 +1,5 @@
-# home/menus/launcher.nix – App-Starter fuzzel (Super+Leertaste).
-# Das Aussehen hier gilt auch für alle anderen Menüs.
+# home/menus/fuzzel.nix – Aussehen von fuzzel: Zwischenablage, Emojis, Kürzel-Übersicht.
+# Als Programm-Starter dient caelestia; fuzzel ginge aber auch (Befehl: fuzzel).
 
 { theme, ... }:
 
