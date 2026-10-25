@@ -1,8 +1,7 @@
 -- hyprland.lua – Hyprland-Konfiguration (Hyprland 0.55, Lua)
 --
--- Liegt im Repo unter home/hypr/ und wird von Home Manager nach ~/.config/hypr/
--- verlinkt. Änderungen also im Repo machen und dann neu bauen:
---   sudo nixos-rebuild switch --flake .
+-- Liegt im Repo unter home/hyprland/ und wird von Home Manager nach ~/.config/hypr/
+-- verlinkt. Änderungen also im Repo machen und dann neu bauen: nhs
 --
 -- Aufteilung:
 --   hyprland.lua  Bildschirm, Aussehen, Animationen, Eingabe, Fensterregeln

@@ -3,8 +3,14 @@
 # Legt fest, welche Versionen von nixpkgs und Home Manager benutzt werden
 # (die genauen Stände stehen in flake.lock), und baut daraus den Rechner "nixos".
 #
-# Anwenden (im Ordner dieses Repos):   sudo nixos-rebuild switch --flake .
-# Alles aktualisieren:                 nix flake update  →  danach wie oben
+# Aufbau des Repos:
+#   configuration.nix   dieser Rechner (Hardware, Name, stateVersion)
+#   system/             NixOS: ein Modul pro Thema (Sound, Login, NVIDIA …)
+#   home/               Home Manager: alles im Home-Verzeichnis
+#   theme/              Farben, Schriften, Hintergrundbild – für System und Home
+#
+# Anwenden:          nhs  (bzw. sudo nixos-rebuild switch)
+# Aktualisieren:     nix flake update  →  danach nhs
 #
 # Wichtig: Neue Dateien erst mit `git add` hinzufügen – ein Flake sieht nur
 # Dateien, die Git kennt.
@@ -24,8 +30,13 @@
 
   outputs =
     { nixpkgs, home-manager, ... }:
+    let
+      # Benutzername – steht nur hier und wird an alle Module als `user` übergeben
+      user = "dave";
+    in
     {
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit user; };
         modules = [
           ./configuration.nix
 
@@ -34,10 +45,10 @@
             home-manager = {
               useGlobalPkgs = true; # gleiche Pakete & Einstellungen (z. B. allowUnfree) wie das System
               useUserPackages = true; # Programme landen im Benutzerprofil statt in ~/.nix-profile
-              # Vorhandene Dateien (z. B. die alte hyprland.lua) nicht blockieren,
-              # sondern als *.hm-backup zur Seite legen
+              # Vorhandene Dateien nicht blockieren, sondern als *.hm-backup zur Seite legen
               backupFileExtension = "hm-backup";
-              users.dave = import ./home;
+              extraSpecialArgs = { inherit user; };
+              users.${user} = import ./home;
             };
           }
         ];

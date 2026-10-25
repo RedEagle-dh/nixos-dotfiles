@@ -1,7 +1,8 @@
 # theme/default.nix – Das Aussehen des ganzen Systems an einer Stelle:
 # Farbpalette, Schriften, Mauszeiger, Icons, GTK-Theme und Hintergrundbild.
 #
-# Genutzt von desktop.nix (Login-Bildschirm) und allen Modulen unter home/.
+# Genutzt von system/ (Login-Bildschirm, Schriften) und home/. Dort steht es
+# jedem Modul als Argument `theme` zur Verfügung.
 # Wer hier eine Farbe ändert, ändert sie überall: Fensterrahmen, Leiste,
 # Starter, Benachrichtigungen, Terminal, Sperrbildschirm und Hintergrund.
 

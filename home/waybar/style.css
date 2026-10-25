@@ -1,5 +1,5 @@
 /* style.css – Aussehen der Leiste.
- * Farben (@base, @iris, …) und Schriften setzt home/waybar.nix aus
+ * Farben (@base, @iris, …) und Schriften setzt home/waybar/default.nix aus
  * theme/default.nix davor. Icons kommen aus der Nerd-Font-Schrift.
  * GTK-CSS-Referenz: https://docs.gtk.org/gtk3/css-properties.html
  */
