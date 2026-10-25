@@ -100,8 +100,4 @@ in
     gtk.enable = true;
     x11.enable = true; # für ältere X11-Programme (XWayland)
   };
-
-  # Hyprland selbst nutzt die schärfere hyprcursor-Variante (siehe hyprland/hyprland.lua)
-  xdg.dataFile."icons/${theme.cursor.hyprcursor}".source =
-    "${theme.cursor.hyprcursorPackage}/share/icons/${theme.cursor.hyprcursor}";
 }

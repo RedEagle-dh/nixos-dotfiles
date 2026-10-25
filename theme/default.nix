@@ -63,10 +63,11 @@ in
   };
 
   cursor = {
-    name = "BreezeX-RosePine-Linux"; # klassischer Zeiger für Programme
-    package = pkgs.rose-pine-cursor;
-    hyprcursor = "rose-pine-hyprcursor"; # gestochen scharfe Variante für Hyprland
-    hyprcursorPackage = pkgs.rose-pine-hyprcursor;
+    # Bibata Modern Ice: weiß, runde Ecken (Vorschau: github.com/ful1e5/Bibata_Cursor).
+    # Weitere Varianten im selben Paket: Bibata-Modern-Classic (schwarz),
+    # Bibata-Modern-Amber (gold), Bibata-Original-* (spitze Ecken)
+    name = "Bibata-Modern-Ice";
+    package = pkgs.bibata-cursors;
     size = 24;
   };
 

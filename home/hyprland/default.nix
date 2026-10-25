@@ -29,7 +29,7 @@
             mono = theme.fonts.mono.name;
           };
           cursor = {
-            inherit (theme.cursor) name hyprcursor size;
+            inherit (theme.cursor) name size;
           };
         }
       }

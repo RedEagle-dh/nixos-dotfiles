@@ -67,11 +67,9 @@ hl.monitor({
 ---- UMGEBUNGSVARIABLEN ----
 ----------------------------
 
--- Mauszeiger: hyprcursor für Hyprland selbst, klassischer Zeiger für Programme
-hl.env("HYPRCURSOR_THEME", theme.cursor.hyprcursor)
-hl.env("HYPRCURSOR_SIZE",  tostring(theme.cursor.size))
-hl.env("XCURSOR_THEME",    theme.cursor.name)
-hl.env("XCURSOR_SIZE",     tostring(theme.cursor.size))
+-- Mauszeiger (theme/default.nix) – für Hyprland selbst und alle Programme
+hl.env("XCURSOR_THEME", theme.cursor.name)
+hl.env("XCURSOR_SIZE",  tostring(theme.cursor.size))
 
 
 -----------------
@@ -205,12 +203,15 @@ hl.config({ animations = { enabled = true } })
 hl.curve("smooth", { type = "bezier", points = { {0.25, 1},    {0.5, 1}  } })
 hl.curve("swift",  { type = "bezier", points = { {0.05, 0.9},  {0.1, 1}  } })
 hl.curve("linear", { type = "bezier", points = { {0, 0},       {1, 1}    } })
-hl.curve("bouncy", { type = "spring", mass = 1, stiffness = 90, dampening = 15 })
+-- Feder für Fenster (Verschieben, Öffnen). Bei Federn zählt "speed" nicht – die
+-- Dauer ergibt sich aus stiffness (höher = schneller) und dampening (höher =
+-- weniger Nachfedern). So steht ein Fenster nach etwa 0,25 s, mit leichtem Federn.
+hl.curve("bouncy", { type = "spring", mass = 1, stiffness = 300, dampening = 30 })
 
 hl.animation({ leaf = "global",           enabled = true, speed = 8,   bezier = "default" })
-hl.animation({ leaf = "windows",          enabled = true, speed = 4.5, spring = "bouncy" })
-hl.animation({ leaf = "windowsIn",        enabled = true, speed = 4,   spring = "bouncy", style = "popin 88%" })
-hl.animation({ leaf = "windowsOut",       enabled = true, speed = 2,   bezier = "smooth", style = "popin 88%" })
+hl.animation({ leaf = "windows",          enabled = true, speed = 3,   spring = "bouncy" })
+hl.animation({ leaf = "windowsIn",        enabled = true, speed = 3,   spring = "bouncy", style = "popin 88%" })
+hl.animation({ leaf = "windowsOut",       enabled = true, speed = 1.5, bezier = "smooth", style = "popin 88%" })
 hl.animation({ leaf = "border",           enabled = true, speed = 6,   bezier = "smooth" })
 hl.animation({ leaf = "fade",             enabled = true, speed = 3,   bezier = "smooth" })
 hl.animation({ leaf = "layersIn",         enabled = true, speed = 3,   bezier = "swift",  style = "popin 92%" })
