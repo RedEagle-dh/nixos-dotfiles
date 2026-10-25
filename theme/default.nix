@@ -1,8 +1,8 @@
 # theme/default.nix – Das Aussehen des ganzen Systems an einer Stelle:
 # Farbpalette, Schriften, Mauszeiger, Icons, GTK-Theme und Hintergrundbild.
 #
-# Genutzt von system/ (Login-Bildschirm, Schriften) und home/. Dort steht es
-# jedem Modul als Argument `theme` zur Verfügung.
+# Genutzt von system/ (Bootmenü, Startbildschirm, Login-Bildschirm, Schriften)
+# und home/. Dort steht es jedem Modul als Argument `theme` zur Verfügung.
 # Wer hier eine Farbe ändert, ändert sie überall: Fensterrahmen, Leiste,
 # Starter, Benachrichtigungen, Terminal, Sperrbildschirm und Hintergrund.
 
@@ -26,6 +26,17 @@ let
     highlightLow = "21202e";
     highlightMed = "403d52";
     highlightHigh = "524f67";
+  };
+
+  wallpaper = import ./wallpaper.nix { inherit pkgs colors; };
+
+  # Dasselbe Bild in Monitorauflösung für Bootmenü und Startbildschirm. Beide
+  # laufen vor dem Grafiktreiber und müssen das Bild selbst laden und
+  # skalieren – passend gerendert geht das schneller und sieht schärfer aus.
+  bootWallpaper = import ./wallpaper.nix {
+    inherit pkgs colors;
+    width = 2560;
+    height = 1440;
   };
 in
 {
@@ -63,5 +74,11 @@ in
     package = pkgs.adw-gtk3;
   };
 
-  wallpaper = import ./wallpaper.nix { inherit pkgs colors; };
+  inherit wallpaper bootWallpaper;
+
+  # Startbildschirm (Plymouth): Hintergrundbild, Logo und Spinner
+  plymouth = import ./plymouth.nix {
+    inherit pkgs colors;
+    wallpaper = bootWallpaper;
+  };
 }

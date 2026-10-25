@@ -9,6 +9,7 @@
 {
   imports = [
     ./boot.nix # Bootloader
+    ./boot-splash.nix # Startbildschirm statt Textmeldungen
     ./nix.nix # Nix selbst: Flakes, Aufräumen, nh
     ./locale.nix # Sprache, Zeitzone, Tastatur
     ./users.nix # Benutzerkonto & Shell

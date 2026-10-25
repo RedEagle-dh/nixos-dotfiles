@@ -3,8 +3,16 @@
 # Das Bild entsteht beim Bauen aus einer SVG-Grafik: weiche Farbwolken auf
 # dunklem Grund und ein seidiges Band aus feinen Linien. Ändert sich die
 # Palette, passt sich das Bild automatisch an.
+#
+# width/height: Größe der PNG-Datei. Entworfen ist die Grafik für 3840×2160,
+# andere Größen werden scharf neu gerendert statt hochskaliert.
 
-{ pkgs, colors }:
+{
+  pkgs,
+  colors,
+  width ? 3840,
+  height ? 2160,
+}:
 
 let
   inherit (pkgs) lib;
@@ -98,5 +106,5 @@ let
   '';
 in
 pkgs.runCommand "wallpaper.png" { nativeBuildInputs = [ pkgs.resvg ]; } ''
-  resvg --width 3840 --height 2160 ${svg} $out
+  resvg --width ${toString width} --height ${toString height} ${svg} $out
 ''
