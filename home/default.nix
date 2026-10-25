@@ -9,6 +9,8 @@
 {
   imports = [
     ./apps.nix # Programme
+    ./discord.nix # Discord (Vesktop mit Vencord)
+    ./spotify.nix # Spotify mit spicetify-Theme
     ./appearance.nix # GTK- & Qt-Theme, Icons, Mauszeiger
     ./xdg.nix # Ordner & Standardprogramme
     ./hyprland # Fenster, Tastenkürzel, Login-Sperre, Leerlauf

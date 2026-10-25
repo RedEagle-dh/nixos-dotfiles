@@ -39,6 +39,12 @@
       url = "github:caelestia-dots/shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Spotify mit spicetify (Theme & Erweiterungen). Eingebunden in home/spotify.nix.
+    spicetify-nix = {
+      url = "github:Gerg-L/spicetify-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -60,7 +66,7 @@
               useUserPackages = true; # Programme landen im Benutzerprofil statt in ~/.nix-profile
               # Vorhandene Dateien nicht blockieren, sondern als *.hm-backup zur Seite legen
               backupFileExtension = "hm-backup";
-              extraSpecialArgs = { inherit user inputs; }; # inputs: für home/caelestia
+              extraSpecialArgs = { inherit user inputs; }; # inputs: für home/caelestia und home/spotify.nix
               users.${user} = import ./home;
             };
           }

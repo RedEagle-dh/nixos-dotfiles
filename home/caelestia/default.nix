@@ -51,13 +51,14 @@ in
       };
 
       # Was caelestia beim Farbwechsel mitfärbt: Hyprland-Rahmen
-      # (hypr/scheme/current.lua, liest hyprland.lua) und offene Terminals.
+      # (hypr/scheme/current.lua, liest hyprland.lua), offene Terminals und
+      # Discord (Theme für Vesktop, siehe ../discord.nix; legt nebenbei leere
+      # themes-Ordner für andere Discord-Clients in ~/.config an).
       # Alles andere bleibt aus, weil caelestia sonst die von Nix verwalteten
       # Dateien überschreiben würde – GTK bekommt die Farben über die Vorlagen
-      # unten, Qt (Kvantum) und fuzzel bleiben in Rosé Pine.
+      # unten, Qt (Kvantum), fuzzel und Spotify (../spotify.nix) bleiben in Rosé Pine.
       cli.settings.theme =
         lib.genAttrs [
-          "enableDiscord"
           "enableSpicetify"
           "enablePandora"
           "enableFuzzel"
@@ -74,6 +75,7 @@ in
         // {
           enableTerm = true;
           enableHypr = true;
+          enableDiscord = true;
         };
     };
 
@@ -125,6 +127,7 @@ in
 
     # Beim ersten Mal: Hintergrundbild setzen und Farbschema "dynamic" (Farben
     # aus dem Hintergrundbild). Danach merkt sich caelestia beides selbst.
+    # Fehlt nur das Discord-Theme, wird das aktuelle Farbschema neu angewendet.
     home.activation.caelestiaDefaults = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
       needScheme=""
       if [ ! -f "${themeDir}/gtk4.css" ]; then needScheme=1; fi
@@ -133,6 +136,9 @@ in
       fi
       if [ -n "$needScheme" ]; then
         run ${cli}/bin/caelestia scheme set -n dynamic || true
+      elif [ ! -f "${config.xdg.configHome}/vesktop/themes/caelestia.theme.css" ]; then
+        # Discord-Theme fehlt noch: aktuelles Farbschema einmal neu anwenden
+        run ${cli}/bin/caelestia scheme set -m "$(${cli}/bin/caelestia scheme get -m)" || true
       fi
     '';
   };
