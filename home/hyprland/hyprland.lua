@@ -328,7 +328,7 @@ for i = 1, 5 do
 end
 
 -- Spezial-Flächen (Super+S, Super+M …) mit mehr Rand, damit sie wie ein Overlay wirken
-for _, name in ipairs({ "special", "sysmon", "music", "communication", "todo" }) do
+for _, name in ipairs({ "passwords", "sysmon", "music", "communication" }) do
     hl.workspace_rule({ workspace = "special:" .. name, gaps_out = 60 })
 end
 

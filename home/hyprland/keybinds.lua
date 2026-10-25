@@ -262,14 +262,14 @@ bind({ mod .. " + ALT + mouse_up", mod .. " + ALT + Page_Up", "CTRL + " .. mod .
 ---------------------------
 ---- SPEZIAL-FLÄCHEN ----
 ---------------------------
--- Schweben über allem und lassen sich ein- und ausblenden. Die festen
--- Flächen holen ihre Programme dorthin (bzw. starten sie, wo angegeben).
+-- Schweben über allem und lassen sich ein- und ausblenden. Jede Fläche holt
+-- ihr Programm dorthin und startet es, falls es noch nicht läuft.
 
 local specialApps = {
+    passwords     = { { class = "1Password", command = "1password" } },
     sysmon        = { { class = "btop", command = "kitty --class btop btop" } },
-    music         = { { class = "Spotify" }, { class = "feishin" } },
-    communication = { { class = "discord" }, { class = "vesktop" }, { class = "whatsapp" } },
-    todo          = {},
+    music         = { { class = "Spotify", command = "spotify" } },
+    communication = { { class = "vesktop", command = "vesktop" } },
 }
 
 local function toggleSpecial(name)
@@ -301,20 +301,11 @@ local function toggleSpecial(name)
     end
 end
 
--- Super+S: offene Spezial-Fläche schließen, sonst die allgemeine öffnen
-bind(mod .. " + S", function()
-    local active = hl.get_active_special_workspace()
-    local name   = active and active.name:gsub("^special:", "") or "special"
-    hl.dispatch(hl.dsp.workspace.toggle_special(name))
-end, "Spezial-Fläche ein/aus")
-
+bind(mod .. " + S",           toggleSpecial("passwords"),     "1Password ein/aus")
+bind(mod .. " + M",           toggleSpecial("music"),         "Spotify ein/aus")
+bind(mod .. " + D",           toggleSpecial("communication"), "Vesktop (Discord) ein/aus")
 bind("CTRL + SHIFT + Escape", toggleSpecial("sysmon"),        "Systemmonitor (btop) ein/aus")
-bind(mod .. " + M",           toggleSpecial("music"),         "Musik-Fläche ein/aus")
-bind(mod .. " + D",           toggleSpecial("communication"), "Chat-Fläche ein/aus")
-bind(mod .. " + R",           toggleSpecial("todo"),          "Aufgaben-Fläche ein/aus")
 
-bind({ mod .. " + ALT + S", "CTRL + " .. mod .. " + SHIFT + up" },
-     hl.dsp.window.move({ workspace = "special:special" }), "Fenster auf die Spezial-Fläche")
 bind("CTRL + " .. mod .. " + SHIFT + down",
      hl.dsp.window.move({ workspace = "e+0" }), "Fenster von der Spezial-Fläche zurückholen")
 
