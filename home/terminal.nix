@@ -71,20 +71,18 @@ in
   };
 
   # ───────────────────────── Shell ─────────────────────────
-  programs.bash = {
+  programs.zsh = {
     enable = true;
-    historyControl = [
-      "ignoredups"
-      "erasedups"
-    ];
-    historySize = 50000;
-    shellAliases = 
-      {
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+    history.size = 50000;
+  };
+
+  home.shellAliases = {
       ".." = "cd ..";
       "..." = "cd ../..";
-      "nhs" = "nh os boot";
-      "nhb" = "nh os switch";
-    };
+      "nhb" = "nh os boot";
+      "nhs" = "nh os switch && exec $SHELL";
   };
 
   programs.starship = {

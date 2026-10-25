@@ -184,6 +184,9 @@ in
     terminal = "kitty";
   };
 
+  programs.zsh.enable = true;
+  users.users.${user}.shell = pkgs.zsh;
+
   environment.systemPackages = with pkgs; [
     nautilus # Dateimanager (Super+E)
 
