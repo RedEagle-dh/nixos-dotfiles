@@ -168,7 +168,7 @@ in
   programs.nix-ld.enable = true; # vorkompilierte Fremd-Binaries lauffähig machen
 
   programs._1password.enable = true;
-  programs._1password-gui.enable = {
+  programs._1password-gui = {
     enable = true;
     polkitPolicyOwners = [ user ];
   };
