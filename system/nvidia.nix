@@ -1,11 +1,24 @@
 # system/nvidia.nix – Grafiktreiber für die RTX 4080.
 
-{ ... }:
+{ pkgs, ... }:
 
 {
   hardware.graphics = {
     enable = true;
     enable32Bit = true; # 32-Bit-Treiber für Steam/Proton
+
+    # Videos im Browser über die Grafikkarte dekodieren (VA-API → NVDEC) statt
+    # auf der CPU. Prüfen: in Firefox about:support → "Hardware Video Decoding",
+    # oder beim Abspielen in nvidia-smi nach "firefox" schauen.
+    # Firefox-Einstellungen dazu: system/programs.nix
+    extraPackages = [ pkgs.nvidia-vaapi-driver ];
+  };
+
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "nvidia"; # VA-API soll den NVIDIA-Treiber laden
+    # Firefox dekodiert in einem abgeschotteten Prozess, aus dem heraus der
+    # Treiber die Grafikkarte nicht erreicht – laut nvidia-vaapi-driver nötig
+    MOZ_DISABLE_RDD_SANDBOX = "1";
   };
   services.xserver.videoDrivers = [ "nvidia" ]; # heißt so, gilt aber auch für Wayland
 

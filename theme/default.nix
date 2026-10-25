@@ -3,8 +3,10 @@
 #
 # Genutzt von system/ (Bootmenü, Startbildschirm, Login-Bildschirm, Schriften)
 # und home/. Dort steht es jedem Modul als Argument `theme` zur Verfügung.
-# Wer hier eine Farbe ändert, ändert sie überall: Fensterrahmen, Leiste,
-# Starter, Benachrichtigungen, Terminal, Sperrbildschirm und Hintergrund.
+# Die Palette färbt alles, was vor oder neben caelestia läuft: Bootmenü,
+# Startbildschirm, Login, das erzeugte Hintergrundbild, Qt-Programme, Spotify,
+# Prompt und fzf. Leiste, Fensterrahmen, Terminal, GTK-Programme und Menüs
+# färbt caelestia nach seinem Farbschema (home/caelestia).
 
 { pkgs }:
 

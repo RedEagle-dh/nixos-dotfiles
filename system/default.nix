@@ -23,7 +23,8 @@
     ./1password.nix # 1Password mit Browser- & System-Anbindung
     ./docker.nix # Docker mit GPU
     ./gaming.nix # Steam, Proton, Gamemode
-    ./storage.nix # Swap & Btrfs-Pflege
+    ./storage.nix # Swap, Kompression, Snapshots von /home
+    ./backup.nix # tägliches Backup auf den Homelab (restic)
   ];
 
   _module.args.theme = import ../theme { inherit pkgs; };

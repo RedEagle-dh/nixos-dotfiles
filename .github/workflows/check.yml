@@ -1,0 +1,21 @@
+# Bei jedem Push und Pull Request: Ist alles mit `nix fmt` formatiert, und
+# wertet die Konfiguration fehlerfrei aus? (Gebaut wird nichts.)
+
+name: Prüfen
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: cachix/install-nix-action@v31
+
+      - name: Formatierung
+        run: nix fmt -- --ci
+
+      - name: Konfiguration auswerten
+        run: nix flake check --no-build

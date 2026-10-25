@@ -1,7 +1,7 @@
 # home/caelestia/ – die caelestia-Shell (github.com/caelestia-dots/shell):
 # Leiste links, Starter (Super antippen), Dashboard, Seitenleiste mit
 # Benachrichtigungen, Sitzungsmenü, Lautstärke-Anzeige, Sperrbildschirm und
-# Hintergrundbild und das Farbschema für Fensterrahmen, Terminal und GTK.
+# Hintergrundbild und das Farbschema für Fensterrahmen, Terminal, GTK und Menüs.
 #
 # Einstellungen: unten in settings (landen in ~/.config/caelestia/shell.json),
 # alle Optionen: https://github.com/caelestia-dots/shell#example-configuration
@@ -55,8 +55,9 @@ in
       # Discord (Theme für Vesktop, siehe ../discord.nix; legt nebenbei leere
       # themes-Ordner für andere Discord-Clients in ~/.config an).
       # Alles andere bleibt aus, weil caelestia sonst die von Nix verwalteten
-      # Dateien überschreiben würde – GTK bekommt die Farben über die Vorlagen
-      # unten, Qt (Kvantum), fuzzel und Spotify (../spotify.nix) bleiben in Rosé Pine.
+      # Dateien überschreiben würde – GTK und fuzzel (../menus/fuzzel.nix)
+      # bekommen die Farben über eigene Vorlagen, Qt (Kvantum) und Spotify
+      # (../spotify.nix) bleiben in Rosé Pine.
       cli.settings.theme =
         lib.genAttrs [
           "enableSpicetify"
@@ -127,7 +128,8 @@ in
 
     # Beim ersten Mal: Hintergrundbild setzen und Farbschema "dynamic" (Farben
     # aus dem Hintergrundbild). Danach merkt sich caelestia beides selbst.
-    # Fehlt nur das Discord-Theme, wird das aktuelle Farbschema neu angewendet.
+    # Fehlt nur eine der ausgefüllten Vorlagen (z. B. nach dem Hinzufügen einer
+    # neuen), wird das aktuelle Farbschema neu angewendet.
     home.activation.caelestiaDefaults = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
       needScheme=""
       if [ ! -f "${themeDir}/gtk4.css" ]; then needScheme=1; fi
@@ -136,8 +138,8 @@ in
       fi
       if [ -n "$needScheme" ]; then
         run ${cli}/bin/caelestia scheme set -n dynamic || true
-      elif [ ! -f "${config.xdg.configHome}/vesktop/themes/caelestia.theme.css" ]; then
-        # Discord-Theme fehlt noch: aktuelles Farbschema einmal neu anwenden
+      elif [ ! -f "${config.xdg.configHome}/vesktop/themes/caelestia.theme.css" ] \
+        || [ ! -f "${themeDir}/fuzzel.ini" ]; then
         run ${cli}/bin/caelestia scheme set -m "$(${cli}/bin/caelestia scheme get -m)" || true
       fi
     '';

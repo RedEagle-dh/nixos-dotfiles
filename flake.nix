@@ -11,6 +11,8 @@
 #
 # Anwenden:          nhs  (bzw. sudo nixos-rebuild switch)
 # Aktualisieren:     nix flake update  →  danach nhs
+#                    Oder: Jeden Montag öffnet GitHub einen PR mit neuem flake.lock
+#                    (.github/workflows/update.yml) – mergen, git pull, nhs.
 #                    Bricht danach etwas: im Bootmenü die vorherige Generation
 #                    wählen oder `git checkout flake.lock` und erneut nhs.
 #
@@ -45,6 +47,13 @@
       url = "github:Gerg-L/spicetify-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Fertige Datenbank "welches Paket enthält welchen Befehl" – für `, befehl`
+    # und den Hinweis bei unbekannten Befehlen. Eingebunden in home/terminal/cli-tools.nix.
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -52,8 +61,13 @@
     let
       # Benutzername – steht nur hier und wird an alle Module als `user` übergeben
       user = "dave";
+      system = "x86_64-linux";
     in
     {
+      # `nix fmt` formatiert alle .nix-Dateien im Repo einheitlich (nixfmt).
+      # Die GitHub Action prüft das bei jedem Push (.github/workflows/check.yml).
+      formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
+
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit user; };
         modules = [

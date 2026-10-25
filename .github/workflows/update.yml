@@ -1,0 +1,50 @@
+# Jeden Montag: flake.lock aktualisieren, prüfen, ob die Konfiguration damit
+# noch auswertet, und das Ergebnis als Pull Request vorschlagen.
+# Übernehmen: PR mergen, lokal `git pull`, dann nhs (oder nhb und neu starten).
+# Von Hand starten: GitHub → Actions → "flake.lock aktualisieren" → Run workflow.
+#
+# Schlägt die Prüfung fehl, entsteht kein PR – GitHub meldet den Fehler per Mail.
+
+name: flake.lock aktualisieren
+
+on:
+  schedule:
+    - cron: "0 4 * * 1" # montags 4 Uhr UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: cachix/install-nix-action@v31
+
+      - name: Inputs aktualisieren
+        id: update
+        run: |
+          {
+            echo 'changes<<EOF'
+            nix flake update 2>&1
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Konfiguration auswerten
+        run: nix flake check --no-build
+
+      - uses: peter-evans/create-pull-request@v8
+        with:
+          branch: update-flake-lock
+          delete-branch: true
+          commit-message: "flake.lock aktualisieren"
+          title: "flake.lock aktualisieren"
+          body: |
+            Neue Stände der Flake-Inputs. Die Konfiguration wertet damit fehlerfrei aus
+            (`nix flake check --no-build`) – ob alles läuft, zeigt erst `nhb` und ein Neustart.
+
+            ```
+            ${{ steps.update.outputs.changes }}
+            ```

@@ -1,4 +1,4 @@
-# system/gaming.nix – Spielen: Steam mit Proton, Gamemode, Gamescope, MangoHud.
+# system/gaming.nix – Spielen: Steam mit Proton, Heroic, Gamemode, Gamescope, MangoHud.
 #
 # Windows-Spiele laufen in Steam über Proton: Rechtsklick aufs Spiel →
 # Eigenschaften → Kompatibilität → "Proton Experimental" oder "GE-Proton".
@@ -30,5 +30,10 @@
     capSysNice = true; # darf sich höhere Priorität geben → flüssigere Bilder
   };
 
-  environment.systemPackages = [ pkgs.mangohud ];
+  environment.systemPackages = [
+    pkgs.mangohud
+    # Spiele von Epic, GOG und Amazon. Proton-/Wine-Versionen (z. B. GE-Proton)
+    # lädt Heroic im "Wine Manager" selbst herunter.
+    pkgs.heroic
+  ];
 }

@@ -7,13 +7,21 @@
 #   direnv     lädt in Projektordnern mit .envrc die passende Umgebung
 #              (z. B. "use flake" → Werkzeuge aus dem devShell des Projekts);
 #              einmal pro Ordner freigeben: direnv allow
+#   , befehl   startet ein Programm, ohne es zu installieren (z. B. ", cowsay hi")
+#              Unbekannter Befehl? Die Shell nennt das Paket, das ihn enthält.
+#   nix-locate sucht, welches Paket eine Datei enthält (nix-locate bin/ffmpeg)
 
-{ theme, ... }:
+{ inputs, theme, ... }:
 
 let
   hex = name: "#${theme.colors.${name}}";
 in
 {
+  # Fertige Paket-Datenbank, wöchentlich neu gebaut – kommt mit nix flake update
+  imports = [ inputs.nix-index-database.homeModules.nix-index ];
+  programs.nix-index.enable = true; # Hinweis bei unbekannten Befehlen
+  programs.nix-index-database.comma.enable = true;
+
   programs.zoxide.enable = true;
 
   programs.direnv = {

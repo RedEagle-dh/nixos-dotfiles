@@ -13,6 +13,7 @@
     file-roller # Archive (zip, tar …)
     vscode # Erweiterungen & Einstellungen pflegst du in VS Code selbst
     hyprmod # Hyprland-Einstellungen live ausprobieren; Ergebnis dann in home/hyprland/ übernehmen
+    bun # JavaScript-Laufzeit & Paketmanager
   ];
 
   # Videos. Mit gpu-next meldet mpv HDR-Videos an Hyprland – im Vollbild

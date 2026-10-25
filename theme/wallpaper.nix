@@ -80,20 +80,44 @@ let
       <g fill="none" stroke-linecap="round" filter="url(#glow)">
     ${ribbon {
       lines = 22;
-      start = [ 1650 200 ];
-      c1 = [ 1050 380 ];
-      c2 = [ 1650 (-260) ];
-      end = [ 980 220 ];
+      start = [
+        1650
+        200
+      ];
+      c1 = [
+        1050
+        380
+      ];
+      c2 = [
+        1650
+        (-260)
+      ];
+      end = [
+        980
+        220
+      ];
       colorA = c.rose;
       colorB = c.love;
       strength = 0.12;
     }}
     ${ribbon {
       lines = 30;
-      start = [ 1500 260 ];
-      c1 = [ 650 520 ];
-      c2 = [ 2050 (-420) ];
-      end = [ 760 300 ];
+      start = [
+        1500
+        260
+      ];
+      c1 = [
+        650
+        520
+      ];
+      c2 = [
+        2050
+        (-420)
+      ];
+      end = [
+        760
+        300
+      ];
       colorA = c.iris;
       colorB = c.rose;
       strength = 0.32;

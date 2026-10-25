@@ -2,7 +2,12 @@
 # Welche es sind, steht in theme/default.nix. Die Farben der GTK-Programme kommen
 # aus dem Farbschema von caelestia (home/caelestia), Qt bleibt in Rosé Pine.
 
-{ lib, pkgs, theme, ... }:
+{
+  lib,
+  pkgs,
+  theme,
+  ...
+}:
 
 let
   # Qt-Farbpalette (qt5ct/qt6ct-Format). Kvantum färbt normale Qt-Programme

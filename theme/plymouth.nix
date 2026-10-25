@@ -27,9 +27,13 @@ let
   # Plymouth-Skripte erwarten Farben als drei Zahlen zwischen 0 und 1
   rgb =
     color:
-    lib.concatMapStringsSep ", " (
-      i: toString (lib.fromHexString (builtins.substring i 2 c.${color}) / 255.0)
-    ) [ 0 2 4 ];
+    lib.concatMapStringsSep ", "
+      (i: toString (lib.fromHexString (builtins.substring i 2 c.${color}) / 255.0))
+      [
+        0
+        2
+        4
+      ];
 
   # Spinner: blasser Ring, darauf ein umlaufender Bogen – als Einzelbilder
   spinnerFrames = 60;
