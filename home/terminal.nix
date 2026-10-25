@@ -78,9 +78,12 @@ in
       "erasedups"
     ];
     historySize = 50000;
-    shellAliases = {
+    shellAliases = 
+      {
       ".." = "cd ..";
       "..." = "cd ../..";
+      "nhs" = "nh os boot";
+      "nhb" = "nh os switch";
     };
   };
 

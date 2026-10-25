@@ -173,6 +173,11 @@ in
     polkitPolicyOwners = [ user ];
   };
 
+  programs.nh = {
+    enable = true;
+    flake = "/etc/nixos";
+  };
+
   # Dateimanager Nautilus mit "In Kitty öffnen" im Rechtsklickmenü
   programs.nautilus-open-any-terminal = {
     enable = true;
