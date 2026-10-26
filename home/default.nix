@@ -15,6 +15,7 @@
     ./audio.nix
     ./storage.nix
     ./terminal
+    ./neovim
   ];
 
   _module.args.theme = import ../theme { inherit pkgs; };
