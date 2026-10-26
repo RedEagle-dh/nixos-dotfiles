@@ -1,13 +1,3 @@
-# theme/plymouth.nix – Startbildschirm beim Hoch- und Herunterfahren.
-#
-# Zeigt das Hintergrundbild mit dem NixOS-Logo in den Akzentfarben und einem
-# dezenten Spinner darunter. Fragt das System nach einem Passwort (z. B. für
-# eine verschlüsselte Festplatte), erscheint dort stattdessen ein Eingabefeld.
-# Danach übernimmt Hyprland mit demselben Hintergrundbild (Sperrbildschirm).
-#
-# Alle Grafiken entstehen beim Bauen aus SVG und sind für eine Bildhöhe von
-# 1440 Pixeln gerendert; auf anderen Monitoren skaliert das Skript sie mit.
-
 {
   pkgs,
   colors,
@@ -20,11 +10,9 @@ let
   c = colors;
   name = "splash";
 
-  # Schrift für Passwortabfrage und Meldungen
   fontFile = "${pkgs.inter}/share/fonts/truetype/InterVariable.ttf";
   fontName = "Inter Variable";
 
-  # Plymouth-Skripte erwarten Farben als drei Zahlen zwischen 0 und 1
   rgb =
     color:
     lib.concatMapStringsSep ", "
@@ -35,7 +23,6 @@ let
         4
       ];
 
-  # Spinner: blasser Ring, darauf ein umlaufender Bogen – als Einzelbilder
   spinnerFrames = 60;
   spinnerFrame =
     i:
@@ -48,7 +35,6 @@ let
       </svg>
     '';
 
-  # Eingabefeld für Passwörter und ein Punkt pro eingegebenem Zeichen
   field = pkgs.writeText "field.svg" ''
     <svg xmlns="http://www.w3.org/2000/svg" width="380" height="52" viewBox="0 0 380 52">
       <rect x="1" y="1" width="378" height="50" rx="25" fill="#${c.surface}" fill-opacity="0.85"
@@ -62,8 +48,6 @@ let
   '';
 
   script = pkgs.writeText "${name}.script" ''
-    # Erzeugt von theme/plymouth.nix – Änderungen bitte dort.
-
     Window.SetBackgroundTopColor(${rgb "base"});
     Window.SetBackgroundBottomColor(${rgb "base"});
 
@@ -83,8 +67,6 @@ let
 
     font = "${fontName} " + Math.Int(13 * scale);
 
-    # --- Hintergrund und Logo -------------------------------------------------
-
     background = Sprite(Image("background.png").Scale(screen_w, screen_h));
     background.SetPosition(0, 0, -100);
 
@@ -92,16 +74,12 @@ let
     logo = Sprite(logo_image);
     logo.SetPosition(centered_x(logo_image), Math.Int((screen_h - logo_image.GetHeight()) / 2), 10);
 
-    # --- Spinner -------------------------------------------------------------
-
     for (i = 0; i < ${toString spinnerFrames}; i++)
       spinner_frames[i] = scaled(Image("spinner-" + i + ".png"));
 
     lower_y = Math.Int(screen_h * 0.76);
     spinner = Sprite(spinner_frames[0]);
     spinner.SetPosition(centered_x(spinner_frames[0]), lower_y, 10);
-
-    # --- Passwortabfrage (unsichtbar, bis jemand fragt) -----------------------
 
     field_image = scaled(Image("field.png"));
     field_x = centered_x(field_image);
@@ -118,8 +96,6 @@ let
     answer = Sprite();
     message = Sprite();
 
-    # --- Zustand: 0 = Spinner, 1 = Eingabefeld --------------------------------
-
     asking = 0;
     has_answer = 0;
     has_message = 0;
@@ -127,7 +103,7 @@ let
 
     fun refresh() {
       global.tick = global.tick + 1;
-      fade = Math.Min(global.tick / 25, 1); # in einer halben Sekunde einblenden
+      fade = Math.Min(global.tick / 25, 1);
 
       background.SetOpacity(fade);
       logo.SetOpacity(fade);
@@ -162,7 +138,7 @@ let
         }
         global.bullets[i].SetPosition(start + i * bullet_step, bullet_y, 30);
       }
-      # Überzählige Punkte (nach Löschen) aus dem Bild schieben
+      # Nach dem Löschen überzählige Punkte aus dem Bild schieben
       for (i = count; i < global.bullet_count; i++)
         global.bullets[i].SetPosition(-1000, -1000, 30);
     }
@@ -189,7 +165,6 @@ let
     }
     Plymouth.SetDisplayNormalFunction(display_normal);
 
-    # Meldungen vom System (selten, z. B. Dateisystemprüfung) klein am unteren Rand
     fun display_message(text) {
       image = Image.Text(text, ${rgb "subtle"}, 1, font);
       message.SetImage(image);

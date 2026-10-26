@@ -1,9 +1,6 @@
-# home/xdg.nix – Standard-Ordner und welches Programm welche Dateien öffnet.
-
 { ... }:
 
 {
-  # ~/Documents, ~/Downloads, ~/Pictures … (Screenshot-Ordner: screenshots.nix)
   xdg.userDirs = {
     enable = true;
     createDirectories = true;

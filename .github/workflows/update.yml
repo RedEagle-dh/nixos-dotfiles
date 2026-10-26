@@ -1,15 +1,8 @@
-# Jeden Montag: flake.lock aktualisieren, prüfen, ob die Konfiguration damit
-# noch auswertet, und das Ergebnis als Pull Request vorschlagen.
-# Übernehmen: PR mergen, lokal `git pull`, dann nhs (oder nhb und neu starten).
-# Von Hand starten: GitHub → Actions → "flake.lock aktualisieren" → Run workflow.
-#
-# Schlägt die Prüfung fehl, entsteht kein PR – GitHub meldet den Fehler per Mail.
-
 name: flake.lock aktualisieren
 
 on:
   schedule:
-    - cron: "0 4 * * 1" # montags 4 Uhr UTC
+    - cron: "0 4 * * 1"
   workflow_dispatch:
 
 permissions:

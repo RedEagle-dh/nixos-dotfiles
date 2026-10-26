@@ -1,29 +1,21 @@
-# home/caelestia/gtk-css.nix – Farben für GTK-Programme als CSS (für ~/.config/gtk-*/gtk.css).
-# Ohne sie sind GTK-Programme (Nautilus, Loupe, pavucontrol …) GNOME-grau, und
-# eine Akzentfarbe bekommen sie unter Hyprland auch nicht.
-#
-# Bekommt eine Farbe pro Rolle (Argumente unten) und macht daraus alle Farben,
-# die libadwaita kennt (https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/css-variables.html).
-# Genutzt von default.nix daneben: Farben aus dem Schema von caelestia.
-
 { lib }:
 
 {
-  accent, # Schalter, Auswahl, Links
-  onAccent, # Text auf der Akzentfarbe
+  accent,
+  onAccent,
   error,
   onError,
   success,
   warning,
-  onStatus, # Text auf success/warning
-  window, # Fensterhintergrund
-  view, # Listen, Textfelder
-  fg, # Haupttext
-  headerbar, # Titelleiste
+  onStatus,
+  window,
+  view,
+  fg,
+  headerbar,
   sidebar,
   secondarySidebar,
   card,
-  popover, # Menüs, Dialoge
+  popover,
   border,
 }:
 let
@@ -79,11 +71,9 @@ let
     scrollbar_outline_color = "rgba(0, 0, 0, 0.5)";
   };
 
-  # GTK 3 (adw-gtk3) kennt nur die alten benannten Farben
   definedColors = lib.concatStrings (
     lib.mapAttrsToList (name: value: "@define-color ${name} ${value};\n") colors
   );
-  # libadwaita (GTK 4) liest seit 1.6 CSS-Variablen: accent_bg_color → --accent-bg-color
   cssVariables = lib.concatStrings (
     lib.mapAttrsToList (
       name: value: "  --${builtins.replaceStrings [ "_" ] [ "-" ] name}: ${value};\n"

@@ -1,0 +1,69 @@
+Bootmenü schneller zeichnen: Hintergrund nur einmal statt zweimal malen, und
+zwar direkt zusammen mit den Icons. Füllt das Bild den ganzen Bildschirm, wird
+außerdem weder vorher schwarz gefüllt noch danach der Bildschirm zurückgelesen
+(Lesen aus dem Grafikspeicher ist mit der NVIDIA-Firmware sehr langsam).
+
+diff -ru a/refind/main.c b/refind/main.c
+--- a/refind/main.c	2026-10-26 11:06:07.163662455 +0100
++++ b/refind/main.c	2026-10-26 11:06:18.990276359 +0100
+@@ -526,9 +526,6 @@
+     ScanForBootloaders(FALSE);
+     ScanForTools();
+ 
+-    // SetupScreen() clears the screen; but ScanForBootloaders() may display a
+-    // message that must be deleted, so do so
+-    BltClearScreen(TRUE);
+     pdInitialize();
+ 
+     if (GlobalConfig.ScanDelay > 0) {
+diff -ru a/refind/screen.c b/refind/screen.c
+--- a/refind/screen.c	2026-10-26 11:06:07.163617359 +0100
++++ b/refind/screen.c	2026-10-26 11:06:18.989907320 +0100
+@@ -201,11 +201,8 @@
+             HaveResized = TRUE;
+         } // if
+         SwitchToGraphics();
+-        if (GlobalConfig.ScreensaverTime != -1) {
+-           BltClearScreen(TRUE);
+-        } else { // start with screen blanked
+-           GraphicsScreenDirty = TRUE;
+-        }
++        // Draw the banner only once, together with the menu
++        GraphicsScreenDirty = TRUE;
+     }
+ } // VOID SetupScreen()
+ 
+@@ -438,6 +435,7 @@
+     EG_IMAGE *NewBanner = NULL;
+     INTN BannerPosX, BannerPosY;
+     EG_PIXEL Black = { 0x0, 0x0, 0x0, 0 };
++    BOOLEAN BannerFillsScreen = FALSE;
+ 
+     if (ShowBanner && !(GlobalConfig.HideUIFlags & HIDEUI_FLAG_BANNER)) {
+         // load banner on first call
+@@ -464,8 +462,14 @@
+            MenuBackgroundPixel = Banner->PixelData[0];
+         } // if Banner exists
+ 
++        // A banner covering the whole screen overwrites every pixel anyway
++        BannerFillsScreen = (Banner != NULL) && (Banner->Width == UGAWidth) &&
++                            (Banner->Height == UGAHeight) && (GlobalConfig.ScreensaverTime != -1);
++
+         // clear and draw banner
+-        if (GlobalConfig.ScreensaverTime != -1)
++        if (BannerFillsScreen)
++           ;
++        else if (GlobalConfig.ScreensaverTime != -1)
+            egClearScreen(&MenuBackgroundPixel);
+         else
+            egClearScreen(&Black);
+@@ -487,7 +491,8 @@
+ 
+     GraphicsScreenDirty = FALSE;
+     egFreeImage(GlobalConfig.ScreenBackground);
+-    GlobalConfig.ScreenBackground = egCopyScreen();
++    // Reading back from video memory is very slow on some firmware (NVIDIA)
++    GlobalConfig.ScreenBackground = BannerFillsScreen ? egCopyImage(Banner) : egCopyScreen();
+ } // VOID BltClearScreen()
+ 
+ 

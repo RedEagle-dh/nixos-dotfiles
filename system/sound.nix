@@ -1,16 +1,13 @@
-# system/sound.nix – Ton über PipeWire.
-# Lautstärke-Tasten & Anzeige: home/audio.nix
-
 { ... }:
 
 {
-  security.rtkit.enable = true; # Echtzeit-Priorität gegen Knackser
+  security.rtkit.enable = true;
   services.pulseaudio.enable = false;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
-    alsa.support32Bit = true; # für 32-Bit-Spiele
-    pulse.enable = true; # Kompatibilität für PulseAudio-Apps
+    alsa.support32Bit = true;
+    pulse.enable = true;
     wireplumber.enable = true;
   };
 }

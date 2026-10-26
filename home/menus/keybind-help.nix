@@ -1,7 +1,3 @@
-# home/menus/keybind-help.nix – Übersicht aller Tastenkürzel (Super+F1).
-# Liest die Kürzel samt Beschreibung direkt aus dem laufenden Hyprland –
-# die Beschreibungen stehen in hyprland/keybinds.lua.
-
 { pkgs, ... }:
 
 let
@@ -12,7 +8,6 @@ let
       pkgs.fuzzel
     ];
     text = ''
-      # Liest alle Kürzel samt Beschreibung direkt aus dem laufenden Hyprland
       hyprctl binds -j | jq -r '
         def bit($b): ((. / $b) | floor) % 2 == 1;
         def mods: [

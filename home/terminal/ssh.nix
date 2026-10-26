@@ -1,19 +1,20 @@
-# home/terminal/ssh.nix – SSH über den 1Password-Agent.
-#   Der Private Key liegt nur in 1Password, hier steht nur der Public Key
-#   (id_ed25519.pub). Er sagt ssh, welchen der Keys im Agent es anbieten soll.
-#   Neuer Rechner? Auf allen Servern ist schon derselbe Key hinterlegt.
+{ lib, pkgs, ... }:
 
-{ ... }:
-
+let
+  # Leer = 1Password-Standard (alle Keys aus dem Privat-Tresor); sonst nur diese, in dieser Reihenfolge
+  agentKeys = [ 
+    { item = "5poti6gc3lkawn5v6cjwg3pkde"; }
+  ];
+in
 {
-  # ~/.ssh/id_ed25519.pub
-  home.file.".ssh/id_ed25519.pub".source = ./id_ed25519.pub;
+  xdg.configFile."1Password/ssh/agent.toml" = lib.mkIf (agentKeys != [ ]) {
+    source = (pkgs.formats.toml { }).generate "agent.toml" { ssh-keys = agentKeys; };
+  };
 
   programs.ssh = {
     enable = true;
-    enableDefaultConfig = false; # alte Home-Manager-Standardwerte nicht übernehmen
+    enableDefaultConfig = false;
 
-    # Optionen heißen wie in `man ssh_config`. "*" landet automatisch am Ende.
     settings = {
       pi5 = {
         HostName = "192.168.188.20";
@@ -34,9 +35,7 @@
 
       "*" = {
         IdentityAgent = "~/.1password/agent.sock";
-        IdentityFile = "~/.ssh/id_ed25519.pub";
-        IdentitiesOnly = true; # nur diesen Key anbieten, nicht alle aus 1Password
-        ServerAliveInterval = 60; # Verbindung bei Leerlauf am Leben halten
+        ServerAliveInterval = 60;
         ServerAliveCountMax = 3;
       };
     };

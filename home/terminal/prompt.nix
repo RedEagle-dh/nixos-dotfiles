@@ -1,5 +1,3 @@
-# home/terminal/prompt.nix – Prompt (starship): Ordner, Git-Status, Laufzeit.
-
 { theme, ... }:
 
 let

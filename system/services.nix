@@ -1,18 +1,14 @@
-# system/services.nix – kleine Dienste, die ein Desktop braucht.
-
 { ... }:
 
 {
-  networking.networkmanager.enable = true; # LAN/WLAN (Icon in der Leiste)
-  security.polkit.enable = true; # erlaubt Programmen, nach Rechten zu fragen
+  networking.networkmanager.enable = true;
+  security.polkit.enable = true;
 
-  services.gnome.gnome-keyring.enable = true; # Passwortspeicher (Browser, VS Code, WLAN)
-  security.pam.services.login.enableGnomeKeyring = true; # beim Text-Login entsperren (sonst: hyprlock)
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.login.enableGnomeKeyring = true;
 
-  programs.dconf.enable = true; # GTK-Einstellungen
-  services.udisks2.enable = true; # USB-Sticks einhängen
-  services.gvfs.enable = true; # Papierkorb, Netzlaufwerke im Dateimanager
-  services.gnome.sushi.enable = true; # Leertaste im Dateimanager = Schnellvorschau
-
-  # hardware.bluetooth.enable = true; # falls dein PC Bluetooth hat
+  programs.dconf.enable = true;
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+  services.gnome.sushi.enable = true;
 }

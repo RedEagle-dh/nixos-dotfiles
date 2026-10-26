@@ -1,5 +1,3 @@
-# home/terminal/kitty.nix – Terminal Kitty in den Farben aus theme/.
-
 { theme, ... }:
 
 let
@@ -18,13 +16,12 @@ in
       enable_audio_bell = false;
       scrollback_lines = 20000;
       cursor_shape = "beam";
-      cursor_trail = 3; # Cursor zieht beim Springen einen kurzen Schweif
+      cursor_trail = 3;
       url_style = "curly";
       tab_bar_edge = "bottom";
       tab_bar_style = "powerline";
       tab_powerline_style = "slanted";
 
-      # Farben: Rosé Pine
       foreground = hex "text";
       background = hex "base";
       selection_foreground = hex "text";

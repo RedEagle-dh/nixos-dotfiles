@@ -1,18 +1,13 @@
-# system/fonts.nix – Schriften.
-# Systemweit, damit auch der Login-Bildschirm sie findet. Welche Schriften
-# es sind, steht in theme/default.nix.
-
 { pkgs, theme, ... }:
 
 {
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-color-emoji
-    theme.fonts.ui.package # Inter – Oberflächen
-    theme.fonts.mono.package # JetBrains Mono mit Icons – Terminal, Menüs
+    theme.fonts.ui.package
+    theme.fonts.mono.package
   ];
 
-  # Programme ohne eigene Schriftwahl bekommen dieselben Schriften
   fonts.fontconfig.defaultFonts = {
     sansSerif = [
       theme.fonts.ui.name

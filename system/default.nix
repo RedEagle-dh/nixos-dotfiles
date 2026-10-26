@@ -1,30 +1,24 @@
-# system/ – NixOS-Module, eines pro Thema.
-#
-# Neues Thema? Datei anlegen, hier eintragen, `git add` – fertig.
-# Jedes Modul bekommt automatisch `user` (aus flake.nix) und `theme`
-# (Farben, Schriften, Hintergrundbild aus ../theme) als Argument.
-
 { pkgs, ... }:
 
 {
   imports = [
-    ./boot.nix # Bootmenü (rEFInd) & Bootloader
-    ./boot-splash.nix # Startbildschirm statt Textmeldungen
-    ./nix.nix # Nix selbst: Flakes, Aufräumen, nh
-    ./locale.nix # Sprache, Zeitzone, Tastatur
-    ./users.nix # Benutzerkonto & Shell
-    ./nvidia.nix # Grafiktreiber RTX 4080
-    ./hyprland.nix # Hyprland, Sperrbildschirm, Polkit
-    ./login.nix # Autologin, hyprlock dient als Login
-    ./sound.nix # PipeWire
-    ./services.nix # Netzwerk, Schlüsselbund, USB-Sticks …
-    ./fonts.nix # Schriften
-    ./programs.nix # systemweite Programme
-    ./1password.nix # 1Password mit Browser- & System-Anbindung
-    ./docker.nix # Docker mit GPU
-    ./gaming.nix # Steam, Proton, Gamemode
-    ./storage.nix # Swap, Kompression, Snapshots von /home
-    ./backup.nix # tägliches Backup auf den Homelab (restic)
+    ./boot.nix
+    ./boot-splash.nix
+    ./nix.nix
+    ./locale.nix
+    ./users.nix
+    ./nvidia.nix
+    ./hyprland.nix
+    ./login.nix
+    ./sound.nix
+    ./services.nix
+    ./fonts.nix
+    ./programs.nix
+    ./1password.nix
+    ./docker.nix
+    ./gaming.nix
+    ./storage.nix
+    # ./backup.nix
   ];
 
   _module.args.theme = import ../theme { inherit pkgs; };

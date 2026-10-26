@@ -1,6 +1,3 @@
-# Bei jedem Push und Pull Request: Ist alles mit `nix fmt` formatiert, und
-# wertet die Konfiguration fehlerfrei aus? (Gebaut wird nichts.)
-
 name: Prüfen
 
 on:

@@ -1,7 +1,3 @@
-# home/screenshots.nix – Screenshots, Bildschirmaufnahmen und Farbpipette.
-# Screenshots landen in der Zwischenablage und unter ~/Pictures/Screenshots,
-# Aufnahmen unter ~/Videos/Recordings. Kürzel: siehe hyprland/keybinds.lua.
-
 { config, pkgs, ... }:
 
 let
@@ -26,7 +22,6 @@ let
         screen) grimblast --notify copysave output ;;
         active) grimblast --notify copysave active ;;
         edit)
-          # Bereich wählen, dann beschriften; Enter kopiert und speichert
           grimblast --freeze save area - | satty \
             --filename - \
             --output-filename "$dir/Screenshot_$(date +%Y%m%d_%H%M%S).png" \
@@ -40,13 +35,12 @@ let
     '';
   };
 
-  # Bildschirmaufnahme an/aus: läuft schon eine, wird sie beendet und gespeichert
   record = pkgs.writeShellApplication {
     name = "record";
     runtimeInputs = [
       pkgs.wf-recorder
       pkgs.slurp
-      pkgs.pulseaudio # pactl: Name des Ausgabegeräts für den Ton
+      pkgs.pulseaudio # pactl
       pkgs.libnotify
       pkgs.jq
       pkgs.procps
@@ -68,7 +62,7 @@ let
         screen) args+=(--output "$monitor") ;;
         sound) args+=(--output "$monitor" --audio="$(pactl get-default-sink).monitor") ;;
         region)
-          geometry=$(slurp) || exit 0 # Esc bricht die Auswahl ab
+          geometry=$(slurp) || exit 0
           args+=(--geometry "$geometry")
           ;;
         *) echo "Aufruf: record screen|sound|region" >&2; exit 1 ;;
@@ -84,7 +78,7 @@ in
   home.packages = [
     screenshot
     record
-    pkgs.hyprpicker # Farbpipette (Super+Umschalt+C); friert auch das Bild beim Screenshot ein
+    pkgs.hyprpicker # braucht auch grimblast --freeze
   ];
 
   xdg.userDirs.extraConfig.SCREENSHOTS = screenshotDir;

@@ -1,13 +1,3 @@
-# home/spotify.nix – Spotify mit spicetify (github.com/Gerg-L/spicetify-nix):
-# Theme "Comfy" in den Rosé-Pine-Farben aus ../theme.
-#
-# spicetify baut Theme und Erweiterungen fest in das Spotify-Paket ein. Darum
-# färbt caelestia Spotify nicht mit (anders als Discord) – neue Farben gibt es
-# nur über theme/default.nix und nhs.
-#
-# Alle Themes:        https://gerg-l.github.io/spicetify-nix/themes.html
-# Alle Erweiterungen: https://gerg-l.github.io/spicetify-nix/extensions.html
-
 {
   inputs,
   pkgs,
@@ -22,7 +12,7 @@ in
 {
   imports = [ inputs.spicetify-nix.homeManagerModules.spicetify ];
 
-  # Installiert Spotify gleich mit – pkgs.spotify nicht zusätzlich installieren
+  # Installiert Spotify mit – pkgs.spotify nicht zusätzlich installieren
   programs.spicetify = {
     enable = true;
     theme = spicePkgs.themes.comfy;
@@ -30,14 +20,14 @@ in
     customColorScheme = {
       text = c.text;
       subtext = c.subtle;
-      main = c.base; # Inhalt
-      main-elevated = c.surface; # Suchleiste, erhöhte Flächen
+      main = c.base;
+      main-elevated = c.surface;
       main-transition = c.base;
-      highlight = c.overlay; # Zeile unter der Maus
+      highlight = c.overlay;
       highlight-elevated = c.highlightMed;
-      sidebar = c.surface; # Bibliothek links
-      player = c.surface; # Leiste unten
-      card = c.surface; # Kontextmenüs, Karten
+      sidebar = c.surface;
+      player = c.surface;
+      card = c.surface;
       shadow = c.base;
       selected-row = c.text;
       button = c.iris;
@@ -57,8 +47,8 @@ in
     };
 
     enabledExtensions = with spicePkgs.extensions; [
-      shuffle # echtes Zufallsprinzip statt Spotifys "Smart Shuffle"
-      fullAppDisplay # Vollbild-Ansicht mit großem Cover
+      shuffle
+      fullAppDisplay
     ];
   };
 }

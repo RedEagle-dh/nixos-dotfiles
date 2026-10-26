@@ -1,17 +1,3 @@
-# system/boot.nix – Bootmenü (rEFInd) und Bootloader (systemd-boot).
-#
-# Beim Start erscheint rEFInd: links Windows, rechts NixOS, im Hintergrund das
-# Wallpaper. NixOS ist vorausgewählt und startet nach ein paar Sekunden von
-# selbst – immer die neueste Generation. Ältere Generationen (falls ein Update
-# etwas kaputt gemacht hat): NixOS markieren und Tab oder F2 drücken.
-#
-# Aufgabenteilung: systemd-boot verwaltet wie gewohnt Kernel und Generationen
-# in /boot. Nach jedem Rebuild baut ein Skript daraus das rEFInd-Menü und
-# setzt rEFInd an die erste Stelle der Bootreihenfolge.
-#
-# Notausgang, falls rEFInd nicht startet: im Boot-Menü des Mainboards
-# (meist F8 oder F11) "Linux Boot Manager" (= systemd-boot) wählen.
-
 {
   lib,
   pkgs,
@@ -20,17 +6,18 @@
 }:
 
 let
-  menuTimeout = 5; # Sekunden bis NixOS von selbst startet
+  menuTimeout = 5;
 
-  # Windows liegt auf der anderen SSD mit eigener EFI-Partition.
-  # Partitions-ID nachschauen: lsblk -o NAME,PARTUUID,PARTTYPENAME
   windowsEfiPartition = "a56ea599-cf51-42bd-a406-dfbed40ae3f5";
 
   esp = "/boot";
   refindDir = "EFI/refind";
 
-  # Fester Teil von refind.conf. Die Reihenfolge der Einträge ist die
-  # Reihenfolge der Icons (Windows links, NixOS rechts).
+  # Ohne Patch malt rEFInd das Hintergrundbild doppelt und langsam, die Icons erst danach
+  refind = pkgs.refind.overrideAttrs (old: {
+    patches = old.patches ++ [ ./refind-fast-banner.patch ];
+  });
+
   refindConf = pkgs.writeText "refind.conf" ''
     timeout ${toString menuTimeout}
     default_selection NixOS
@@ -38,14 +25,11 @@ let
     hideui hints,badges,arrows,editor,label
     use_graphics_for linux,windows
 
-    # Höchste Auflösung der Grafikkarte nutzen – die NVIDIA-Firmware startet
-    # sonst in niedriger Auflösung und alles wirkt hochskaliert
+    # Die NVIDIA-Firmware startet sonst in niedriger Auflösung
     resolution max
 
-    # Keine Werkzeugzeile (Shell, Neustart …) unter den Icons. Ein leeres
-    # "showtools" reicht in rEFInd 0.14.2 nicht: Jeder Eintrag überschreibt nur
-    # einen der 12 Standardplätze. Also alle mit einem Werkzeug füllen, das es
-    # nicht gibt.
+    # Leeres "showtools" reicht in 0.14.2 nicht: Jeder Eintrag überschreibt nur
+    # einen der 12 Standardplätze – also alle mit einem Werkzeug füllen, das es nicht gibt
     showtools ${lib.concatStringsSep "," (lib.replicate 12 "gdisk")}
 
     # Ohne vorhandenen Icon-Ordner schaltet rEFInd in den Textmodus
@@ -65,8 +49,6 @@ let
     }
   '';
 
-  # Läuft nach jedem Rebuild: hängt den NixOS-Eintrag an refind.conf an und
-  # sorgt dafür, dass rEFInd als Erstes startet.
   refindUpdate = pkgs.writeShellApplication {
     name = "refind-update";
     runtimeInputs = with pkgs; [
@@ -81,14 +63,12 @@ let
 
       field() { sed -n "s/^$1[[:space:]]\+//p" "$2" | head -n 1; }
 
-      # Alle NixOS-Einträge von systemd-boot, neueste Generation zuerst
       mapfile -t files < <(
         for f in "$entries"/nixos-*.conf; do
           echo "$(field version "$f" | sed -n 's/^Generation \([0-9]*\).*/\1/p') $f"
         done | sort -k 1,1nr | cut -d ' ' -f 2-
       )
 
-      # Standard laut systemd-boot (nach `nh os boot` die neue Generation)
       id=$(field preferred ${esp}/loader/loader.conf)
       [[ -n $id ]] || id=$(field default ${esp}/loader/loader.conf)
       id=''${id%.conf}
@@ -128,7 +108,6 @@ let
       } > "$conf.tmp"
       mv "$conf.tmp" "$conf"
 
-      # Booteintrag "rEFInd" anlegen bzw. an die erste Stelle setzen
       num=$(efibootmgr | sed -n 's/^Boot\([0-9A-Fa-f]\{4\}\)\*\{0,1\} rEFInd[[:space:]].*/\1/p' | head -n 1)
       if [[ -z $num ]]; then
         part=$(findmnt -n -o SOURCE ${esp})
@@ -148,13 +127,10 @@ in
 {
   boot.loader.systemd-boot = {
     enable = true;
-
-    # Max. 10 Generationen, damit /boot nicht vollläuft
     configurationLimit = 10;
 
-    # rEFInd selbst und sein Theme nach /boot kopieren
     extraFiles = {
-      "${refindDir}/refind_x64.efi" = "${pkgs.refind}/share/refind/refind_x64.efi";
+      "${refindDir}/refind_x64.efi" = "${refind}/share/refind/refind_x64.efi";
     }
     // builtins.listToAttrs (
       map

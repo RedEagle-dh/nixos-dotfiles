@@ -1,12 +1,7 @@
-# home/terminal/fastfetch.nix – Begrüßung beim Öffnen eines Terminals:
-# NixOS-Schriftzug und eine Box mit Systeminfos (Layout wie bei caelestia,
-# Farben vom Farbschema von caelestia). Von Hand aufrufen: fastfetch
-
 { lib, pkgs, ... }:
 
 let
-  # Terminal-Farbcodes. 16–18 belegt caelestia mit den Akzentfarben seines
-  # Farbschemas – sie wechseln also mit dem Hintergrundbild.
+  # 16–18 belegt caelestia mit den Akzentfarben des aktuellen Schemas
   slots = {
     text = "37";
     primary = "38;5;16";
@@ -18,7 +13,6 @@ in
 {
   home.packages = [ pkgs.fastfetch ];
 
-  # Platzhalter in den Einträgen: {$1} Text, {$2}–{$4} erste bis dritte Akzentfarbe
   xdg.configFile."fastfetch/config.jsonc".text = ''
     {
         "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
@@ -50,7 +44,6 @@ in
     }
   '';
 
-  # Schriftzug in der Akzentfarbe, darunter die Box – bei jedem neuen Terminal
   programs.zsh.initContent = lib.mkOrder 1500 ''
     printf '${builtins.replaceStrings [ "\\u001b" ] [ "\\e" ] (color "primary")}'
     cat <<'EOF'

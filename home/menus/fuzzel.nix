@@ -1,14 +1,7 @@
-# home/menus/fuzzel.nix – Aussehen von fuzzel: Zwischenablage, Emojis, Kürzel-Übersicht.
-# Als Programm-Starter dient caelestia; fuzzel ginge aber auch (Befehl: fuzzel).
-#
-# Farben: aus dem aktuellen Farbschema von caelestia, wie GTK. caelestia füllt
-# die Vorlage unten bei jedem Farbwechsel aus (nach ~/.local/state/caelestia/
-# theme/fuzzel.ini), fuzzel liest sie bei jedem Öffnen – neue Farben gelten sofort.
-
 { config, theme, ... }:
 
 let
-  m3 = name: "{{ ${name}.hex }}"; # Platzhalter für eine Farbe des Schemas
+  m3 = name: "{{ ${name}.hex }}";
 in
 {
   xdg.configFile."caelestia/templates/fuzzel.ini".text = ''
@@ -30,7 +23,7 @@ in
     enable = true;
     settings = {
       main = {
-        include = "${config.xdg.stateHome}/caelestia/theme/fuzzel.ini"; # Farben
+        include = "${config.xdg.stateHome}/caelestia/theme/fuzzel.ini";
         font = "${theme.fonts.ui.name}:size=13,${theme.fonts.mono.name}:size=13";
         prompt = ''"  "'';
         placeholder = ''"Programm suchen …"'';

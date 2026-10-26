@@ -1,17 +1,9 @@
-# home/terminal/git.nix – Git, delta, lazygit und gh.
-#   Commits und Tags werden über 1Password signiert, mit demselben SSH-Key wie
-#   in ssh.nix (id_ed25519.pub). Prüfen: git log --show-signature
-#   git diff/log/show   Ausgabe über delta: Syntaxfarben, Zeilennummern,
-#                       geänderte Wörter hervorgehoben; n/N springt zur nächsten Datei
-#   lazygit             Git im Terminal mit Oberfläche (stagen, committen, rebasen …)
-#   gh                  GitHub: PRs, Issues, Actions (einmalig: gh auth login)
-
 { lib, osConfig, ... }:
 
 let
   name = "David Hermann";
   email = "redeagle.private@gmail.com";
-  key = lib.trim (builtins.readFile ./id_ed25519.pub);
+  key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMZLL7Fxqp3qXS04JkBDvHzdV98LgpL/LQ9ln6yh2rmx";
 in
 {
   programs.git = {
@@ -21,18 +13,17 @@ in
         inherit name email;
       };
       init.defaultBranch = "main";
-      push.autoSetupRemote = true; # erstes `git push` eines neuen Branches ohne -u
-      fetch.prune = true; # gelöschte Branches auf GitHub auch lokal vergessen
-      diff.colorMoved = "default"; # verschobene Zeilen anders färben als geänderte
-      merge.conflictStyle = "zdiff3"; # bei Konflikten auch den gemeinsamen Ursprung zeigen
+      push.autoSetupRemote = true;
+      fetch.prune = true;
+      diff.colorMoved = "default";
+      merge.conflictStyle = "zdiff3";
     };
     signing = {
       format = "ssh";
       inherit key;
       signByDefault = true;
-      # Pfad ändert sich bei jedem 1Password-Update – deshalb hier und nicht fest in der Config
+      # Pfad ändert sich bei jedem 1Password-Update – nicht fest eintragen
       signer = lib.getExe' osConfig.programs._1password-gui.package "op-ssh-sign";
-      # eigene Signaturen als vertrauenswürdig anzeigen
       allowedSigners = "${email} ${key}";
     };
   };
@@ -43,7 +34,7 @@ in
     options = {
       navigate = true;
       line-numbers = true;
-      syntax-theme = "ansi"; # Terminalfarben, wie bat
+      syntax-theme = "ansi";
     };
   };
 
@@ -51,8 +42,8 @@ in
     enable = true;
     settings = {
       gui = {
-        nerdFontsVersion = "3"; # Icons für Dateien und Branches
-        # Farbnamen statt fester Werte → folgt dem Farbschema von caelestia
+        nerdFontsVersion = "3";
+        # Farbnamen statt Hex, damit es dem caelestia-Schema folgt
         theme = {
           activeBorderColor = [
             "magenta"
@@ -68,6 +59,6 @@ in
 
   programs.gh = {
     enable = true;
-    settings.git_protocol = "ssh"; # klonen und pushen über SSH (1Password), nicht HTTPS
+    settings.git_protocol = "ssh";
   };
 }

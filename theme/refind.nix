@@ -1,9 +1,3 @@
-# theme/refind.nix – Aussehen des Bootmenüs (rEFInd).
-#
-# Hintergrundbild, je ein großes Icon für NixOS und Windows, ein abgerundeter
-# Auswahlrahmen und eine Schrift aus der Mono-Schrift des Systems. Alles beim
-# Bauen aus der Palette erzeugt; system/boot.nix kopiert es nach /boot.
-
 {
   pkgs,
   colors,
@@ -44,9 +38,7 @@ let
       </svg>
     '';
 
-  # rEFInd kann nur Bitmap-Schriften: ein PNG mit 96 gleich breiten Zeichen
-  # (ASCII 32–126 plus ein Ersatzzeichen für alles andere). Die Zeichen müssen
-  # schwarz sein – auf dunklem Grund invertiert rEFInd sie selbst zu weiß.
+  # Zeichen müssen schwarz sein – rEFInd invertiert sie auf dunklem Grund selbst.
   fontScript = pkgs.writeText "make-font.py" ''
     import sys
     from PIL import Image, ImageDraw, ImageFont
@@ -78,7 +70,6 @@ pkgs.runCommand "refind-theme"
     mkdir -p $out
     cp ${wallpaper} $out/background.png
 
-    # Logo etwas kleiner als das Icon, damit der Auswahlrahmen Luft hat
     resvg --width 176 --height 176 ${nixosLogo} logo.png
     magick logo.png -background none -gravity center -extent ${toString iconSize}x${toString iconSize} $out/os_nixos.png
     resvg ${windowsLogo} $out/os_windows.png

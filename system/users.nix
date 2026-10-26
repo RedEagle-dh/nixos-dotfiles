@@ -1,6 +1,3 @@
-# system/users.nix – Benutzerkonto und Login-Shell.
-# Das Passwort wird nicht hier gesetzt, sondern mit `passwd`.
-
 { pkgs, user, ... }:
 
 {
@@ -8,10 +5,10 @@
     isNormalUser = true;
     description = "David Hermann";
     extraGroups = [
-      "networkmanager" # Netzwerke verwalten
-      "wheel" # sudo
+      "networkmanager"
+      "wheel"
     ];
-    shell = pkgs.zsh; # Einrichtung der Shell: home/terminal/zsh.nix
+    shell = pkgs.zsh;
   };
 
   # Pflicht, damit zsh als Login-Shell erlaubt ist

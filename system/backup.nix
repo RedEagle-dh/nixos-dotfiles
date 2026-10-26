@@ -1,37 +1,22 @@
-# system/backup.nix – tägliches Backup des Home-Verzeichnisses auf den Homelab (restic).
-#
-# restic speichert verschlüsselt und dedupliziert: Jedes Backup ist vollständig,
-# überträgt aber nur, was sich geändert hat. Ältere Backups werden ausgedünnt
-# (pruneOpts unten).
-#
-# Einmalig einrichten (vorher läuft der Dienst einfach nicht):
+# Einmalig einrichten (vorher läuft der Dienst nicht):
 #   sudo mkdir -p /root/restic
 #   sudo sh -c 'head -c 32 /dev/urandom | base64 > /root/restic/password'
-#   sudo cat /root/restic/password      → in 1Password speichern! Ohne Passwort
-#                                         sind die Backups nicht mehr lesbar.
+#   sudo cat /root/restic/password  → in 1Password speichern, ohne Passwort sind die Backups verloren
 #   sudo ssh-keygen -t ed25519 -N "" -C restic@nixos -f /root/restic/ssh_key
-#   sudo cat /root/restic/ssh_key.pub   → auf dem Homelab in ~/.ssh/authorized_keys,
+#   sudo cat /root/restic/ssh_key.pub → auf dem Homelab in ~/.ssh/authorized_keys,
 #     mit vorangestelltem  restrict,command="/usr/lib/openssh/sftp-server"
-#     (der Key darf dann nur Dateien übertragen, keine Befehle ausführen)
-#   sudo systemctl start restic-backups-homelab    erstes Backup, legt das Repository an
-#
-# Benutzen (sudo, weil das Passwort root gehört):
-#   sudo restic-homelab snapshots                  alle Backups
-#   sudo restic-homelab restore latest --target /tmp/restore --include /home/dave/Documents
-#   sudo restic-homelab mount /mnt                 Backups als Ordner durchstöbern
-#   systemctl status restic-backups-homelab        lief das letzte Backup durch?
+#   sudo systemctl start restic-backups-homelab
 
 { user, ... }:
 
 let
   dir = "/root/restic";
-  homelab = "192.168.188.81"; # wie "homelab" in home/terminal/ssh.nix
+  homelab = "192.168.188.81";
 in
 {
   services.restic.backups.homelab = {
-    initialize = true; # Repository beim ersten Lauf anlegen
+    initialize = true;
     passwordFile = "${dir}/password";
-    # Pfad relativ zum Home-Verzeichnis von dave auf dem Homelab
     repository = "sftp:${user}@${homelab}:backups/nixos";
     extraOptions = [
       "sftp.command='ssh ${user}@${homelab} -i ${dir}/ssh_key -o IdentitiesOnly=yes -s sftp'"
@@ -39,11 +24,12 @@ in
 
     paths = [ "/home/${user}" ];
     exclude = [
-      # Lässt sich neu herunterladen oder erzeugen
       "/home/*/.cache"
       "/home/*/.local/share/Steam"
       "/home/*/.local/share/Trash"
       "/home/*/Games"
+      "/home/*/.config/heroic/tools"
+      "/home/*/.local/share/umu"
       "/home/*/.vscode/extensions"
       "/home/*/.npm"
       "/home/*/.bun/install/cache"
@@ -51,11 +37,11 @@ in
       "node_modules"
       ".direnv"
     ];
-    extraBackupArgs = [ "--exclude-caches" ]; # Ordner mit CACHEDIR.TAG, z. B. Rust-Builds (target/)
+    extraBackupArgs = [ "--exclude-caches" ];
 
     timerConfig = {
       OnCalendar = "daily";
-      Persistent = true; # war der PC aus, beim nächsten Start nachholen
+      Persistent = true;
       RandomizedDelaySec = "1h";
     };
     pruneOpts = [
@@ -65,10 +51,8 @@ in
     ];
   };
 
-  # Noch nicht eingerichtet (s. o.)? Dann überspringen statt mit Fehler abbrechen
   systemd.services.restic-backups-homelab.unitConfig.ConditionPathExists = "${dir}/password";
 
-  # Host-Key des Homelabs, damit root ihm ohne Rückfrage vertraut
   programs.ssh.knownHosts.homelab = {
     hostNames = [
       "homelab"

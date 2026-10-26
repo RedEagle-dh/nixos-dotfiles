@@ -1,15 +1,3 @@
--- keybinds.lua – alle Tastenkürzel. SUPER = Windows-Taste.
---
--- Belegung wie bei caelestia (github.com/caelestia-dots/caelestia), mit Kitty
--- als Terminal. Starter, Benachrichtigungen, Sitzungsmenü usw. kommen von der
--- caelestia-Shell; sie wird über `caelestia shell …` gesteuert.
--- Auf die deutsche Tastatur übertragen: US-Minus/Gleich/Backslash liegen hier
--- auf ß, ´ und # (gleiche Stelle auf der Tastatur).
---
--- Super+F1 zeigt jederzeit eine durchsuchbare Liste aller Kürzel. Sie wird aus
--- den Beschreibungen hier erzeugt – beim Ändern eines Kürzels also die
--- Beschreibung mitpflegen.
-
 local mod = "SUPER"
 
 local terminal      = "kitty"
@@ -17,16 +5,12 @@ local browser       = "firefox"
 local editor        = "code"
 local files         = "nautilus --new-window"
 local audioSettings = "pavucontrol"
-local launcher      = "caelestia shell drawers toggle launcher" -- zweiter Druck schließt ihn wieder
+local launcher      = "caelestia shell drawers toggle launcher"
 
--- Super allein (antippen) öffnet den Starter. Hyprland löst das beim Loslassen
--- von Super aus – auch nach Super+1 o. Ä. Deshalb merkt sich jedes Kürzel hier,
--- dass Super gerade "benutzt" wurde, und der Starter bleibt dann zu.
+-- Super antippen öffnet den Starter beim Loslassen – auch nach Super+1. superUsed hält ihn dann zu.
 local superUsed = false
 
--- hl.bind mit Beschreibung für die Kürzel-Übersicht (Super+F1).
--- Mehrere Tasten für dieselbe Aktion: keys als Liste; nur die erste erscheint
--- in der Übersicht.
+-- Beschreibungen speisen die Kürzel-Übersicht (Super+F1) – beim Ändern mitpflegen.
 local function bind(keys, action, description, opts)
     if type(keys) == "table" then
         for i, key in ipairs(keys) do
@@ -39,8 +23,7 @@ local function bind(keys, action, description, opts)
     for k, v in pairs(opts or {}) do o[k] = v end
 
     if o.mouse then
-        -- Maus-Aktionen (Ziehen) lassen sich nicht einpacken – ein zweites,
-        -- durchlässiges Kürzel auf derselben Taste merkt sich die Benutzung
+        -- Mausziehen lässt sich nicht einpacken – zweites, durchlässiges Kürzel merkt die Benutzung
         hl.bind(keys, function() superUsed = true end, { non_consuming = true })
         return hl.bind(keys, action, o)
     end
@@ -59,7 +42,6 @@ local function exec(cmd)
     return hl.dsp.exec_cmd(cmd)
 end
 
--- Mehrere Aktionen nacheinander auf einer Taste
 local function chain(...)
     local actions = { ... }
     return function()
@@ -69,17 +51,11 @@ local function chain(...)
     end
 end
 
--- Flags
-local locked  = { locked = true } -- funktioniert auch auf dem Sperrbildschirm
-local held    = { repeating = true } -- gedrückt halten wiederholt
+local locked  = { locked = true }
+local held    = { repeating = true }
 local lockedHeld = { locked = true, repeating = true }
 local mouse   = { mouse = true }
 local release = { release = true }
-
-
--------------------
----- STARTER ----
--------------------
 
 hl.bind(mod .. " + SUPER_L", function()
     if not superUsed then
@@ -90,11 +66,6 @@ end, { description = "Programm starten (Super antippen)", release = true })
 
 bind(mod .. " + space", exec(launcher), nil)
 
-
---------------------
----- PROGRAMME ----
---------------------
-
 bind({ mod .. " + T", mod .. " + Return" }, exec(terminal), "Terminal")
 bind(mod .. " + W",            exec(browser),          "Browser")
 bind(mod .. " + C",            exec(editor),           "Editor (VS Code)")
@@ -104,11 +75,6 @@ bind(mod .. " + V",            exec("clipboard-menu"), "Zwischenablage-Verlauf")
 bind(mod .. " + ALT + V",      exec("clipboard-menu delete"), "Eintrag aus dem Zwischenablage-Verlauf löschen")
 bind(mod .. " + period",       exec("emoji-menu"),     "Emoji einfügen")
 bind(mod .. " + SHIFT + C",    exec("hyprpicker --autocopy --format=hex"), "Farbe vom Bildschirm kopieren")
-
-
------------------
----- FENSTER ----
------------------
 
 local directions = { left = "links", right = "rechts", up = "oben", down = "unten" }
 for key, name in pairs(directions) do
@@ -124,7 +90,6 @@ bind(mod .. " + P",           hl.dsp.window.pin(),                              
 bind(mod .. " + J",           hl.dsp.layout("togglesplit"),                     "Teilung drehen (neben- ↔ untereinander)")
 bind("CTRL + " .. mod .. " + numbersign", hl.dsp.window.center(),                "Fenster mittig setzen")
 
--- Bildschirmgröße in Prozent → absolute Größe
 local function screenSize(xPercent, yPercent)
     local screen = hl.get_active_monitor()
     if screen and screen.width and screen.height then
@@ -142,7 +107,6 @@ bind("CTRL + " .. mod .. " + ALT + numbersign", function()
     hl.dispatch(hl.dsp.window.center())
 end, "Fenster auf Standardgröße (55 × 70 %) und mittig")
 
--- Bild-im-Bild: Fenster schwebend, klein unten rechts, auf allen Flächen
 bind(mod .. " + ALT + numbersign", function()
     local win = hl.get_active_window()
     local screen = hl.get_active_monitor()
@@ -167,7 +131,6 @@ bind(mod .. " + ALT + numbersign", function()
     hl.dispatch(hl.dsp.window.pin({ action = "on", window = "address:" .. win.address }))
 end, "Bild-im-Bild (klein unten rechts, angeheftet)")
 
--- Größe in 10-%-Schritten der aktuellen Fenstergröße
 local function resizeBy(xPercent, yPercent)
     return function()
         local win = hl.get_active_window()
@@ -186,29 +149,19 @@ bind({ mod .. " + ssharp", mod .. " + ALT + left" },             resizeBy(-10, 0
 bind({ mod .. " + SHIFT + dead_acute", mod .. " + ALT + down" }, resizeBy(0, 10),  "Fenster höher",     held)
 bind({ mod .. " + SHIFT + ssharp", mod .. " + ALT + up" },       resizeBy(0, -10), "Fenster niedriger", held)
 
--- Mit der Maus: Super + linke Taste (oder Z) verschiebt, Super + rechte Taste (oder X) ändert die Größe
 bind({ mod .. " + mouse:272", mod .. " + Z" }, hl.dsp.window.drag(),   "Fenster mit der Maus verschieben", mouse)
 bind({ mod .. " + mouse:273", mod .. " + X" }, hl.dsp.window.resize(), "Fenstergröße mit der Maus ändern", mouse)
 
--- Alt+Tab wie gewohnt
 bind("ALT + Tab",         chain(hl.dsp.window.cycle_next(), hl.dsp.window.bring_to_top()),
                           "Nächstes Fenster", held)
 bind("SHIFT + ALT + Tab", chain(hl.dsp.window.cycle_next({ next = false }), hl.dsp.window.bring_to_top()),
                           "Vorheriges Fenster", held)
 
--- Gruppen: mehrere Fenster als Tabs in einem Rahmen
 bind(mod .. " + comma",           hl.dsp.group.toggle(),                    "Fenster als Tabs gruppieren")
 bind(mod .. " + U",               hl.dsp.window.move({ out_of_group = true }), "Fenster aus der Gruppe lösen")
 bind(mod .. " + SHIFT + comma",   hl.dsp.group.lock_active(),               "Gruppe sperren")
 bind("CTRL + ALT + Tab",          hl.dsp.group.next(),                      "Nächster Tab in der Gruppe",  held)
 bind("CTRL + SHIFT + ALT + Tab",  hl.dsp.group.prev(),                      "Vorheriger Tab in der Gruppe", held)
-
-
------------------------
----- ARBEITSFLÄCHEN ----
------------------------
--- Flächen sind in Zehnergruppen eingeteilt (1–10, 11–20 …). Super+Zahl
--- bleibt in der aktuellen Gruppe, Strg+Super+Zahl wechselt die Gruppe.
 
 local function workspaceAction(kind, inGroup, i)
     return function()
@@ -230,8 +183,7 @@ local function workspaceAction(kind, inGroup, i)
 end
 
 for i = 1, 10 do
-    local key = tostring(i % 10) -- Fläche 10 liegt auf der Taste 0
-    -- In der Übersicht nur einmal beschreiben statt zehnmal
+    local key = tostring(i % 10)
     local first = i == 1
     bind(mod .. " + " .. key,                  workspaceAction("focus", false, i),
          first and "Zu Arbeitsfläche 1…10 wechseln (Tasten 1…0)" or nil)
@@ -257,13 +209,6 @@ bind({ mod .. " + ALT + mouse_down", mod .. " + ALT + Page_Down", "CTRL + " .. m
      hl.dsp.window.move({ workspace = "+1" }), "Fenster auf die nächste Fläche mitnehmen")
 bind({ mod .. " + ALT + mouse_up", mod .. " + ALT + Page_Up", "CTRL + " .. mod .. " + SHIFT + left" },
      hl.dsp.window.move({ workspace = "-1" }), "Fenster auf die vorherige Fläche mitnehmen")
-
-
----------------------------
----- SPEZIAL-FLÄCHEN ----
----------------------------
--- Schweben über allem und lassen sich ein- und ausblenden. Jede Fläche holt
--- ihr Programm dorthin und startet es, falls es noch nicht läuft.
 
 local specialApps = {
     passwords     = { { class = "1Password", command = "1password" } },
@@ -309,13 +254,6 @@ bind("CTRL + SHIFT + Escape", toggleSpecial("sysmon"),        "Systemmonitor (bt
 bind("CTRL + " .. mod .. " + SHIFT + down",
      hl.dsp.window.move({ workspace = "e+0" }), "Fenster von der Spezial-Fläche zurückholen")
 
-
-----------------------------------
----- SCREENSHOTS & AUFNAHMEN ----
-----------------------------------
--- Screenshots landen in der Zwischenablage und unter ~/Pictures/Screenshots,
--- Aufnahmen unter ~/Videos/Recordings. Gleiches Kürzel beendet die Aufnahme.
-
 bind("Print",                         exec("screenshot screen"), "Screenshot: ganzer Bildschirm", locked)
 bind(mod .. " + SHIFT + S",           exec("caelestia shell picker openFreeze"), "Screenshot: Bereich oder Fenster anklicken")
 bind(mod .. " + SHIFT + ALT + S",     exec("screenshot edit"),   "Screenshot: Bereich beschriften (Pfeile, Text …)")
@@ -323,11 +261,6 @@ bind("ALT + Print",                   exec("screenshot active"), "Screenshot: ak
 bind("CTRL + ALT + R",                exec("record"),            "Bildschirm aufnehmen (an/aus)")
 bind(mod .. " + ALT + R",             exec("record sound"),      "Bildschirm mit Ton aufnehmen (an/aus)")
 bind(mod .. " + SHIFT + ALT + R",     exec("record region"),     "Bereich aufnehmen (an/aus)")
-
-
-----------------
----- SYSTEM ----
-----------------
 
 bind("CTRL + ALT + Delete",    exec("caelestia shell drawers toggle session"), "Sperren, Abmelden, Neustart, Ausschalten")
 bind(mod .. " + L",            exec("loginctl lock-session"),  "Bildschirm sperren", locked)
@@ -340,12 +273,6 @@ bind("CTRL + " .. mod .. " + N",         exec("caelestia shell notifs toggleDnd"
 bind("CTRL + " .. mod .. " + SHIFT + R", exec("systemctl --user stop caelestia"),    "Oberfläche beenden", release)
 bind("CTRL + " .. mod .. " + ALT + R",   exec("systemctl --user restart caelestia"), "Oberfläche neu starten", release)
 
-
----------------
----- MEDIEN ----
----------------
-
--- caelestia zeigt die Lautstärke selbst an, sobald sie sich ändert
 local sink = "@DEFAULT_AUDIO_SINK@"
 bind("XF86AudioRaiseVolume",   exec("wpctl set-mute " .. sink .. " 0; wpctl set-volume -l 1 " .. sink .. " 5%+"),
                                "Lauter",          lockedHeld)

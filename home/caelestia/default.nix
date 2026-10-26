@@ -1,16 +1,3 @@
-# home/caelestia/ – die caelestia-Shell (github.com/caelestia-dots/shell):
-# Leiste links, Starter (Super antippen), Dashboard, Seitenleiste mit
-# Benachrichtigungen, Sitzungsmenü, Lautstärke-Anzeige, Sperrbildschirm und
-# Hintergrundbild und das Farbschema für Fensterrahmen, Terminal, GTK und Menüs.
-#
-# Einstellungen: unten in settings (landen in ~/.config/caelestia/shell.json),
-# alle Optionen: https://github.com/caelestia-dots/shell#example-configuration
-# Hintergrund wechseln: im Starter ">wallpaper" tippen (Bilder aus ~/Pictures/Wallpapers).
-#   Mit dem Farbschema "dynamic" färben sich dabei Shell, Fensterrahmen,
-#   Terminal und GTK-Programme passend zum Bild.
-# Farbschema wechseln: im Starter ">scheme" (fest, z. B. Rosé Pine) oder ">variant"
-#   (Stil der Farben bei "dynamic"); ">mode" für hell/dunkel.
-
 {
   config,
   lib,
@@ -23,7 +10,7 @@ let
   cli = config.programs.caelestia.cli.package;
   wallpaper = "${config.home.homeDirectory}/Pictures/Wallpapers/rose-pine.png";
   stateDir = "${config.xdg.stateHome}/caelestia";
-  themeDir = "${stateDir}/theme"; # ausgefüllte Farbvorlagen
+  themeDir = "${stateDir}/theme";
 in
 {
   imports = [ inputs.caelestia-shell.homeManagerModules.default ];
@@ -31,7 +18,7 @@ in
   config = {
     programs.caelestia = {
       enable = true;
-      cli.enable = true; # Befehl `caelestia` (Farbschema, Hintergrund, Screenshots …)
+      cli.enable = true;
 
       settings = {
         general = {
@@ -41,8 +28,7 @@ in
             playback = [ "mpv" ];
             explorer = [ "nautilus" ];
           };
-          # Sperren und Monitore aus übernimmt hypridle (hyprland/idle.nix);
-          # gesperrt wird trotzdem mit dem Sperrbildschirm von caelestia
+          # Übernimmt hypridle – sonst würde doppelt gesperrt
           idle = {
             lockBeforeSleep = false;
             timeouts = [ ];
@@ -50,20 +36,13 @@ in
         };
       };
 
-      # Was caelestia beim Farbwechsel mitfärbt: Hyprland-Rahmen
-      # (hypr/scheme/current.lua, liest hyprland.lua), offene Terminals und
-      # Discord (Theme für Vesktop, siehe ../discord.nix; legt nebenbei leere
-      # themes-Ordner für andere Discord-Clients in ~/.config an).
-      # Alles andere bleibt aus, weil caelestia sonst die von Nix verwalteten
-      # Dateien überschreiben würde – GTK und fuzzel (../menus/fuzzel.nix)
-      # bekommen die Farben über eigene Vorlagen, Qt (Kvantum) und Spotify
-      # (../spotify.nix) bleiben in Rosé Pine.
+      # Aus, weil caelestia sonst von Nix verwaltete Dateien überschreibt (GTK und fuzzel haben eigene Vorlagen)
       cli.settings.theme =
         lib.genAttrs [
           "enableSpicetify"
           "enablePandora"
           "enableFuzzel"
-          "enableBtop" # btop nutzt ohnehin die Terminalfarben
+          "enableBtop"
           "enableNvtop"
           "enableHtop"
           "enableGtk"
@@ -80,9 +59,6 @@ in
         };
     };
 
-    # GTK-Farben als Vorlagen: caelestia füllt sie bei jedem Farbwechsel aus
-    # (nach ~/.local/state/caelestia/theme/), gtk.css bindet sie ein.
-    # Offene GTK-Programme übernehmen neue Farben erst beim nächsten Start.
     xdg.configFile =
       let
         m3 = name: "#{{ ${name}.hex }}";
@@ -115,21 +91,15 @@ in
       gtk4.extraCss = ''@import url("file://${themeDir}/gtk4.css");'';
     };
 
-    # Neue Terminals starten gleich in den aktuellen Farben
     programs.zsh.initContent = lib.mkOrder 1400 ''
       [[ -r "${stateDir}/sequences.txt" ]] && cat "${stateDir}/sequences.txt"
     '';
 
-    # Für die Auswahl: unser Hintergrundbild und das von caelestia. Eigene Bilder
-    # einfach dazulegen – der Ordner ist ein normaler Ordner.
     home.file."Pictures/Wallpapers/rose-pine.png".source = theme.wallpaper;
     home.file."Pictures/Wallpapers/caelestia.webp".source =
       "${config.programs.caelestia.package}/share/caelestia-shell/assets/wallpaper.webp";
 
-    # Beim ersten Mal: Hintergrundbild setzen und Farbschema "dynamic" (Farben
-    # aus dem Hintergrundbild). Danach merkt sich caelestia beides selbst.
-    # Fehlt nur eine der ausgefüllten Vorlagen (z. B. nach dem Hinzufügen einer
-    # neuen), wird das aktuelle Farbschema neu angewendet.
+    # Eine neu hinzugefügte Vorlage füllt caelestia erst beim nächsten Farbwechsel aus – daher hier neu anwenden
     home.activation.caelestiaDefaults = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
       needScheme=""
       if [ ! -f "${themeDir}/gtk4.css" ]; then needScheme=1; fi

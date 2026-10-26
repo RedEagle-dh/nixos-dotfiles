@@ -1,11 +1,4 @@
-# home/hyprland/lock.nix – Sperrbildschirm beim Login (hyprlock).
-# Verschwommenes Hintergrundbild, große Uhr, Passwortfeld.
-# Die Passwortprüfung (PAM) richtet system/hyprland.nix ein.
-#
-# Beim Start der Sitzung sperrt er sich sofort: Weil system/login.nix
-# automatisch anmeldet, ist der Sperrbildschirm zugleich der Login – und
-# entsperrt dabei auch den Schlüsselbund. Später (Super+L, Leerlauf) sperrt
-# caelestia mit seinem eigenen Sperrbildschirm.
+# Wegen Autologin (system/login.nix) ist dieser Sperrbildschirm der eigentliche Login und entsperrt den Schlüsselbund.
 
 {
   config,
@@ -23,11 +16,10 @@ in
     Unit = {
       Description = "Sperrbildschirm direkt nach dem Login";
       PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ]; # erst wenn Hyprland läuft
+      After = [ "graphical-session.target" ];
     };
     Service = {
       ExecStart = lib.getExe config.programs.hyprlock.package;
-      # Nach dem Entsperren endet hyprlock normal; stürzt er ab, sofort wieder sperren
       Restart = "on-failure";
       RestartSec = 1;
     };
@@ -63,7 +55,6 @@ in
       ];
 
       label = [
-        # Uhrzeit
         {
           text = "$TIME";
           color = "rgb(${c.text})";
@@ -73,7 +64,6 @@ in
           halign = "center";
           valign = "center";
         }
-        # Datum, z. B. "Samstag, 25. Oktober"
         {
           text = ''cmd[update:60000] LC_TIME=de_DE.UTF-8 date +"%A, %-d. %B"'';
           color = "rgb(${c.subtle})";
@@ -83,7 +73,6 @@ in
           halign = "center";
           valign = "center";
         }
-        # Hinweis unten
         {
           text = "Gesperrt · Passwort eingeben und Enter drücken";
           color = "rgba(${c.muted}ff)";
@@ -101,7 +90,7 @@ in
           position = "0, -60";
           halign = "center";
           valign = "center";
-          rounding = -1; # Pillenform
+          rounding = -1;
           outline_thickness = 2;
           outer_color = "rgba(${c.iris}ee) rgba(${c.rose}ee) 45deg";
           inner_color = "rgba(${c.base}cc)";

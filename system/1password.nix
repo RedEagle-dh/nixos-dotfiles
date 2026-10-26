@@ -1,15 +1,29 @@
-# system/1password.nix – 1Password.
-#
-# Muss ins System, nicht in Home Manager: Das Modul legt eine Benutzergruppe,
-# Hilfsprogramme mit besonderen Rechten (Browser-Erweiterung, `op`) und eine
-# Polkit-Regel an.
-
-{ user, ... }:
+# Muss ins System, nicht in Home Manager: legt Gruppe, setuid-Helfer und Polkit-Regel an.
 
 {
-  programs._1password.enable = true; # Kommandozeile `op`
+  config,
+  lib,
+  user,
+  ...
+}:
+
+{
+  programs._1password.enable = true;
   programs._1password-gui = {
     enable = true;
-    polkitPolicyOwners = [ user ]; # Entsperren mit dem Systempasswort
+    polkitPolicyOwners = [ user ];
+  };
+
+  # Ohne laufendes 1Password gibt es keinen SSH-Agent → ssh: "Permission denied (publickey)"
+  systemd.user.services."1password" = {
+    description = "1Password im Hintergrund (SSH-Agent, Git-Signatur)";
+    partOf = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${lib.getExe config.programs._1password-gui.package} --silent";
+      Restart = "on-failure";
+      RestartSec = 2;
+    };
   };
 }

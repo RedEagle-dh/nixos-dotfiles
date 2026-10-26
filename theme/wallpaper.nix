@@ -1,12 +1,3 @@
-# theme/wallpaper.nix – Hintergrundbild, aus den Farben der Palette berechnet.
-#
-# Das Bild entsteht beim Bauen aus einer SVG-Grafik: weiche Farbwolken auf
-# dunklem Grund und ein seidiges Band aus feinen Linien. Ändert sich die
-# Palette, passt sich das Bild automatisch an.
-#
-# width/height: Größe der PNG-Datei. Entworfen ist die Grafik für 3840×2160,
-# andere Größen werden scharf neu gerendert statt hochskaliert.
-
 {
   pkgs,
   colors,
@@ -18,8 +9,6 @@ let
   inherit (pkgs) lib;
   c = colors;
 
-  # Ein "Band" aus vielen leicht versetzten Kurven, die sich verdrehen.
-  # start/c1/c2/end: y-Werte der Kurve, jeweils [Anfang Spreizung]
   ribbon =
     {
       lines,
@@ -34,9 +23,8 @@ let
     lib.concatMapStrings (
       i:
       let
-        t = i * 1.0 / (lines - 1); # 0 … 1 über alle Linien
+        t = i * 1.0 / (lines - 1);
         y = p: toString (builtins.elemAt p 0 + builtins.elemAt p 1 * t);
-        # in der Mitte des Bandes am hellsten
         opacity = toString (0.04 + strength * (1 - (2 * t - 1) * (2 * t - 1)));
         color = if lib.mod i 2 == 0 then colorA else colorB;
       in

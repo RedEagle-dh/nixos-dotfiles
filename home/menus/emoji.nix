@@ -1,5 +1,3 @@
-# home/menus/emoji.nix – Emoji-Auswahl (Super+.).
-
 { pkgs, ... }:
 
 let
@@ -12,7 +10,6 @@ let
       pkgs.wl-clipboard
     ];
     text = ''
-      # Tippt das gewählte Emoji direkt ins aktive Fenster
       rofimoji --selector fuzzel --action type --skin-tone neutral --prompt "󰞅  " \
         --selector-args="--placeholder 'Emoji suchen (englische Begriffe) …' --width 50"
     '';
