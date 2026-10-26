@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! nix fmt -- --ci >/dev/null 2>&1; then
+  echo "pre-commit: Dateien wurden formatiert – prüfen, mit 'git add' übernehmen und erneut committen." >&2
+  git status --short >&2
+  exit 1
+fi

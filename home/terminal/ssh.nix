@@ -2,7 +2,7 @@
 
 let
   # Leer = 1Password-Standard (alle Keys aus dem Privat-Tresor); sonst nur diese, in dieser Reihenfolge
-  agentKeys = [ 
+  agentKeys = [
     { item = "5poti6gc3lkawn5v6cjwg3pkde"; }
   ];
 in
