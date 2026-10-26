@@ -29,6 +29,7 @@ in
         format = "[$symbol$name]($style) ";
         symbol = " ";
         style = hex "foam";
+        heuristic = true;
       };
       python.format = "[$symbol($version )]($style)";
       nodejs.format = "[$symbol($version )]($style)";

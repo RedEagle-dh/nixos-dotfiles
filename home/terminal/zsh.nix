@@ -7,6 +7,14 @@
     syntaxHighlighting.enable = true;
     autocd = true;
 
+    plugins = [
+      {
+        name = "zsh-nix-shell";
+        file = "nix-shell.plugin.zsh";
+        src = "${pkgs.zsh-nix-shell}/share/zsh-nix-shell";
+      }
+    ];
+
     history = {
       size = 50000;
       save = 50000;
@@ -22,7 +30,7 @@
       zstyle ':completion:*:descriptions' format '[%d]'
       zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
       zstyle ':fzf-tab:*' switch-group ',' '.'
-      zstyle ':fzf-tab:complete:(cd|z|eza|ls):*' fzf-preview 'eza -1 --color=always --icons $realpath'
+      zstyle ':fzf-tab:complete:(cd|z|eza|ls):*' fzf-preview 'eza -1 --color=always --icons=always $realpath'
     '';
   };
 
