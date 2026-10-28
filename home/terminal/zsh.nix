@@ -1,3 +1,5 @@
+# Unverändert auch im Homelab-Repo – nur, was auf den Nodes ebenso passt
+# Änderungen in nix-dotfiles machen und rüberkopieren
 { lib, pkgs, ... }:
 
 {
@@ -37,7 +39,5 @@
   home.shellAliases = {
     ".." = "cd ..";
     "..." = "cd ../..";
-    nhb = "nh os boot";
-    nhs = "nh os switch && exec $SHELL";
   };
 }

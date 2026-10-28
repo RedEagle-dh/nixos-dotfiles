@@ -1,3 +1,5 @@
+# Unverändert auch im Homelab-Repo – nur, was auf den Nodes ebenso passt
+# Änderungen in nix-dotfiles machen und rüberkopieren
 { theme, ... }:
 
 let
@@ -8,7 +10,13 @@ in
     enable = true;
     settings = {
       add_newline = true;
-      format = "$directory$git_branch$git_status$nix_shell$python$nodejs$bun$rust$cmd_duration$line_break$character";
+      format = "$hostname$directory$git_branch$git_status$nix_shell$python$nodejs$bun$rust$cmd_duration$line_break$character";
+
+      hostname = {
+        ssh_only = true;
+        format = "[$hostname]($style) ";
+        style = "bold ${hex "pine"}";
+      };
 
       directory = {
         style = "bold ${hex "iris"}";

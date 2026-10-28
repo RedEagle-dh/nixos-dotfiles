@@ -1,3 +1,5 @@
+# Unverändert auch im Homelab-Repo – nur, was auf den Nodes ebenso passt
+# Änderungen in nix-dotfiles machen und rüberkopieren
 { inputs, theme, ... }:
 
 let
