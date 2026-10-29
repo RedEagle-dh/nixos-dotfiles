@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   home.packages = with pkgs; [
@@ -6,7 +6,7 @@
     papers
     gnome-text-editor
     file-roller
-    vscode
+    (callPackage ../pkgs/t3code-nightly.nix { })
     hyprmod
     bun
   ];
@@ -22,5 +22,10 @@
     };
   };
 
-  programs.claude-code.enable = true;
+  programs.claude-code = {
+    enable = true;
+    package = pkgs.claude-code.override {
+      manifest = lib.importJSON ../pkgs/claude-code.json;
+    };
+  };
 }

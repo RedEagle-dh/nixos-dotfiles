@@ -1,8 +1,8 @@
 local mod = "SUPER"
 
 local terminal      = "kitty"
-local browser       = "firefox"
-local editor        = "code"
+local browser       = "zen-beta"
+local editor        = "zeditor"
 local files         = "nautilus --new-window"
 local audioSettings = "pavucontrol"
 local launcher      = "caelestia shell drawers toggle launcher"
@@ -68,7 +68,7 @@ bind(mod .. " + space", exec(launcher), nil)
 
 bind({ mod .. " + T", mod .. " + Return" }, exec(terminal), "Terminal")
 bind(mod .. " + W",            exec(browser),          "Browser")
-bind(mod .. " + C",            exec(editor),           "Editor (VS Code)")
+bind(mod .. " + C",            exec(editor),           "Editor (Zed)")
 bind(mod .. " + E",            exec(files),            "Dateimanager")
 bind("CTRL + ALT + V",         exec(audioSettings),    "Lautstärke-Einstellungen")
 bind(mod .. " + V",            exec("clipboard-menu"), "Zwischenablage-Verlauf")

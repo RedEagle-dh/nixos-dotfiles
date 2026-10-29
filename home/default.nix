@@ -3,6 +3,8 @@
 {
   imports = [
     ./apps.nix
+    ./browsers.nix
+    ./zed.nix
     ./discord.nix
     ./spotify.nix
     ./appearance.nix

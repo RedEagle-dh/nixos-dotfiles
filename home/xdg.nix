@@ -10,7 +10,7 @@
     enable = true;
     defaultApplications =
       let
-        browser = "firefox.desktop";
+        browser = "zen-beta.desktop";
         images = "org.gnome.Loupe.desktop";
         video = "mpv.desktop";
         text = "org.gnome.TextEditor.desktop";

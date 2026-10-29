@@ -30,7 +30,7 @@ in
       "/home/*/Games"
       "/home/*/.config/heroic/tools"
       "/home/*/.local/share/umu"
-      "/home/*/.vscode/extensions"
+      "/home/*/.local/share/zed/extensions"
       "/home/*/.npm"
       "/home/*/.bun/install/cache"
       "/home/*/.cargo/registry"

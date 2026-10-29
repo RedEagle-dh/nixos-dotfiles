@@ -9,7 +9,7 @@
 
   environment.sessionVariables = {
     LIBVA_DRIVER_NAME = "nvidia";
-    # Aus Firefox' abgeschottetem Dekodier-Prozess erreicht der Treiber die GPU nicht
+    # Aus Zens abgeschottetem Dekodier-Prozess erreicht der Treiber die GPU nicht
     MOZ_DISABLE_RDD_SANDBOX = "1";
   };
   services.xserver.videoDrivers = [ "nvidia" ];

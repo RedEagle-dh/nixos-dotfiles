@@ -49,13 +49,13 @@ in
           "enableQt"
           "enableWarp"
           "enableChromium"
-          "enableZed"
           "enableCava"
         ] (_: false)
         // {
           enableTerm = true;
           enableHypr = true;
           enableDiscord = true;
+          enableZed = true;
         };
     };
 
@@ -109,7 +109,8 @@ in
       if [ -n "$needScheme" ]; then
         run ${cli}/bin/caelestia scheme set -n dynamic || true
       elif [ ! -f "${config.xdg.configHome}/vesktop/themes/caelestia.theme.css" ] \
-        || [ ! -f "${themeDir}/fuzzel.ini" ]; then
+        || [ ! -f "${themeDir}/fuzzel.ini" ] \
+        || [ ! -f "${config.xdg.configHome}/zed/themes/caelestia.json" ]; then
         run ${cli}/bin/caelestia scheme set -m "$(${cli}/bin/caelestia scheme get -m)" || true
       fi
     '';
