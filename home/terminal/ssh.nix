@@ -32,6 +32,11 @@ in
         HostName = "192.168.188.3";
         User = "dave";
       };
+      git-local = {
+        HostName = "192.168.188.81";
+        Port = 2222;
+
+      };
 
       "*" = {
         IdentityAgent = "~/.1password/agent.sock";

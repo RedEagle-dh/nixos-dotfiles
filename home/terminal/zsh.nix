@@ -33,6 +33,7 @@
       zstyle ':completion:*' list-colors ''${(s.:.)LS_COLORS}
       zstyle ':fzf-tab:*' switch-group ',' '.'
       zstyle ':fzf-tab:complete:(cd|z|eza|ls):*' fzf-preview 'eza -1 --color=always --icons=always $realpath'
+      [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
     '';
   };
 

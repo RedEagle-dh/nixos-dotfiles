@@ -9,6 +9,8 @@
     (callPackage ../pkgs/t3code-nightly.nix { })
     hyprmod
     bun
+    sops
+    age
   ];
 
   # target-colorspace-hint geht nur mit gpu-next – darüber schaltet Hyprland im Vollbild auf HDR
