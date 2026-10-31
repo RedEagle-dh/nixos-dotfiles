@@ -28,6 +28,8 @@
         "!nil"
       ];
       lsp.nixd.settings.formatting.command = [ "nixfmt" ];
+      # Das heruntergeladene JDTLS braucht mindestens Java 25, programs.java liefert 21
+      lsp.jdtls.settings.java_home = pkgs.jdk25.home;
     };
   };
 
