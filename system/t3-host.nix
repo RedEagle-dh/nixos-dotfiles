@@ -18,7 +18,7 @@ in
     iptables -A nixos-fw -p tcp -s 192.168.188.20 --dport 3773 -j nixos-fw-accept
   '';
   networking.firewall.extraStopCommands = ''
-      iptables -D nixos-fw -p tcp -s 192.168.188.20 --dport 3773 -j nixos-fw-accept || true
+    iptables -D nixos-fw -p tcp -s 192.168.188.20 --dport 3773 -j nixos-fw-accept || true
   '';
 
   users.users.${user} = {
