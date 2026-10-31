@@ -19,6 +19,7 @@
     ./docker.nix
     ./gaming.nix
     ./storage.nix
+    ./t3-host.nix
     # ./backup.nix
   ];
 

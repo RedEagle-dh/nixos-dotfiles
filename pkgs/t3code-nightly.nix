@@ -21,6 +21,9 @@ appimageTools.wrapType2 {
 
   profile = ''
     export T3CODE_CLOUDFLARED_PATH=${lib.getExe cloudflared}
+    # ~/.t3 gehört dem Hintergrunddienst (system/t3-host.nix), die App bekommt ein eigenes
+    # Home und verbindet sich per Pairing mit dem Dienst
+    export T3CODE_HOME="''${T3CODE_HOME:-$HOME/.t3-desktop}"
   '';
 
   extraInstallCommands = ''
