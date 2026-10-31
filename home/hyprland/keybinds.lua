@@ -159,7 +159,7 @@ bind("SHIFT + ALT + Tab", chain(hl.dsp.window.cycle_next({ next = false }), hl.d
 
 bind(mod .. " + comma",           hl.dsp.group.toggle(),                    "Fenster als Tabs gruppieren")
 bind(mod .. " + U",               hl.dsp.window.move({ out_of_group = true }), "Fenster aus der Gruppe lösen")
-bind(mod .. " + SHIFT + comma",   hl.dsp.group.lock_active(),               "Gruppe sperren")
+bind(mod .. " + SHIFT + comma",   hl.dsp.group.lock(),                      "Gruppe sperren")
 bind("CTRL + ALT + Tab",          hl.dsp.group.next(),                      "Nächster Tab in der Gruppe",  held)
 bind("CTRL + SHIFT + ALT + Tab",  hl.dsp.group.prev(),                      "Vorheriger Tab in der Gruppe", held)
 
