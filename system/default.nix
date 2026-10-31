@@ -11,6 +11,7 @@
     ./hyprland.nix
     ./login.nix
     ./sound.nix
+    ./bluetooth.nix
     ./services.nix
     ./fonts.nix
     ./programs.nix
