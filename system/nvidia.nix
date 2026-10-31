@@ -26,7 +26,7 @@
     modesetting.enable = true;
     nvidiaSettings = true;
 
-    # Nur einschalten, falls das Bild nach Standby kaputt ist oder Apps abstürzen:
-    # powerManagement.enable = true;
+    # Without this the NVIDIA driver crashes after suspending
+    powerManagement.enable = true;
   };
 }
