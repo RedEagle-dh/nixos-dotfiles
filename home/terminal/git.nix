@@ -17,6 +17,16 @@ in
       fetch.prune = true;
       diff.colorMoved = "default";
       merge.conflictStyle = "zdiff3";
+
+      # HTTPS-Zugang zu Forgejo: T3 klont Forgejo-Repos über HTTPS und nutzt dafür Gits eigene
+      # Zugangsdaten. Token als Datei statt Keyring (nach Wake-on-LAN ist der Keyring gesperrt),
+      # außerhalb des Nix-Stores, einmalig anlegen:
+      #   read -rs TOKEN && printf 'https://dave:%s@git.dave.haus\n' "$TOKEN" > ~/.config/git/credentials-forgejo \
+      #     && chmod 600 ~/.config/git/credentials-forgejo; unset TOKEN
+      credential."https://git.dave.haus" = {
+        helper = "store --file ~/.config/git/credentials-forgejo";
+        username = "dave";
+      };
     };
     signing = {
       format = "ssh";
