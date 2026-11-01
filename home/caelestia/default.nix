@@ -34,6 +34,16 @@ in
             timeouts = [ ];
           };
         };
+        # Kein Ruhezustand möglich (nur zram, kein Swap auf der Platte → CanHibernate = "na"):
+        # der Knopf im Session-Menü und auf dem Sperrbildschirm legt den PC stattdessen schlafen.
+        # Sperren beim Schlafen übernimmt hypridle (before_sleep_cmd)
+        session = {
+          commands.hibernate = [
+            "systemctl"
+            "suspend"
+          ];
+          icons.hibernate = "bedtime";
+        };
       };
 
       # Aus, weil caelestia sonst von Nix verwaltete Dateien überschreibt (GTK und fuzzel haben eigene Vorlagen)

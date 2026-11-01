@@ -1,12 +1,12 @@
-# Desktop als T3-Code-Host auf Abruf: per Wake-on-LAN aufwecken und per SSH ausschalten (Buttons
+# Desktop als T3-Code-Host auf Abruf: per Wake-on-LAN aufwecken und per SSH schlafen legen (Buttons
 # in Home Assistant auf dem pi5). Der t3-Dienst startet ohne Login, erreichbar über t3.dave.haus
 # (Caddy auf dem pi5). Den Dienst legt `t3 up --lan --no-connect` an (User-Unit t3code.service).
 { user, ... }:
 
 let
   pi5 = "192.168.188.20";
-  # Öffentlicher Schlüssel von Home Assistant (/var/lib/home-assistant/.ssh/desktop_poweroff.pub auf dem pi5)
-  haPoweroffKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGWBV/vcQyMb9PQS2JOefSsRggiPWTnxyYuOIGYLxZMa home-assistant@nexus";
+  # Öffentlicher Schlüssel von Home Assistant (/var/lib/home-assistant/.ssh/desktop_suspend.pub auf dem pi5)
+  haSuspendKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGWBV/vcQyMb9PQS2JOefSsRggiPWTnxyYuOIGYLxZMa home-assistant@nexus";
 in
 {
   # Netzwerkkarte reagiert auf Magic Packets, auch aus Suspend und Soft-Off.
@@ -24,17 +24,17 @@ in
   users.users.${user} = {
     # User-Dienste starten beim Booten statt erst beim Login (und laufen nach Logout weiter)
     linger = true;
-    # Nur vom pi5, nur `systemctl poweroff` (restrict = keine Shell, kein Forwarding), siehe unten
+    # Nur vom pi5, nur `systemctl suspend` (restrict = keine Shell, kein Forwarding), siehe unten
     openssh.authorizedKeys.keys = [
-      ''restrict,from="${pi5}",command="/run/current-system/sw/bin/systemctl poweroff" ${haPoweroffKey}''
+      ''restrict,from="${pi5}",command="/run/current-system/sw/bin/systemctl suspend" ${haSuspendKey}''
     ];
   };
 
   # Der t3-Installer legt den Befehl nach ~/.local/bin
   environment.localBinInPath = true;
 
-  # Ausschalten aus Home Assistant: HA meldet sich per SSH mit dem Schlüssel oben an.
-  # Kein Suspend: nach dem Aufwachen friert Hyprland ein (nvidia-drm "Flip event timeout")
+  # Schlafen legen aus Home Assistant: HA meldet sich per SSH mit dem Schlüssel oben an.
+  # Suspend geht erst mit hardware.nvidia.powerManagement (nvidia.nix), sonst friert Hyprland ein
   services.openssh = {
     enable = true;
     settings = {
@@ -47,8 +47,8 @@ in
   # multiple-sessions: die Desktop-Sitzung läuft parallel zur SSH-Sitzung
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
-      if ((action.id == "org.freedesktop.login1.power-off" ||
-           action.id == "org.freedesktop.login1.power-off-multiple-sessions") &&
+      if ((action.id == "org.freedesktop.login1.suspend" ||
+           action.id == "org.freedesktop.login1.suspend-multiple-sessions") &&
           subject.user == "${user}") {
         return polkit.Result.YES;
       }
