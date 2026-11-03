@@ -18,7 +18,7 @@
 #        incus exec t3 -- cloud-init status --wait
 #   3. GitHub-Tokens, einer pro Besitzer, Dateiname = Besitzer in Kleinbuchstaben. Fragt nacheinander
 #      (zsh: Text nach "?" ist der Prompt, -s zeigt die Eingabe nicht an):
-#        for owner in redeagle-dh modlogtv eventmate-bot benz-walter; do
+#        for owner in redeagle-dh modlogtv eventmate-bot benz-walter n2-stickstoff; do
 #          read -rs "TOKEN?Token für $owner: " && echo
 #          printf '%s' "$TOKEN" | incus exec t3 -- su - dev -c \
 #            "umask 077; mkdir -p ~/.config/gh-tokens; cat > ~/.config/gh-tokens/$owner"
@@ -26,8 +26,8 @@
 #      Standard-Token für Aufrufe ohne Repo (T3 selbst fragt so nach, siehe container/gh.sh):
 #        incus exec t3 -- su - dev -c 'ln -sfn redeagle-dh ~/.config/gh-tokens/default'
 #      Prüfen: incus exec t3 -- su - dev -c 'gh pr list -R eventmate-bot/eventmate_mono --limit 1'
-#      Grafana (MCP, je Instanz): ~/.config/mcp/grafana-<name>.env im Container anlegen und im
-#      Projekt registrieren, siehe container/grafana-mcp.sh
+#      Grafana (MCP, je Instanz): ~/.config/mcp/grafana-<name>.env im Container anlegen, dann
+#      `register-grafana-mcp` (meldet sie global als grafana-<name> an), siehe container/grafana-mcp.sh
 #   4. Die Server-Runtime des bisherigen t3-Dienstes (nicht die Desktop-App) in den Container
 #      kopieren und dort als Dienst einrichten. Die Runtime ist ein normales Linux-Programm ohne
 #      Bezug auf /nix/store, läuft also unverändert auf Ubuntu. Version = die, die der Dienst nutzt:

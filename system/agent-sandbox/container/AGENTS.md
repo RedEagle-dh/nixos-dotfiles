@@ -37,7 +37,11 @@ Docker, and apt. Node, pnpm and bun come from mise (`mise use node@22` etc. per 
 
 # Debugging with production data
 
-- If the project has a `grafana` MCP server, use it to look at dashboards, Loki logs and Prometheus
-  metrics when you investigate a bug. It is read-only. Each project's server points at that
-  project's own Grafana. In Codex the servers are named `grafana-<instance>`; use the one for
-  the project you are working on.
+- Use the Grafana MCP servers to look at dashboards, Loki logs and Prometheus metrics when you
+  investigate a bug. They are read-only. There is one per Grafana instance. Use only the one for
+  the project you are working on:
+  - `grafana-eventmate`: eventmate_mono
+  - `grafana-homelab`: nix-dotfiles-homelab and the services running in the homelab
+  - `grafana-modlog`: ModLogTV repositories
+  - `grafana-benzwalter`: benz-walter repositories
+  Other projects (for example N2-Stickstoff) have no Grafana.

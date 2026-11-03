@@ -63,3 +63,6 @@ as_dev 'command -v claude >/dev/null || curl -fsSL https://claude.ai/install.sh 
 # seiner Playwright-Version: npx playwright install chromium
 node_bin=$(as_dev 'dirname "$(mise which node)"')
 PATH="$node_bin:$PATH" npx -y playwright install-deps chromium
+
+# Grafana-Instanzen aus ~/.config/mcp/grafana-*.env bei Claude und Codex anmelden (braucht beide)
+as_dev register-grafana-mcp
