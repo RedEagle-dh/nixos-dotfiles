@@ -146,6 +146,11 @@ let
       mode = "0755";
     }
     {
+      target = "/usr/local/bin/register-grafana-mcp";
+      source = ./register-grafana-mcp.sh;
+      mode = "0755";
+    }
+    {
       target = "/home/dev/.config/systemd/user/t3code.service.d/50-agent.conf";
       text = t3ServiceEnv;
     }

@@ -4,12 +4,14 @@
 # starten ihn selbst. URL und Token stehen pro Instanz in ~/.config/mcp/grafana-<name>.env:
 #   GRAFANA_URL=https://grafana.dave.haus
 #   GRAFANA_SERVICE_ACCOUNT_TOKEN=glsa_…        (Service Account mit Rolle Viewer)
+#   GRAFANA_MCP_TOOLS=…                         (optional, siehe unten)
 # Loki und Prometheus fragt der Server über die Datenquellen dieser Grafana ab.
+# Angemeldet wird jede Instanz als grafana-<name>, global bei Claude und Codex:
+# register-grafana-mcp (läuft auch in provision.sh).
 #
-# Registrieren, im Projektordner (gilt nur für dieses Projekt):
-#   claude mcp add -s local grafana -- grafana-mcp <name>
-# Codex kennt nur globale Server, darum dort mit Namen:
-#   codex mcp add grafana-<name> -- grafana-mcp <name>
+# Nur die Werkzeuge fürs Debuggen (22 statt 62): jede Instanz steht in jeder Sitzung im Kontext,
+# Codex lädt sie alle. Mehr für eine Instanz, z. B. Traces und Alerts:
+#   GRAFANA_MCP_TOOLS=search,datasource,prometheus,loki,dashboard,tempo,alerting
 set -eu
 name=${1:?usage: grafana-mcp <name>}
 shift
@@ -23,4 +25,5 @@ fi
 set -a
 . "$env_file"
 set +a
-exec mcp-grafana --disable-write "$@"
+exec mcp-grafana --disable-write \
+  --enabled-tools="${GRAFANA_MCP_TOOLS:-search,datasource,prometheus,loki,dashboard}" "$@"
