@@ -43,6 +43,8 @@ as_dev 'command -v mise >/dev/null || curl -fsSL https://mise.run | sh'
 as_dev 'mise use -g node@lts pnpm@latest bun@latest'
 # Codex braucht Node, darum erst danach
 as_dev 'mise use -g npm:@openai/codex@latest'
+# Grafana-MCP-Server (fertiges Binary aus den GitHub-Releases), gestartet über grafana-mcp
+as_dev "mise use -g 'github:grafana/mcp-grafana[asset_pattern=mcp-grafana_Linux_x86_64.tar.gz]@latest'"
 as_dev 'command -v claude >/dev/null || curl -fsSL https://claude.ai/install.sh | bash'
 
 # Systembibliotheken für Playwright-Chromium. Die Browser selbst lädt jedes Projekt passend zu
