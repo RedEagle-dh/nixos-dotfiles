@@ -3,6 +3,8 @@
 # Meldet jede Grafana-Instanz aus ~/.config/mcp/grafana-<name>.env als MCP-Server grafana-<name>
 # an, global bei Claude (Scope user) und Codex: dieselben Namen in beiden, in jedem Projekt.
 # Schon angemeldete Server bleiben, wie sie sind. Als dev ausführen; provision.sh ruft es auf.
+# Pro Projekt ginge auch (Claude: `claude mcp add -s local`, Codex: .codex/config.toml im Projekt,
+# nur bei vertrauten Projekten). Global ist bewusst gewählt: einfacher, der Name zeigt die Instanz.
 set -eu
 
 for env_file in "$HOME"/.config/mcp/grafana-*.env; do

@@ -9,8 +9,9 @@
 # Angemeldet wird jede Instanz als grafana-<name>, global bei Claude und Codex:
 # register-grafana-mcp (läuft auch in provision.sh).
 #
-# Nur die Werkzeuge fürs Debuggen (22 statt 62): jede Instanz steht in jeder Sitzung im Kontext,
-# Codex lädt sie alle. Mehr für eine Instanz, z. B. Traces und Alerts:
+# Nur die Werkzeuge fürs Debuggen: 22 statt 62, ~5,8k statt ~14k Tokens an Definitionen (gezählt
+# mit o200k). Claude und Codex laden MCP-Werkzeuge zwar erst bei Bedarf (Tool Search), aber weniger
+# Werkzeuge heißt weniger Rauschen bei der Suche. Mehr für eine Instanz, z. B. Traces und Alerts:
 #   GRAFANA_MCP_TOOLS=search,datasource,prometheus,loki,dashboard,tempo,alerting
 set -eu
 name=${1:?usage: grafana-mcp <name>}
