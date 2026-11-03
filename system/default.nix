@@ -20,6 +20,7 @@
     ./gaming.nix
     ./storage.nix
     ./t3-host.nix
+    ./agent-sandbox
     # ./backup.nix
   ];
 

@@ -13,12 +13,11 @@ in
   # Zusätzlich im BIOS: "Power on by PCI-E" an, ErP aus
   networking.interfaces.enp14s0.wakeOnLan.enable = true;
 
-  # Opening port 3773 for caddy on pi5 only because of the t3.dave.haus domain
-  networking.firewall.extraCommands = ''
-    iptables -A nixos-fw -p tcp -s 192.168.188.20 --dport 3773 -j nixos-fw-accept
-  '';
-  networking.firewall.extraStopCommands = ''
-    iptables -D nixos-fw -p tcp -s 192.168.188.20 --dport 3773 -j nixos-fw-accept || true
+  # Opening port 3773 for caddy on pi5 only because of the t3.dave.haus domain.
+  # nftables syntax: Incus (agent-sandbox) needs the nftables firewall, iptables rules are gone.
+  # Remove after switching t3.dave.haus to the container (port 3774)
+  networking.firewall.extraInputRules = ''
+    ip saddr ${pi5} tcp dport 3773 accept
   '';
 
   users.users.${user} = {

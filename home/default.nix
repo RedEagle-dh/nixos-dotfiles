@@ -18,6 +18,7 @@
     ./storage.nix
     ./terminal
     ./neovim
+    ./agent-skills.nix
   ];
 
   _module.args.theme = import ../theme { inherit pkgs; };
