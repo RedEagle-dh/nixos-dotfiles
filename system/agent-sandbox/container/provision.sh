@@ -45,6 +45,18 @@ as_dev 'mise use -g node@lts pnpm@latest bun@latest'
 as_dev 'mise use -g npm:@openai/codex@latest'
 # Grafana-MCP-Server (fertiges Binary aus den GitHub-Releases), gestartet über grafana-mcp
 as_dev "mise use -g 'github:grafana/mcp-grafana[asset_pattern=mcp-grafana_Linux_x86_64.tar.gz]@latest'"
+
+# Nix als Werkzeug für die Nix-Repos (nix fmt im pre-commit-Hook, nix eval, nix flake check). Das
+# System bleibt Ubuntu. Einzelnutzer-Installation: kein Daemon, keine Build-Nutzer, /nix gehört dev.
+# Flakes schaltet ~/.config/nix/nix.conf aus files.nix ein
+if [ ! -x /home/dev/.nix-profile/bin/nix ]; then
+  install -d -m 0755 -o dev -g dev /nix
+  as_dev 'curl -fsSL https://nixos.org/nix/install | sh -s -- --no-daemon --no-channel-add --no-modify-profile'
+fi
+# Links in /usr/local/bin statt PATH-Eintrag: liegt schon in jedem PATH, auch im laufenden T3-Dienst
+for bin in /home/dev/.nix-profile/bin/nix*; do
+  ln -sf "$bin" /usr/local/bin/
+done
 as_dev 'command -v claude >/dev/null || curl -fsSL https://claude.ai/install.sh | bash'
 
 # Systembibliotheken für Playwright-Chromium. Die Browser selbst lädt jedes Projekt passend zu

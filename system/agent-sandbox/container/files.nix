@@ -77,6 +77,11 @@ let
     exec "$home/runtime/versions/$v/t3" "$@"
   '';
 
+  # Nix im Container (provision.sh): Flakes an, die Repos nutzen sie
+  nixConfig = ''
+    experimental-features = nix-command flakes
+  '';
+
   ghConfig = ''
     git_protocol: ssh
     prompt: disabled
@@ -143,6 +148,10 @@ let
     {
       target = "/home/dev/.config/systemd/user/t3code.service.d/50-agent.conf";
       text = t3ServiceEnv;
+    }
+    {
+      target = "/home/dev/.config/nix/nix.conf";
+      text = nixConfig;
     }
     {
       target = "/home/dev/.config/gh/config.yml";
