@@ -3,9 +3,8 @@
 You run in an isolated Ubuntu container ("t3") on David's desktop. You have passwordless sudo,
 Docker, and apt. Node, pnpm and bun come from mise (`mise use node@22` etc. per project).
 
-- The home network is blocked on purpose (192.168.188.0/24, VPN ranges, *.dave.haus web services).
-  Don't try to reach pi5, server/homelab, dns, dns2 or the router. Only Forgejo over SSH
-  (git.dave.haus:2222) is reachable.
+- The home network is reachable, but you have no credentials for its machines (pi5, server, dns,
+  dns2, router). Don't try to log in to them or to the web services behind *.dave.haus.
 - Git authentication and commit signing go through an ssh-agent on the host. There is no key file
   in this container; don't look for one. Commits are signed automatically.
 
@@ -32,3 +31,10 @@ Docker, and apt. Node, pnpm and bun come from mise (`mise use node@22` etc. per 
 - For UI changes, start the dev server and check the page with Playwright
   (`npx playwright install chromium` once per project): take screenshots and look at them.
 - `docker` and `docker compose` work as usual. Stop containers you started when you're done.
+
+# Debugging with production data
+
+- If the project has a `grafana` MCP server, use it to look at dashboards, Loki logs and Prometheus
+  metrics when you investigate a bug. It is read-only. Each project's server points at that
+  project's own Grafana. In Codex the servers are named `grafana-<instance>`; use the one for
+  the project you are working on.

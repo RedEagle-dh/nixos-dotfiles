@@ -3,7 +3,7 @@
 # Keyring, Browser), und über die docker-Gruppe wären sie root.
 #
 #   incus.nix       Bridge, Speicher und das Profil "agent" (Limits, Docker im Container, Sockets)
-#   firewall.nix    Internet ja, Heimnetz nein – einzige Ausnahme Forgejo-SSH über den pi5
+#   firewall.nix    Netz wie jedes LAN-Gerät; nur T3s Port ist auf Caddy (pi5) beschränkt
 #   git-broker.nix  ssh-agent mit dem Git-Schlüssel; der Container bekommt nur den Socket
 #   container/      Das Ubuntu im Container: cloud-init.nix (Nutzer, Pakete) ruft provision.sh auf
 #                   (mise, Claude, Codex, Playwright); files.nix (git, ssh, Wrapper) hängt Incus
@@ -26,6 +26,8 @@
 #      Standard-Token für Aufrufe ohne Repo (T3 selbst fragt so nach, siehe container/gh.sh):
 #        incus exec t3 -- su - dev -c 'ln -sfn redeagle-dh ~/.config/gh-tokens/default'
 #      Prüfen: incus exec t3 -- su - dev -c 'gh pr list -R eventmate-bot/eventmate_mono --limit 1'
+#      Grafana (MCP, je Instanz): ~/.config/mcp/grafana-<name>.env im Container anlegen und im
+#      Projekt registrieren, siehe container/grafana-mcp.sh
 #   4. Die Server-Runtime des bisherigen t3-Dienstes (nicht die Desktop-App) in den Container
 #      kopieren und dort als Dienst einrichten. Die Runtime ist ein normales Linux-Programm ohne
 #      Bezug auf /nix/store, läuft also unverändert auf Ubuntu. Version = die, die der Dienst nutzt:

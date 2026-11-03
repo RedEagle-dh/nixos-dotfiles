@@ -1,0 +1,26 @@
+#!/bin/sh
+# grafana-mcp <name> [weitere mcp-grafana-Flags]
+# Startet den Grafana-MCP-Server (stdio, nur lesend) für eine Grafana-Instanz. Claude und Codex
+# starten ihn selbst. URL und Token stehen pro Instanz in ~/.config/mcp/grafana-<name>.env:
+#   GRAFANA_URL=https://grafana.dave.haus
+#   GRAFANA_SERVICE_ACCOUNT_TOKEN=glsa_…        (Service Account mit Rolle Viewer)
+# Loki und Prometheus fragt der Server über die Datenquellen dieser Grafana ab.
+#
+# Registrieren, im Projektordner (gilt nur für dieses Projekt):
+#   claude mcp add -s local grafana -- grafana-mcp <name>
+# Codex kennt nur globale Server, darum dort mit Namen:
+#   codex mcp add grafana-<name> -- grafana-mcp <name>
+set -eu
+name=${1:?usage: grafana-mcp <name>}
+shift
+
+env_file="$HOME/.config/mcp/grafana-$name.env"
+if [ ! -r "$env_file" ]; then
+  echo "grafana-mcp: $env_file fehlt" >&2
+  exit 1
+fi
+
+set -a
+. "$env_file"
+set +a
+exec mcp-grafana --disable-write "$@"
