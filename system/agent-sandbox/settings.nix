@@ -28,9 +28,11 @@
     email = "redeagle.private@gmail.com";
   };
 
-  # Obergrenzen (cgroup-Limits), nichts davon wird reserviert
+  # Obergrenzen (cgroup-Limits), nichts davon wird reserviert. Desktop: 16 Threads, 31 GiB.
+  # cpu = alle Threads: bei Volllast teilen sich Container und user.slice die CPU per cgroup-Gewicht
+  # (je 100), der Desktop bleibt bedienbar. memory lässt dem Host ~7 GiB
   limits = {
-    memory = "16GiB";
-    cpu = "12";
+    memory = "24GiB";
+    cpu = "16";
   };
 }
