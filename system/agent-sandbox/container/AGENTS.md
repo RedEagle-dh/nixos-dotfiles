@@ -31,6 +31,9 @@ Docker, and apt. Node, pnpm and bun come from mise (`mise use node@22` etc. per 
 - For UI changes, start the dev server and check the page with Playwright
   (`npx playwright install chromium` once per project): take screenshots and look at them.
 - `docker` and `docker compose` work as usual. Stop containers you started when you're done.
+- `nix` (with flakes) is installed as a tool for Nix repos: `nix fmt`, `nix flake check`,
+  `nix eval`, `nix build` of single packages. Use it to check your changes before a PR. This is
+  not NixOS: never run `nixos-rebuild`, deploy scripts or anything that changes a machine.
 
 # Debugging with production data
 
