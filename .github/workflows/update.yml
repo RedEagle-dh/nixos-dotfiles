@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: cachix/install-nix-action@v31
 
-      - name: Claude Code und T3 Code Nightly aktualisieren
+      - name: Claude Code, T3 Code Nightly und Command Code aktualisieren
         run: ./pkgs/update.sh
 
       - name: Inputs aktualisieren
@@ -38,7 +38,7 @@ jobs:
           commit-message: "flake.lock und Pakete aktualisieren"
           title: "flake.lock und Pakete aktualisieren"
           body: |
-            Neue Stände der Flake-Inputs, von Claude Code und T3 Code Nightly. Die Konfiguration wertet damit fehlerfrei aus
+            Neue Stände der Flake-Inputs, von Claude Code, T3 Code Nightly und Command Code. Die Konfiguration wertet damit fehlerfrei aus
             (`nix flake check --no-build`) – ob alles läuft, zeigt erst `nhb` und ein Neustart.
 
             ```

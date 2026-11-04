@@ -7,6 +7,7 @@
     gnome-text-editor
     file-roller
     (callPackage ../pkgs/t3code-nightly.nix { })
+    (callPackage ../pkgs/command-code { })
     hyprmod
     bun
     sops

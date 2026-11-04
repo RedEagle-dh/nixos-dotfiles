@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if ! command -v prefetch-npm-deps >/dev/null; then
+  exec nix shell nixpkgs#nodejs nixpkgs#jq nixpkgs#prefetch-npm-deps -c "$0" "$@"
+fi
+
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 claude=https://downloads.claude.ai/claude-code-releases
@@ -13,7 +17,19 @@ tag=$(curl -fsSL "https://api.github.com/repos/$t3/releases?per_page=30" |
 sha=$(curl -fsSL "https://github.com/$t3/releases/download/$tag/nightly-linux.yml" | sed -n 's/^sha512: //p')
 printf '{\n  "version": "%s",\n  "hash": "sha512-%s"\n}\n' "${tag#v}" "${sha:?}" >t3code-nightly.json
 
-echo "claude-code $version, t3code ${tag#v}"
+cc=$(curl -fsSL https://registry.npmjs.org/command-code/latest)
+cc_version=$(jq -r .version <<<"$cc")
+cc_tmp=$(mktemp -d)
+curl -fsSL "$(jq -r .dist.tarball <<<"$cc")" | tar xz -C "$cc_tmp"
+jq 'del(.devDependencies)' "$cc_tmp/package/package.json" >"$cc_tmp/package.json"
+(cd "$cc_tmp" && npm install --package-lock-only --ignore-scripts --no-audit --no-fund >/dev/null)
+cp "$cc_tmp/package-lock.json" command-code/package-lock.json
+jq -n --arg version "$cc_version" --arg hash "$(jq -r .dist.integrity <<<"$cc")" \
+  --arg npmDepsHash "$(prefetch-npm-deps command-code/package-lock.json 2>/dev/null)" \
+  '{$version, $hash, $npmDepsHash}' >command-code/source.json
+rm -rf "$cc_tmp"
+
+echo "claude-code $version, t3code ${tag#v}, command-code $cc_version"
 
 # T3-Server im Agent-Container (system/agent-sandbox) auf dieselbe Version wie die App. `t3 update`
 # lädt die Runtime aus demselben Release (t3-<version>-linux-x64.tar.gz) und startet den Dienst neu,
