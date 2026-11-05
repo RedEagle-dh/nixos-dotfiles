@@ -13,6 +13,7 @@
     ./sound.nix
     ./bluetooth.nix
     ./services.nix
+    ./vpn.nix
     ./fonts.nix
     ./programs.nix
     ./1password.nix

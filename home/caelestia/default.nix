@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   inputs,
   theme,
   ...
@@ -19,6 +20,16 @@ in
     programs.caelestia = {
       enable = true;
       cli.enable = true;
+
+      # Eingebauter VPN-Schalter kann nur ein VPN gleichzeitig und schreibt in die (schreibgeschützte) shell.json
+      package =
+        inputs.caelestia-shell.packages.${pkgs.stdenv.hostPlatform.system}.with-cli.overrideAttrs
+          (old: {
+            patches = (old.patches or [ ]) ++ [ ./vpn-toggles.patch ];
+            postPatch = (old.postPatch or "") + ''
+              cp ${./VpnToggles.qml} modules/utilities/cards/VpnToggles.qml
+            '';
+          });
 
       settings = {
         general = {

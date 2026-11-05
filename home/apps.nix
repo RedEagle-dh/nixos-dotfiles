@@ -9,6 +9,7 @@
     (callPackage ../pkgs/t3code-nightly.nix { })
     (callPackage ../pkgs/command-code { })
     hyprmod
+    datagrip
     bun
     sops
     age
