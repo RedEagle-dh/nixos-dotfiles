@@ -15,7 +15,11 @@ t3=pingdotgg/t3code
 tag=$(curl -fsSL "https://api.github.com/repos/$t3/releases?per_page=30" |
   grep -o '"tag_name": *"v[^"]*-nightly\.[^"]*"' | head -1 | cut -d'"' -f4)
 sha=$(curl -fsSL "https://github.com/$t3/releases/download/$tag/nightly-linux.yml" | sed -n 's/^sha512: //p')
-printf '{\n  "version": "%s",\n  "hash": "sha512-%s"\n}\n' "${tag#v}" "${sha:?}" >t3code-nightly.json
+# Mac: der Hash der arm64-zip steht in der Zeile nach ihrer url
+mac_sha=$(curl -fsSL "https://github.com/$t3/releases/download/$tag/nightly-mac.yml" |
+  awk '/arm64\.zip$/ { getline; sub(/^ *sha512: /, ""); print; exit }')
+printf '{\n  "version": "%s",\n  "hash": "sha512-%s",\n  "darwinHash": "sha512-%s"\n}\n' \
+  "${tag#v}" "${sha:?}" "${mac_sha:?}" >t3code-nightly.json
 
 cc=$(curl -fsSL https://registry.npmjs.org/command-code/latest)
 cc_version=$(jq -r .version <<<"$cc")

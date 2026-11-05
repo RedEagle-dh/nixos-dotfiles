@@ -1,4 +1,9 @@
-{ lib, osConfig, ... }:
+{
+  lib,
+  osConfig,
+  pkgs,
+  ...
+}:
 
 let
   name = "David Hermann";
@@ -32,10 +37,17 @@ in
       format = "ssh";
       inherit key;
       signByDefault = true;
-      # Pfad ändert sich bei jedem 1Password-Update – nicht fest eintragen
-      signer = lib.getExe' osConfig.programs._1password-gui.package "op-ssh-sign";
+      # Linux: Pfad ändert sich bei jedem 1Password-Update – nicht fest eintragen.
+      # Mac: nix-darwin kopiert die App immer nach /Applications (darwin/1password.nix)
+      signer =
+        if pkgs.stdenv.hostPlatform.isDarwin then
+          "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+        else
+          lib.getExe' osConfig.programs._1password-gui.package "op-ssh-sign";
       allowedSigners = "${email} ${key}";
     };
+
+    ignores = [ "**/.claude/settings.local.json" ];
   };
 
   programs.delta = {
@@ -69,6 +81,9 @@ in
 
   programs.gh = {
     enable = true;
-    settings.git_protocol = "ssh";
+    settings = {
+      git_protocol = "ssh";
+      aliases.co = "pr checkout";
+    };
   };
 }

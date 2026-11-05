@@ -1,6 +1,12 @@
-{ inputs, pkgs, ... }:
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
   extension = slug: {
     installation_mode = "force_installed";
     install_url = "https://addons.mozilla.org/firefox/downloads/latest/${slug}/latest.xpi";
@@ -42,7 +48,9 @@ in
         FeatureRecommendations = false;
         SkipOnboarding = true;
       };
-
+    }
+    # VA-API gibt es nur unter Linux, macOS dekodiert ohnehin in Hardware
+    // lib.optionalAttrs isLinux {
       Preferences = {
         "media.hardware-video-decoding.force-enabled" = locked true;
         "media.ffmpeg.vaapi.enabled" = locked true;
@@ -51,7 +59,8 @@ in
     };
   };
 
-  programs.chromium = {
+  # Auf dem Mac als Cask (darwin/homebrew.nix) – nixpkgs baut Chromium nur für Linux
+  programs.chromium = lib.mkIf isLinux {
     enable = true;
     package = pkgs.ungoogled-chromium;
   };

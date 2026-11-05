@@ -33,8 +33,9 @@ buildNpmPackage {
   npmFlags = [ "--ignore-scripts" ];
   dontNpmBuild = true;
 
-  nativeBuildInputs = [ autoPatchelfHook ];
-  buildInputs = [ stdenv.cc.cc.lib ];
+  # ELF-Binaries in node_modules brauchen unter Linux angepasste Bibliothekspfade, macOS nicht
+  nativeBuildInputs = lib.optionals stdenv.hostPlatform.isLinux [ autoPatchelfHook ];
+  buildInputs = lib.optionals stdenv.hostPlatform.isLinux [ stdenv.cc.cc.lib ];
 
   makeWrapperArgs = [
     "--set-default"
@@ -47,6 +48,9 @@ buildNpmPackage {
     homepage = "https://commandcode.ai";
     license = lib.licenses.unfree;
     mainProgram = "cmd";
-    platforms = [ "x86_64-linux" ];
+    platforms = [
+      "x86_64-linux"
+      "aarch64-darwin"
+    ];
   };
 }

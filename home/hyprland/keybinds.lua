@@ -214,7 +214,7 @@ local specialApps = {
     passwords     = { { class = "1Password", command = "1password" } },
     sysmon        = { { class = "btop", command = "kitty --class btop btop" } },
     music         = { { class = "Spotify", command = "spotify" } },
-    communication = { { class = "vesktop", command = "vesktop" } },
+    communication = { { class = "discord", command = "discord" } },
 }
 
 local function toggleSpecial(name)
@@ -248,7 +248,7 @@ end
 
 bind(mod .. " + S",           toggleSpecial("passwords"),     "1Password ein/aus")
 bind(mod .. " + M",           toggleSpecial("music"),         "Spotify ein/aus")
-bind(mod .. " + D",           toggleSpecial("communication"), "Vesktop (Discord) ein/aus")
+bind(mod .. " + D",           toggleSpecial("communication"), "Discord ein/aus")
 bind("CTRL + SHIFT + Escape", toggleSpecial("sysmon"),        "Systemmonitor (btop) ein/aus")
 
 bind("CTRL + " .. mod .. " + SHIFT + down",

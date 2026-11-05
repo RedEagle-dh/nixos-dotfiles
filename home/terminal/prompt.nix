@@ -10,7 +10,7 @@ in
     enable = true;
     settings = {
       add_newline = true;
-      format = "$hostname$directory$git_branch$git_status$nix_shell$python$nodejs$bun$rust$cmd_duration$line_break$character";
+      format = "$hostname$directory$git_branch$git_status$nix_shell$python$nodejs$bun$rust$golang$docker_context$kubernetes$cmd_duration$line_break$character";
 
       hostname = {
         ssh_only = true;
@@ -43,6 +43,19 @@ in
       nodejs.format = "[$symbol($version )]($style)";
       bun.format = "[$symbol($version )]($style)";
       rust.format = "[$symbol($version )]($style)";
+      golang.format = "[$symbol($version )]($style)";
+      docker_context = {
+        format = "[$symbol$context]($style) ";
+        style = hex "foam";
+        only_with_files = true;
+      };
+      # Nur mit gesetztem KUBECONFIG – sonst stünde der Kontext aus ~/.kube/config in jedem Verzeichnis
+      kubernetes = {
+        disabled = false;
+        detect_env_vars = [ "KUBECONFIG" ];
+        format = "[$symbol$context( \\($namespace\\))]($style) ";
+        style = hex "iris";
+      };
       cmd_duration = {
         format = "[ $duration]($style) ";
         style = hex "gold";

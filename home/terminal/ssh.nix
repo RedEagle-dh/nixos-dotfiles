@@ -4,6 +4,8 @@ let
   # Leer = 1Password-Standard (alle Keys aus dem Privat-Tresor); sonst nur diese, in dieser Reihenfolge
   agentKeys = [
     { item = "5poti6gc3lkawn5v6cjwg3pkde"; }
+    { item = "3lrymnkbhaovbsc6fuofstxhyi"; }
+    { item = "ctvgjaz7hs2e5lvbdx7d4px74u"; }
   ];
 in
 {
@@ -15,21 +17,34 @@ in
     enable = true;
     enableDefaultConfig = false;
 
+    # Name und IP: `ssh 192.168.188.20` greift genauso wie `ssh pi5`. Alle Schlüssel aus 1Password
     settings = {
-      pi5 = {
+      "pi5 192.168.188.20" = {
         HostName = "192.168.188.20";
         User = "dave";
       };
-      homelab = {
+      "homelab 192.168.188.81" = {
         HostName = "192.168.188.81";
         User = "dave";
       };
-      dns = {
+      "dns 192.168.188.2" = {
         HostName = "192.168.188.2";
         User = "dave";
       };
-      dns2 = {
+      "dns2 192.168.188.3" = {
         HostName = "192.168.188.3";
+        User = "dave";
+      };
+      "airsoft 192.168.188.73" = {
+        HostName = "192.168.188.73";
+        User = "dave";
+      };
+      "ucg 192.168.188.1" = {
+        HostName = "192.168.188.1";
+        User = "root";
+      };
+      "desktop 192.168.188.35" = {
+        HostName = "192.168.188.35";
         User = "dave";
       };
       git-local = {

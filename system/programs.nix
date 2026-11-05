@@ -16,7 +16,5 @@
     wget
     curl
     unzip
-
-    forgejo-cli
   ];
 }

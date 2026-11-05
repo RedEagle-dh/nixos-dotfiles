@@ -1,7 +1,10 @@
 { lib, pkgs, ... }:
 
 let
-  # 16–18 belegt caelestia mit den Akzentfarben des aktuellen Schemas
+  inherit (pkgs.stdenv.hostPlatform) isDarwin;
+
+  # 16–18 belegt caelestia mit den Akzentfarben des aktuellen Schemas, auf dem Mac fest kitty
+  # (home/darwin/terminal.nix)
   slots = {
     text = "37";
     primary = "38;5;16";
@@ -9,6 +12,56 @@ let
     tertiary = "38;5;18";
   };
   color = name: "\\u001b[${slots.${name}}m";
+
+  # macOS kennt weder `uptime -p` noch free und hostnamectl – Ausgabe wie unter Linux
+  macUptime = pkgs.writeShellScript "uptime-pretty" ''
+    # "{ sec = 1793352772, usec = 168060 } …" – nur sec, nicht usec
+    boot=$(/usr/sbin/sysctl -n kern.boottime | /usr/bin/sed -E 's/^\{ sec = ([0-9]+),.*/\1/')
+    s=$(( $(/bin/date +%s) - boot ))
+    d=$(( s / 86400 )); h=$(( s % 86400 / 3600 )); m=$(( s % 3600 / 60 ))
+    out=""
+    unit() { [ "$1" -gt 0 ] && out="$out''${out:+, }$1 $2$([ "$1" -gt 1 ] && echo s)"; }
+    unit $d day; unit $h hour; unit $m minute
+    echo "''${out:-0 minutes}"
+  '';
+  uptimeModule =
+    if isDarwin then
+      ''{ "type": "command", "key": "│   uptime", "text": "${macUptime}", "format": "{>22} │" }''
+    else
+      ''{ "type": "command", "key": "│   uptime", "text": "${pkgs.procps}/bin/uptime -p | cut -d ' ' -f 2-", "format": "{>22} │" }'';
+  memModule =
+    if isDarwin then
+      ''{ "type": "memory", "key": "│ {$3}{$1}  mem   ", "format": "{$3}{used>10} / {total}{$1} │" }''
+    else
+      ''
+        {
+            "type": "command",
+            "key": "│ {$3}{$1}  mem   ",
+            "text": "free -m | awk 'NR==2{printf \"%.2f GiB / %.2f GiB\",$3/1024,$2/1024}'",
+            "format": "{$3}{>22}{$1} │"
+        }'';
+  hostnameCmd = if isDarwin then "scutil --get LocalHostName" else "hostnamectl hostname";
+  distroIcon = if isDarwin then "" else "󰻀";
+
+  # figlet -f slant, eine Spalte eingerückt
+  banner = lib.concatMapStrings (line: " ${line}\n") (
+    if isDarwin then
+      [
+        "                         ____  _____"
+        "   ____ ___  ____ ______/ __ \\/ ___/"
+        "  / __ `__ \\/ __ `/ ___/ / / /\\__ \\"
+        " / / / / / / /_/ / /__/ /_/ /___/ /"
+        "/_/ /_/ /_/\\__,_/\\___/\\____//____/"
+      ]
+    else
+      [
+        "    _   ___      ____  _____"
+        "   / | / (_)  __/ __ \\/ ___/"
+        "  /  |/ / / |/_/ / / /\\__ \\"
+        " / /|  / />  </ /_/ /___/ /"
+        "/_/ |_/_/_/|_|\\____//____/"
+      ]
+  );
 in
 {
   home.packages = [ pkgs.fastfetch ];
@@ -26,18 +79,13 @@ in
             "break",
             { "type": "custom", "key": "╭───────────────────────────────────╮" },
             { "type": "kernel", "key": "│ {$2}{$1}  kernel", "format": "{$2}{release>22}{$1} │" },
-            { "type": "command", "key": "│   uptime", "text": "${pkgs.procps}/bin/uptime -p | cut -d ' ' -f 2-", "format": "{>22} │" },
+            ${uptimeModule},
             { "type": "shell", "key": "│ {$2}{$1}  shell ", "format": "{$2}{pretty-name>22}{$1} │" },
-            {
-                "type": "command",
-                "key": "│ {$3}{$1}  mem   ",
-                "text": "free -m | awk 'NR==2{printf \"%.2f GiB / %.2f GiB\",$3/1024,$2/1024}'",
-                "format": "{$3}{>22}{$1} │"
-            },
+            ${memModule},
             { "type": "packages", "key": "│   pkgs  ", "format": "{all>22} │" },
             { "type": "command", "key": "│ {$2}{$1}  user  ", "text": "echo $USER", "format": "{$2}{>22}{$1} │" },
-            { "type": "command", "key": "│   hname ", "text": "hostnamectl hostname", "format": "{>22} │" },
-            { "type": "os", "key": "│ {$4}󰻀{$1}  distro", "format": "{$4}{pretty-name>22}{$1} │" },
+            { "type": "command", "key": "│   hname ", "text": "${hostnameCmd}", "format": "{>22} │" },
+            { "type": "os", "key": "│ {$4}${distroIcon}{$1}  distro", "format": "{$4}{pretty-name>22}{$1} │" },
             { "type": "custom", "key": "╰───────────────────────────────────╯" },
             "break"
         ]
@@ -46,13 +94,8 @@ in
 
   programs.zsh.initContent = lib.mkOrder 1500 ''
     printf '${builtins.replaceStrings [ "\\u001b" ] [ "\\e" ] (color "primary")}'
-    cat <<'EOF'
-         _   ___      ____  _____
-        / | / (_)  __/ __ \/ ___/
-       /  |/ / / |/_/ / / /\__ \
-      / /|  / />  </ /_/ /___/ /
-     /_/ |_/_/_/|_|\____//____/
-    EOF
+    command cat <<'EOF'
+    ${banner}EOF
     printf '\e[0m'
     fastfetch --key-padding-left 5
   '';
