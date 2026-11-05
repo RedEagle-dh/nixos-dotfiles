@@ -19,6 +19,9 @@
   services.netbird = {
     enable = true;
     useRoutingFeatures = "client";
+    # NixOS legt config.json vor NetBird an, NetBird hält sie für eine alte Konfiguration und schaltet
+    # seinen SSH-Server ein. Dann darf nur root die Management-URL ändern (netbird up -m …)
+    clients.default.config.ServerSSHAllowed = false;
   };
 
   environment.systemPackages = [ pkgs.wireguard-tools ];

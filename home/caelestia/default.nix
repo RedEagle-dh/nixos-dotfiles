@@ -21,13 +21,18 @@ in
       enable = true;
       cli.enable = true;
 
-      # Eingebauter VPN-Schalter kann nur ein VPN gleichzeitig und schreibt in die (schreibgeschützte) shell.json
+      # Ersetzt caelestias VPN-Teil: der kann nur ein VPN gleichzeitig, und seine Liste landet in der
+      # schreibgeschützten shell.json. Die eigene Liste liegt in ~/.config/caelestia/vpn.json
       package =
         inputs.caelestia-shell.packages.${pkgs.stdenv.hostPlatform.system}.with-cli.overrideAttrs
           (old: {
-            patches = (old.patches or [ ]) ++ [ ./vpn-toggles.patch ];
+            patches = (old.patches or [ ]) ++ [ ./vpn/vpn.patch ];
             postPatch = (old.postPatch or "") + ''
-              cp ${./VpnToggles.qml} modules/utilities/cards/VpnToggles.qml
+              cp ${./vpn/Vpns.qml} services/Vpns.qml
+              cp ${./vpn/VpnRow.qml} components/VpnRow.qml
+              cp ${./vpn/VpnToggles.qml} modules/utilities/cards/VpnToggles.qml
+              cp ${./vpn/VpnSection.qml} modules/nexus/pages/VpnSection.qml
+              cp ${./vpn/VpnEditPage.qml} modules/nexus/pages/network/VpnEditPage.qml
             '';
           });
 
