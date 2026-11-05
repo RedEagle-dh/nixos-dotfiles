@@ -1,4 +1,9 @@
-{ pkgs, user, ... }:
+{
+  config,
+  pkgs,
+  user,
+  ...
+}:
 
 {
   # Jedes VPN trägt sein DNS pro Interface bei resolved ein, statt sich um /etc/resolv.conf zu streiten
@@ -23,6 +28,11 @@
     # seinen SSH-Server ein. Dann darf nur root die Management-URL ändern (netbird up -m …)
     clients.default.config.ServerSSHAllowed = false;
   };
+
+  # config.d landet nur beim Start des Dienstes in config.json, ohne Neustart bliebe eine Änderung wirkungslos
+  systemd.services.netbird.restartTriggers = [
+    config.environment.etc."netbird/config.d/50-nixos.json".source
+  ];
 
   environment.systemPackages = [ pkgs.wireguard-tools ];
 }
