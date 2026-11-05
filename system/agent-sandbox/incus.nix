@@ -82,6 +82,16 @@ in
               readonly = "true";
             };
 
+            # Projekte des Hosts unter demselben Pfad, beschreibbar. shift: Host-dave erscheint im
+            # Container als dev und umgekehrt. Achtung: Was Agents dort ablegen (.git/hooks,
+            # .git/config, Skripte), läuft später auf dem Host als dave
+            developer = {
+              type = "disk";
+              source = "/home/${user}/developer";
+              path = "/home/${user}/developer";
+              shift = "true";
+            };
+
             # ssh-agent des Hosts im Container. bind = instance: der Socket entsteht im Container,
             # jede Verbindung darauf öffnet Incus auf dem Host zum echten ssh-agent. Der Schlüssel
             # verlässt den Host nie
