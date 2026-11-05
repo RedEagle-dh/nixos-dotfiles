@@ -2,7 +2,8 @@
 # dave auf dem Desktop. Als dave könnten sie alles lesen, was dave lesen kann (Schlüssel, Tokens,
 # Keyring, Browser), und über die docker-Gruppe wären sie root.
 #
-#   incus.nix       Bridge, Speicher und das Profil "agent" (Limits, Docker im Container, Sockets)
+#   incus.nix       Bridge, Speicher und das Profil "agent" (Limits, Docker im Container, Sockets,
+#                   ~/developer des Hosts)
 #   firewall.nix    Netz wie jedes LAN-Gerät; nur T3s Port ist auf Caddy (pi5) beschränkt
 #   git-broker.nix  ssh-agent mit dem Git-Schlüssel; der Container bekommt nur den Socket
 #   container/      Das Ubuntu im Container: cloud-init.nix (Nutzer, Pakete) ruft provision.sh auf
