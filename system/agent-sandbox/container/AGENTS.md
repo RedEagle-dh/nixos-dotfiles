@@ -7,6 +7,8 @@ Docker, and apt. Node, pnpm and bun come from mise (`mise use node@22` etc. per 
   dns2, router). Don't try to log in to them or to the web services behind *.dave.haus.
 - Git authentication and commit signing go through an ssh-agent on the host. There is no key file
   in this container; don't look for one. Commits are signed automatically.
+- Skills come from the host: `~/.agents` is read-only and `~/.claude/skills` is shared with the host.
+  Don't install, update or remove skills here (no `npx skills`); ask David to do it on the host.
 
 # Git
 

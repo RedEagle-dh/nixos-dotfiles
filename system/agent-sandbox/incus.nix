@@ -92,6 +92,25 @@ in
               shift = "true";
             };
 
+            # Skills des Hosts (skills-CLI, home/agent-skills.nix): Codex liest ~/.agents/skills, Claude
+            # die relativen Links in ~/.claude/skills, die so auf das eingehängte ~/.agents zeigen.
+            # ~/.agents nur lesend, gepflegt wird auf dem Host. ~/.claude/skills muss beschreibbar sein,
+            # Claude legt dort synced/ an. Achtung wie bei developer: was Agents dort ablegen, lädt
+            # Claude auf dem Host
+            agents = {
+              type = "disk";
+              source = "/home/${user}/.agents";
+              path = "/home/dev/.agents";
+              readonly = "true";
+              shift = "true";
+            };
+            claude-skills = {
+              type = "disk";
+              source = "/home/${user}/.claude/skills";
+              path = "/home/dev/.claude/skills";
+              shift = "true";
+            };
+
             # ssh-agent des Hosts im Container. bind = instance: der Socket entsteht im Container,
             # jede Verbindung darauf öffnet Incus auf dem Host zum echten ssh-agent. Der Schlüssel
             # verlässt den Host nie
