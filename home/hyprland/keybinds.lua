@@ -268,6 +268,7 @@ bind(mod .. " + SHIFT + L",    exec("systemctl suspend"),      "Bereitschaft (St
 bind(mod .. " + F1",           exec("keybind-help"),           "Diese Übersicht")
 bind(mod .. " + N",            exec("caelestia shell drawers toggle sidebar"),   "Seitenleiste mit Benachrichtigungen")
 bind(mod .. " + K",            exec("caelestia shell drawers toggle dashboard"), "Dashboard (Medien, Wetter, System)")
+bind(mod .. " + I",            exec("caelestia shell nexus open"),               "Caelestia-Einstellungen")
 bind("CTRL + ALT + C",         exec("caelestia shell notifs clear"),             "Alle Benachrichtigungen schließen", locked)
 bind("CTRL + " .. mod .. " + N",         exec("caelestia shell notifs toggleDnd"),     "Nicht stören an/aus")
 bind("CTRL + " .. mod .. " + SHIFT + R", exec("systemctl --user stop caelestia"),    "Oberfläche beenden", release)
