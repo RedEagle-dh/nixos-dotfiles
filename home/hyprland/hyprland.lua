@@ -186,6 +186,13 @@ hl.window_rule({
     idle_inhibit = "fullscreen",
 })
 
+-- Hyprland bietet Vollbild-Fenstern HDR an, Electron nimmt an – der Monitor schaltet dann für SDR-Inhalt auf HDR um
+hl.window_rule({
+    name  = "t3code-no-auto-hdr",
+    match = { class = "^(com.t3tools.T3Code|t3code)$" },
+    no_auto_hdr = true,
+})
+
 hl.window_rule({
     name  = "fix-xwayland-drags",
     match = {
