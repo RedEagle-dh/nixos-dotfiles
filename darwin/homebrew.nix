@@ -46,6 +46,13 @@
       # Danach "uninstall" – nie "zap": das löscht bei Casks auch App-Daten unter ~/Library,
       # und die nach Nix umgezogenen Apps (Chrome, Zed, …) benutzen dieselben Daten weiter
       cleanup = "none";
+
+      # Bei jedem nhs veraltete Casks, Formeln und App-Store-Apps von unten aktualisieren. Was neu ist,
+      # weiß brew erst nach `brew update` – das läuft in nhu (pkgs/update.sh). autoUpdate hier bliebe
+      # wirkungslos: nix-homebrew setzt bei festen Taps immer HOMEBREW_NO_AUTO_UPDATE.
+      # Casks, die sich selbst aktualisieren (auto_updates), lässt brew dabei aus – die halten sich selbst
+      # aktuell. Nicht erfasst: brew-Pakete, die nicht unten stehen (`brew upgrade` von Hand)
+      upgrade = true;
     };
 
     # brew kennt Taps ohne "homebrew-": aus "user/homebrew-repo" wird "user/repo"

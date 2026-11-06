@@ -33,7 +33,27 @@ jq -n --arg version "$cc_version" --arg hash "$(jq -r .dist.integrity <<<"$cc")"
   '{$version, $hash, $npmDepsHash}' >command-code/source.json
 rm -rf "$cc_tmp"
 
-echo "claude-code $version, t3code ${tag#v}, command-code $cc_version"
+# Mac-Apps aus den Installern der Hersteller. Die Hashes liefern beide ohne Download mit:
+# NetBird über die GitHub-API (digest), Tailscale als .sha256 neben dem Installer
+nb=$(curl -fsSL https://api.github.com/repos/netbirdio/netbird/releases/latest)
+nb_version=$(jq -r '.tag_name | ltrimstr("v")' <<<"$nb")
+nb_sha=$(jq -r --arg name "netbird_${nb_version}_darwin_arm64.pkg" \
+  '.assets[] | select(.name == $name) | .digest | ltrimstr("sha256:")' <<<"$nb")
+nb_hash=$(nix hash convert --hash-algo sha256 --to sri "${nb_sha:?}")
+jq -n --arg version "$nb_version" --arg hash "$nb_hash" '{$version, $hash}' >netbird-darwin.json
+
+ts_version=$(curl -fsSL 'https://pkgs.tailscale.com/stable/?mode=json&os=darwin' | jq -r .MacZipsVersion)
+ts_sha=$(curl -fsSL "https://pkgs.tailscale.com/stable/Tailscale-$ts_version-macos.pkg.sha256" | cut -d' ' -f1)
+ts_hash=$(nix hash convert --hash-algo sha256 --to sri "${ts_sha:?}")
+jq -n --arg version "$ts_version" --arg hash "$ts_hash" '{$version, $hash}' >tailscale-gui.json
+
+echo "claude-code $version, t3code ${tag#v}, command-code $cc_version, netbird $nb_version, tailscale $ts_version"
+
+# Homebrew: aktuelle Liste der Formeln und Casks holen, das Upgrade selbst macht nhs
+# (homebrew.onActivation.upgrade in darwin/homebrew.nix)
+if command -v brew >/dev/null; then
+  brew update
+fi
 
 # T3-Server im Agent-Container (system/agent-sandbox) auf dieselbe Version wie die App. `t3 update`
 # lädt die Runtime aus demselben Release (t3-<version>-linux-x64.tar.gz) und startet den Dienst neu,
