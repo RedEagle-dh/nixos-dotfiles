@@ -34,5 +34,9 @@
     config.environment.etc."netbird/config.d/50-nixos.json".source
   ];
 
+  services.nordvpn.enable = true;
+  # Ohne die Gruppe kommt die nordvpn-CLI nicht an den Socket von nordvpnd
+  users.users.${user}.extraGroups = [ "nordvpn" ];
+
   environment.systemPackages = [ pkgs.wireguard-tools ];
 }

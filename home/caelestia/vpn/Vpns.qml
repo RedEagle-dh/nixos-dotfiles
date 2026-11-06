@@ -10,19 +10,23 @@ import qs.utils
 Singleton {
     id: root
 
-    readonly property var types: ["tailscale", "netbird", "wireguard", "custom"]
+    readonly property var types: ["tailscale", "netbird", "nordvpn", "wireguard", "custom"]
     readonly property var typeLabels: ({
             tailscale: "Tailscale",
             netbird: "NetBird",
+            nordvpn: "NordVPN",
             wireguard: "WireGuard",
             custom: "Custom"
         })
     readonly property string netbirdCloudUrl: "https://api.netbird.io:443"
+    // nordvpn login only prints the browser link and returns; without analytics consent it would block forever on stdin
+    readonly property string nordvpnConnect: "nordvpn account >/dev/null 2>&1 || { nordvpn set analytics off >/dev/null 2>&1; nordvpn login || exit 1; i=0; until nordvpn account >/dev/null 2>&1; do i=$((i + 1)); [ $i -ge 150 ] && exit 1; sleep 2; done; }; exec nordvpn connect \"$@\""
 
     property var entries: []
 
     property bool tailscaleUp
     property bool netbirdUp
+    property bool nordvpnUp
     property string netbirdHost
     property var wireguardConnections: []
     property var wireguardActive: ({})
@@ -47,6 +51,8 @@ Singleton {
             return tailscaleUp;
         case "netbird":
             return netbirdUp && netbirdHost === hostOf(entry.url || netbirdCloudUrl);
+        case "nordvpn":
+            return nordvpnUp;
         case "wireguard":
             return wireguardActive[entry.connection] === true;
         default:
@@ -72,6 +78,8 @@ Singleton {
             return ["tailscale", up ? "up" : "down"];
         case "netbird":
             return up ? ["netbird", "up", "--no-browser", "-m", entry.url || netbirdCloudUrl] : ["netbird", "down"];
+        case "nordvpn":
+            return up ? ["sh", "-c", nordvpnConnect, "sh", ...(entry.server ?? "").split(/\s+/).filter(Boolean)] : ["nordvpn", "disconnect"];
         case "wireguard":
             return ["nmcli", "connection", up ? "up" : "down", "id", entry.connection];
         default:
@@ -126,6 +134,8 @@ Singleton {
             tailscaleStatus.running = true;
         if (present.includes("netbird"))
             netbirdStatus.running = true;
+        if (present.includes("nordvpn"))
+            nordvpnStatus.running = true;
         if (present.includes("custom"))
             linkStatus.running = true;
         nmStatus.running = true;
@@ -202,7 +212,7 @@ Singleton {
                 if (trimmed.length === 0)
                     return;
                 const url = trimmed.match(/https?:\/\/\S+/);
-                const isLoginHint = /visit|log ?in|authenticat/i.test(trimmed);
+                const isLoginHint = /visit|log ?in|authenticat|browser/i.test(trimmed);
                 if (url && (loginNext || isLoginHint) && !loginOpened) {
                     loginOpened = true;
                     root.setWaiting(entryId, true);
@@ -273,6 +283,15 @@ Singleton {
                     root.netbirdUp = false;
                 }
             }
+        }
+    }
+
+    Process {
+        id: nordvpnStatus
+
+        command: ["nordvpn", "status"]
+        stdout: StdioCollector {
+            onStreamFinished: root.nordvpnUp = /^Status: Connected$/m.test(text)
         }
     }
 

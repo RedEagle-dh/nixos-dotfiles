@@ -29,6 +29,10 @@ PageBase {
             value: "netbird"
         },
         MenuItem {
+            text: "NordVPN"
+            value: "nordvpn"
+        },
+        MenuItem {
             text: "WireGuard"
             value: "wireguard"
         },
@@ -55,6 +59,8 @@ PageBase {
         };
         if (type === "netbird" && urlField.text.trim())
             entry.url = urlField.text.trim();
+        if (type === "nordvpn" && serverField.text.trim())
+            entry.server = serverField.text.trim();
         if (type === "wireguard")
             entry.connection = connection;
         if (type === "custom") {
@@ -79,6 +85,7 @@ PageBase {
         if (existing) {
             nameField.text = existing.name ?? "";
             urlField.text = existing.url ?? "";
+            serverField.text = existing.server ?? "";
             connectField.text = existing.connectCmd ?? "";
             disconnectField.text = existing.disconnectCmd ?? "";
             interfaceField.text = existing.interface ?? "";
@@ -119,6 +126,18 @@ PageBase {
             leadingIcon: "dns"
             supportingText: "Leave empty for NetBird Cloud"
             inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText | Qt.ImhUrlCharactersOnly
+            onAccepted: root.submit()
+        }
+
+        StyledTextField {
+            id: serverField
+
+            Layout.fillWidth: true
+            visible: root.type === "nordvpn"
+            placeholderText: "Server"
+            leadingIcon: "public"
+            supportingText: "Country, city, group or server, e.g. Germany, Germany Berlin, P2P, de1234. Leave empty for the fastest"
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             onAccepted: root.submit()
         }
 
@@ -189,6 +208,8 @@ PageBase {
                     return "The first connect opens the Tailscale login in your browser.";
                 case "netbird":
                     return "The first connect opens the NetBird login in your browser. Only one NetBird network can be connected at a time.";
+                case "nordvpn":
+                    return "The first connect opens the NordVPN login in your browser. Only one NordVPN server can be connected at a time.";
                 case "wireguard":
                     return Vpns.wireguardConnections.length > 0 ? "Import more configs with: nmcli connection import type wireguard file <name>.conf" : "No WireGuard connection in NetworkManager yet. Import your config first: nmcli connection import type wireguard file <name>.conf";
                 default:
