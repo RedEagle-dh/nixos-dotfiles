@@ -118,7 +118,7 @@ in
     };
 
     programs.zsh.initContent = lib.mkOrder 1400 ''
-      [[ -r "${stateDir}/sequences.txt" ]] && cat "${stateDir}/sequences.txt"
+      [[ -r "${stateDir}/sequences.txt" ]] && command cat "${stateDir}/sequences.txt"
     '';
 
     home.file."Pictures/Wallpapers/rose-pine.png".source = theme.wallpaper;

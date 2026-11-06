@@ -7,12 +7,22 @@ fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
+# Ohne Token erlaubt die GitHub-API nur 60 Anfragen pro Stunde und IP, danach 403
+token=${GITHUB_TOKEN:-$(gh auth token 2>/dev/null || true)}
+gh_api() {
+  if [ -n "$token" ]; then
+    curl -fsSL -H "Authorization: Bearer $token" "$@"
+  else
+    curl -fsSL "$@"
+  fi
+}
+
 claude=https://downloads.claude.ai/claude-code-releases
 version=$(curl -fsSL "$claude/latest")
 curl -fsSL "$claude/$version/manifest.zst.json" -o claude-code.json
 
 t3=pingdotgg/t3code
-tag=$(curl -fsSL "https://api.github.com/repos/$t3/releases?per_page=30" |
+tag=$(gh_api "https://api.github.com/repos/$t3/releases?per_page=30" |
   grep -o '"tag_name": *"v[^"]*-nightly\.[^"]*"' | head -1 | cut -d'"' -f4)
 sha=$(curl -fsSL "https://github.com/$t3/releases/download/$tag/nightly-linux.yml" | sed -n 's/^sha512: //p')
 # Mac: der Hash der arm64-zip steht in der Zeile nach ihrer url
@@ -35,7 +45,7 @@ rm -rf "$cc_tmp"
 
 # Mac-Apps aus den Installern der Hersteller. Die Hashes liefern beide ohne Download mit:
 # NetBird über die GitHub-API (digest), Tailscale als .sha256 neben dem Installer
-nb=$(curl -fsSL https://api.github.com/repos/netbirdio/netbird/releases/latest)
+nb=$(gh_api https://api.github.com/repos/netbirdio/netbird/releases/latest)
 nb_version=$(jq -r '.tag_name | ltrimstr("v")' <<<"$nb")
 nb_sha=$(jq -r --arg name "netbird_${nb_version}_darwin_arm64.pkg" \
   '.assets[] | select(.name == $name) | .digest | ltrimstr("sha256:")' <<<"$nb")

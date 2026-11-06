@@ -18,7 +18,8 @@ in
 
   home.shellAliases = {
     nhs = "nh ${if isDarwin then "darwin" else "os"} switch && exec $SHELL";
-    nhu = "(cd ${flake} && ./pkgs/update.sh && nix flake update)";
+    # gh-Token gegen das Rate-Limit der GitHub-API (anonym 60 Anfragen pro Stunde)
+    nhu = ''(t=$(gh auth token 2>/dev/null); cd ${flake} && GITHUB_TOKEN="$t" ./pkgs/update.sh && NIX_CONFIG="''${t:+access-tokens = github.com=$t}" nix flake update)'';
   }
   # macOS kennt keinen Boot-Eintrag für die nächste Generation
   // lib.optionalAttrs (!isDarwin) {
