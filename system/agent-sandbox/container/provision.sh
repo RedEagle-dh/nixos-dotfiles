@@ -15,6 +15,9 @@ ln -sf /opt/agent-sandbox/provision /usr/local/sbin/provision-agent
 if [ -d /run/user/1000/systemd ]; then
   runuser -u dev -- env XDG_RUNTIME_DIR=/run/user/1000 systemctl --user daemon-reload || true
 fi
+# Platzhalter auf 127.0.0.1:22 für "Open in Zed" in T3 (files.nix, open-in-zed.nix)
+systemctl daemon-reload
+systemctl enable --now t3-open-target.socket
 
 # Jeder Hook-Name zeigt auf dasselbe Skript, siehe /etc/git/hooks/run
 for hook in applypatch-msg pre-applypatch post-applypatch pre-commit pre-merge-commit \

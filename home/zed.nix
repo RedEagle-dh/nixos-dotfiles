@@ -51,8 +51,9 @@ let
     formatter.language_server.name = "biome";
     format_on_save = "on";
   };
+  # Die tsgo-Erweiterung registriert ihren Server seit v1.1.0 als "typescript-ls"
   tsgo = [
-    "tsgo"
+    "typescript-ls"
     "!vtsls"
     "!typescript-language-server"
   ];

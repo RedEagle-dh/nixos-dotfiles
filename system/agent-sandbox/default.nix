@@ -6,6 +6,7 @@
 #                   ~/developer und die Skills des Hosts)
 #   firewall.nix    Netz wie jedes LAN-Gerät; nur T3s Port ist auf Caddy (pi5) beschränkt
 #   git-broker.nix  ssh-agent mit dem Git-Schlüssel; der Container bekommt nur den Socket
+#   open-in-zed.nix "Open in Zed" aus T3 öffnet den Ordner im Zed des Hosts, ohne SSH
 #   container/      Das Ubuntu im Container: cloud-init.nix (Nutzer, Pakete) ruft provision.sh auf
 #                   (mise, Claude, Codex, Playwright); files.nix (git, ssh, Wrapper) hängt Incus
 #                   unter /opt/agent-sandbox ein. Nach Änderungen: Rebuild, dann im Container
@@ -48,5 +49,6 @@
     ./incus.nix
     ./firewall.nix
     ./git-broker.nix
+    ./open-in-zed.nix
   ];
 }

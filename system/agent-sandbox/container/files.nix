@@ -77,6 +77,28 @@ let
     exec "$home/runtime/versions/$v/t3" "$@"
   '';
 
+  # Für "Open in Zed" in T3 (open-in-zed.nix): T3 bietet das nur an, wenn auf Port 22 etwas lauscht,
+  # und prüft dabei nur den Verbindungsaufbau. Kein sshd: nur im Container erreichbar, und jede
+  # Verbindung schließt sofort wieder
+  openTargetSocket = ''
+    [Unit]
+    Description=Platzhalter auf Port 22, damit T3 "Open in Zed" anbietet
+
+    [Socket]
+    ListenStream=127.0.0.1:22
+    Accept=yes
+
+    [Install]
+    WantedBy=sockets.target
+  '';
+  openTargetService = ''
+    [Unit]
+    Description=Verbindung zum Platzhalter auf Port 22 sofort schließen
+
+    [Service]
+    ExecStart=/bin/true
+  '';
+
   # Nix im Container (provision.sh): Flakes an, die Repos nutzen sie
   nixConfig = ''
     experimental-features = nix-command flakes
@@ -153,6 +175,14 @@ let
     {
       target = "/home/dev/.config/systemd/user/t3code.service.d/50-agent.conf";
       text = t3ServiceEnv;
+    }
+    {
+      target = "/etc/systemd/system/t3-open-target.socket";
+      text = openTargetSocket;
+    }
+    {
+      target = "/etc/systemd/system/t3-open-target@.service";
+      text = openTargetService;
     }
     {
       target = "/home/dev/.config/nix/nix.conf";
