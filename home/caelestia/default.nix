@@ -134,7 +134,7 @@ in
       fi
       if [ -n "$needScheme" ]; then
         run ${cli}/bin/caelestia scheme set -n dynamic || true
-      elif [ ! -f "${config.xdg.configHome}/Vencord/themes/caelestia.theme.css" ] \
+      elif [ ! -f "${config.xdg.configHome}/Equicord/themes/caelestia.theme.css" ] \
         || [ ! -f "${themeDir}/fuzzel.ini" ] \
         || [ ! -f "${config.xdg.configHome}/zed/themes/caelestia.json" ]; then
         run ${cli}/bin/caelestia scheme set -m "$(${cli}/bin/caelestia scheme get -m)" || true
