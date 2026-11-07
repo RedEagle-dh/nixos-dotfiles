@@ -12,6 +12,14 @@
 
   nixpkgs.hostPlatform = "aarch64-darwin";
 
+  # Name des Macs. LocalHostName ist der Name, nach dem darwin-rebuild den
+  # Flake-Eintrag darwinConfigurations.elder sucht (ohne #…)
+  networking = {
+    hostName = "elder";
+    localHostName = "elder";
+    computerName = "elder";
+  };
+
   # Aktivierung läuft als root – homebrew, system.defaults & Co. brauchen den eigentlichen Nutzer
   system.primaryUser = user;
 

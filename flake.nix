@@ -77,7 +77,7 @@
       );
 
       # Name = LocalHostName (`scutil --get LocalHostName`), dann findet darwin-rebuild ihn ohne #…
-      darwinConfigurations."MacBook-Pro-von-Dave" = nix-darwin.lib.darwinSystem {
+      darwinConfigurations.elder = nix-darwin.lib.darwinSystem {
         specialArgs = { inherit user inputs; };
         modules = [
           ./darwin
@@ -86,7 +86,7 @@
         ];
       };
 
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.baron = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit user; };
         modules = [
           ./configuration.nix

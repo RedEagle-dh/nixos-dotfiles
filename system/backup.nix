@@ -2,7 +2,7 @@
 #   sudo mkdir -p /root/restic
 #   sudo sh -c 'head -c 32 /dev/urandom | base64 > /root/restic/password'
 #   sudo cat /root/restic/password  → in 1Password speichern, ohne Passwort sind die Backups verloren
-#   sudo ssh-keygen -t ed25519 -N "" -C restic@nixos -f /root/restic/ssh_key
+#   sudo ssh-keygen -t ed25519 -N "" -C restic@baron -f /root/restic/ssh_key
 #   sudo cat /root/restic/ssh_key.pub → auf dem Homelab in ~/.ssh/authorized_keys,
 #     mit vorangestelltem  restrict,command="/usr/lib/openssh/sftp-server"
 #   sudo systemctl start restic-backups-homelab
@@ -55,7 +55,7 @@ in
 
   programs.ssh.knownHosts.homelab = {
     hostNames = [
-      "homelab"
+      "inhibitor"
       homelab
     ];
     publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGvUVcrdZjYIkadXvGN9CX5e+wVHnieRCe7O/zMsPKe4";

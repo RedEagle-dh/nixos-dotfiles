@@ -104,6 +104,18 @@ in
       ui_font_size = 16;
       buffer_font_family = theme.fonts.mono.name;
       buffer_font_size = 15;
+      # Kontrast wirkt auch über die Schrift: JetBrains Mono liegt als Medium bei, das bei 15 px
+      # mehr Strichfläche hat als Regular. 400 = Regular, 500 = Medium, 600 = SemiBold.
+      buffer_font_weight = 500;
+
+      # Kommentare im Caelestia-Theme sind kursiv – schräge Striche decken weniger Fläche ab und
+      # lesen sich auf dunklem Grund blasser. Nur die Schriftform, keine Farbe: greift damit auf
+      # jedes neu erzeugte Theme und verstellt die Palette nicht.
+      theme_overrides.Caelestia.syntax = {
+        comment.font_style = null;
+        "comment.doc".font_style = null;
+      };
+
       terminal = {
         font_size = 12;
         line_height.custom = 1.5;

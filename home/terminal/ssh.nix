@@ -17,21 +17,21 @@ in
     enable = true;
     enableDefaultConfig = false;
 
-    # Name und IP: `ssh 192.168.188.20` greift genauso wie `ssh pi5`. Alle Schlüssel aus 1Password
+    # Name und IP: `ssh 192.168.188.20` greift genauso wie `ssh nexus`. Alle Schlüssel aus 1Password
     settings = {
-      "pi5 192.168.188.20" = {
+      "nexus 192.168.188.20" = {
         HostName = "192.168.188.20";
         User = "dave";
       };
-      "homelab 192.168.188.81" = {
+      "inhibitor 192.168.188.81" = {
         HostName = "192.168.188.81";
         User = "dave";
       };
-      "dns 192.168.188.2" = {
+      "blue 192.168.188.2" = {
         HostName = "192.168.188.2";
         User = "dave";
       };
-      "dns2 192.168.188.3" = {
+      "red 192.168.188.3" = {
         HostName = "192.168.188.3";
         User = "dave";
       };
@@ -43,7 +43,7 @@ in
         HostName = "192.168.188.1";
         User = "root";
       };
-      "desktop 192.168.188.35" = {
+      "baron 192.168.188.35" = {
         HostName = "192.168.188.35";
         User = "dave";
       };
