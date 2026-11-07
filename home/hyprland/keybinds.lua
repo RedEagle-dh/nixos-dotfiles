@@ -76,6 +76,19 @@ bind(mod .. " + ALT + V",      exec("clipboard-menu delete"), "Eintrag aus dem Z
 bind(mod .. " + period",       exec("emoji-menu"),     "Emoji einfügen")
 bind(mod .. " + SHIFT + C",    exec("hyprpicker --autocopy --format=hex"), "Farbe vom Bildschirm kopieren")
 
+-- Ein aus dem Terminal gestartetes Programm verdrängt es (misc:enable_swallow). Dasselbe Kürzel holt
+-- das Terminal zurück bzw. blendet es wieder aus – wirkt nur auf das Fenster mit Fokus.
+bind(mod .. " + dead_circumflex", function()
+    local win = hl.get_active_window()
+    if not win then return end
+
+    local swallowed = win.swallowing
+    hl.dispatch(hl.dsp.window.toggle_swallow())
+    if swallowed then
+        hl.dispatch(hl.dsp.focus({ window = "address:" .. swallowed.address }))
+    end
+end, "Terminal zurückholen (nach Start eines Programms)")
+
 local directions = { left = "links", right = "rechts", up = "oben", down = "unten" }
 for key, name in pairs(directions) do
     bind(mod .. " + " .. key,         hl.dsp.focus({ direction = key }),       "Fokus nach " .. name)
