@@ -16,5 +16,6 @@
     wget
     curl
     unzip
+    openssl
   ];
 }
