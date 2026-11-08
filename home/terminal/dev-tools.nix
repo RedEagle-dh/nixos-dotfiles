@@ -87,7 +87,6 @@ in
 
       # KI
       ollama
-      omp
     ]
     # Auf dem Mac aus brew (darwin/homebrew.nix), nixpkgs baut sie dort nicht
     ++ lib.optionals isLinux [
