@@ -22,11 +22,19 @@ version=$(curl -fsSL "$claude/latest")
 curl -fsSL "$claude/$version/manifest.zst.json" -o claude-code.json
 
 t3=pingdotgg/t3code
-tag=$(gh_api "https://api.github.com/repos/$t3/releases?per_page=30" |
-  grep -o '"tag_name": *"v[^"]*-nightly\.[^"]*"' | head -1 | cut -d'"' -f4)
-sha=$(curl -fsSL "https://github.com/$t3/releases/download/$tag/nightly-linux.yml" | sed -n 's/^sha512: //p')
+release=$(gh_api "https://api.github.com/repos/$t3/releases?per_page=30" |
+  jq '[.[] | select(.tag_name | test("^v.*-nightly\\."))][0]')
+tag=$(jq -r .tag_name <<<"$release")
+# Assets über die API laden statt über github.com/…/releases/download: die Route liefert zeitweise
+# 504, während die API auf denselben Speicher weiterleitet und funktioniert. curl schickt den Token
+# bei der Weiterleitung auf release-assets.githubusercontent.com nicht mit
+t3_asset() {
+  gh_api -H 'Accept: application/octet-stream' \
+    "$(jq -r --arg name "$1" '.assets[] | select(.name == $name) | .url' <<<"$release")"
+}
+sha=$(t3_asset nightly-linux.yml | sed -n 's/^sha512: //p')
 # Mac: der Hash der arm64-zip steht in der Zeile nach ihrer url
-mac_sha=$(curl -fsSL "https://github.com/$t3/releases/download/$tag/nightly-mac.yml" |
+mac_sha=$(t3_asset nightly-mac.yml |
   awk '/arm64\.zip$/ { getline; sub(/^ *sha512: /, ""); print; exit }')
 printf '{\n  "version": "%s",\n  "hash": "sha512-%s",\n  "darwinHash": "sha512-%s"\n}\n' \
   "${tag#v}" "${sha:?}" "${mac_sha:?}" >t3code-nightly.json
@@ -69,7 +77,9 @@ fi
 # lädt die Runtime aus demselben Release (t3-<version>-linux-x64.tar.gz) und startet den Dienst neu,
 # laufende Agent-Turns brechen dabei ab. Die App selbst bekommt die Version erst mit dem Rebuild
 if command -v incus >/dev/null && incus info t3 >/dev/null 2>&1; then
-  incus exec t3 -- runuser -l dev -c "t3 update ${tag#v} --yes"
+  # Ein Fehler hier (etwa github.com mit 504) soll nhu nicht abbrechen, sonst entfällt auch nix flake update
+  incus exec t3 -- runuser -l dev -c "t3 update ${tag#v} --yes" ||
+    echo "T3-Server nicht aktualisiert (siehe Fehler oben) – später mit nhu erneut versuchen" >&2
 else
   echo "T3-Server nicht aktualisiert: kein incus oder kein Container t3 (nur auf dem Desktop möglich)" >&2
 fi
