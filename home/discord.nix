@@ -51,6 +51,27 @@ in
     };
   };
 
+  # Discord überschreibt seine settings.json selbst (Fenstergröße usw.) und ersetzt dabei den Symlink
+  # des Moduls durch eine echte Datei – beim nächsten Switch scheitert Home Manager dann an der
+  # schon vorhandenen .hm-backup. Daher nicht linken, sondern die Modul-Settings hineinmischen
+  home.file."${config.xdg.configHome}/discord/settings.json".enable = lib.mkIf isLinux false;
+
+  home.activation.discordSettings = lib.mkIf isLinux (
+    lib.hm.dag.entryAfter [ "linkGeneration" ] (
+      lib.hm.generators.mkImpureConfigMerger {
+        inherit pkgs;
+        format = "json";
+        empty = "{}";
+        jqOperation = "$dynamic * $static";
+        path = "${config.xdg.configHome}/discord/settings.json";
+        staticSettings =
+          (pkgs.formats.json { }).generate "discord-settings.json"
+            config.programs.discord.settings;
+        mode = "644";
+      }
+    )
+  );
+
   # Equicord schreibt selbst in settings.json – nur diese Werte hineinmischen. Das Theme selbst legt
   # caelestia in ~/.config/Equicord/themes ab, passend zum aktuellen Farbschema
   home.activation.equicordSettings = lib.mkIf isLinux (
