@@ -28,6 +28,9 @@ in
   programs.eza.extraOptions = [ "--group-directories-first" ];
 
   programs.zsh = {
+    # Ignoriere commands mit leerzeichen in der history
+    history.ignoreSpace = true;
+
     # Überschreiben die Vorgaben aus programs.eza (dort mkDefault)
     shellAliases = {
       la = "eza -la";
