@@ -35,6 +35,14 @@ in
       "netbirdio/homebrew-tap" = inputs.homebrew-netbird; # netbird-ui
     };
 
+    # Seit Homebrew 6 lädt brew aus fremden Taps nur, was als vertrauenswürdig eingetragen ist –
+    # sonst scheitert die Installation. Einzeln statt ganzer Taps. Entfernen trägt nicht aus:
+    # `brew untrust --formula|--cask <name>`
+    trust = {
+      formulae = [ "hashicorp/tap/terraform" ];
+      casks = [ "netbirdio/tap/netbird-ui" ];
+    };
+
     # Sonst setzt `brew shellenv` /opt/homebrew/bin vor die Nix-Pfade
     enableZshIntegration = false;
   };
