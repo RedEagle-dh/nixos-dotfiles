@@ -1,6 +1,8 @@
 { lib, pkgs, ... }:
 
 let
+  inventory = import ../../inventory.nix;
+
   # Leer = 1Password-Standard (alle Keys aus dem Privat-Tresor); sonst nur diese, in dieser Reihenfolge
   agentKeys = [
     { item = "5poti6gc3lkawn5v6cjwg3pkde"; }
@@ -17,47 +19,36 @@ in
     enable = true;
     enableDefaultConfig = false;
 
-    # Name und IP: `ssh 192.168.188.20` greift genauso wie `ssh nexus`. Alle Schlüssel aus 1Password
-    settings = {
-      "nexus 192.168.188.20" = {
-        HostName = "192.168.188.20";
-        User = "dave";
-      };
-      "inhibitor 192.168.188.81" = {
-        HostName = "192.168.188.81";
-        User = "dave";
-      };
-      "blue 192.168.188.2" = {
-        HostName = "192.168.188.2";
-        User = "dave";
-      };
-      "red 192.168.188.3" = {
-        HostName = "192.168.188.3";
-        User = "dave";
-      };
-      "airsoft 192.168.188.73" = {
-        HostName = "192.168.188.73";
-        User = "dave";
-      };
-      "ucg 192.168.188.1" = {
-        HostName = "192.168.188.1";
-        User = "root";
-      };
-      "baron 192.168.188.35" = {
-        HostName = "192.168.188.35";
-        User = "dave";
-      };
-      git-local = {
-        HostName = "192.168.188.81";
-        Port = 2222;
+    # Ein Block pro Gerät aus inventory.nix. Name und IP: `ssh 192.168.188.20` greift genauso wie
+    # `ssh nexus`. Alle Schlüssel aus 1Password, der Agent wird mitgenommen – außer aufs Gateway, dort
+    # ist man root auf fremder Firmware
+    settings =
+      lib.mapAttrs' (
+        name: node:
+        lib.nameValuePair "${name} ${node.ip}" {
+          HostName = node.ip;
+          User = node.user or "dave";
+          ForwardAgent = name != "ucg";
+        }
+      ) inventory
+      // {
+        git-local = {
+          HostName = inventory.inhibitor.ip;
+          Port = 2222;
+        };
 
-      };
+        # In einer SSH-Sitzung den weitergeleiteten Agent nehmen statt des lokalen 1Password.
+        # Muss vor "*" stehen, weil der erste IdentityAgent gewinnt
+        forwarded-agent = lib.hm.dag.entryBefore [ "*" ] {
+          header = ''Match exec "test -n \"$SSH_CONNECTION\" -a -S \"$SSH_AUTH_SOCK\""'';
+          IdentityAgent = "SSH_AUTH_SOCK";
+        };
 
-      "*" = {
-        IdentityAgent = "~/.1password/agent.sock";
-        ServerAliveInterval = 60;
-        ServerAliveCountMax = 3;
+        "*" = {
+          IdentityAgent = "~/.1password/agent.sock";
+          ServerAliveInterval = 60;
+          ServerAliveCountMax = 3;
+        };
       };
-    };
   };
 }

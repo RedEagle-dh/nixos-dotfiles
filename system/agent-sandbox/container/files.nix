@@ -29,7 +29,7 @@ let
     url."ssh://git@git.dave.haus:${toString s.forgejoSshPort}/".insteadOf = [
       "https://git.dave.haus/"
       # Alte Remotes direkt auf den server: der ist aus dem Container nicht erreichbar
-      "ssh://git@192.168.188.81:2222/"
+      "ssh://git@${(import ../../../inventory.nix).inhibitor.ip}:2222/"
     ];
   };
 

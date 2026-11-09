@@ -11,7 +11,7 @@
 
 let
   dir = "/root/restic";
-  homelab = "192.168.188.81";
+  homelab = (import ../inventory.nix).inhibitor.ip;
 in
 {
   services.restic.backups.homelab = {

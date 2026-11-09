@@ -7,7 +7,7 @@
   containerIp = "10.77.0.10";
 
   # pi5: Caddy (t3.dave.haus) und der Forgejo-SSH-Proxy (git.dave.haus:2222)
-  pi5 = "192.168.188.20";
+  pi5 = (import ../../inventory.nix).nexus.ip;
   forgejoSshPort = 2222;
 
   # T3 lauscht im Container auf t3Port, der Desktop reicht t3HostPort dorthin weiter. Eigener Port,

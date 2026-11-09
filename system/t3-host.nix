@@ -4,7 +4,7 @@
 { user, ... }:
 
 let
-  pi5 = "192.168.188.20";
+  pi5 = (import ../inventory.nix).nexus.ip;
   # Öffentlicher Schlüssel von Home Assistant (/var/lib/home-assistant/.ssh/desktop_suspend.pub auf dem pi5)
   haSuspendKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGWBV/vcQyMb9PQS2JOefSsRggiPWTnxyYuOIGYLxZMa home-assistant@nexus";
 in
