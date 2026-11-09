@@ -49,13 +49,29 @@
 
   outputs =
     {
+      self,
       nixpkgs,
       home-manager,
       nix-darwin,
       ...
     }@inputs:
     let
+      inherit (nixpkgs) lib;
+
       user = "dave";
+
+      # Eigene Pakete aus pkgs/ in pkgs – auf beiden Systemen
+      ownPackages = {
+        nixpkgs.overlays = [ (import ./pkgs) ];
+      };
+
+      # Dieselben Pakete als Flake-Ausgabe, aus dem pkgs des jeweiligen Systems: `nix build .#<name>`
+      # (nhu prüft damit Updates, nhs findet darüber die Pakete außerhalb der Paketlisten)
+      packagesOf =
+        { pkgs, ... }:
+        lib.filterAttrs (
+          _: pkg: lib.isDerivation pkg && lib.meta.availableOn pkgs.stdenv.hostPlatform pkg
+        ) (builtins.intersectAttrs (import ./pkgs pkgs pkgs) pkgs);
 
       # Auf beiden Systemen gleich: home/ ist gemeinsam, dazu der Teil fürs jeweilige System
       homeManager = platformModule: {
@@ -81,6 +97,7 @@
         specialArgs = { inherit user inputs; };
         modules = [
           ./darwin
+          ownPackages
           home-manager.darwinModules.home-manager
           (homeManager ./home/darwin)
         ];
@@ -90,9 +107,15 @@
         specialArgs = { inherit user; };
         modules = [
           ./configuration.nix
+          ownPackages
           home-manager.nixosModules.home-manager
           (homeManager ./home/linux.nix)
         ];
+      };
+
+      packages = {
+        x86_64-linux = packagesOf self.nixosConfigurations.baron;
+        aarch64-darwin = packagesOf self.darwinConfigurations.elder;
       };
     };
 }

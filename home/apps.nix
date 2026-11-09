@@ -1,16 +1,15 @@
 { pkgs, lib, ... }:
 
 let
-  inherit (pkgs.stdenv.hostPlatform) isLinux isDarwin;
+  inherit (pkgs.stdenv.hostPlatform) isLinux;
 in
 {
   home.packages =
     with pkgs;
     [
-      (callPackage (
-        if isDarwin then ../pkgs/t3code-nightly-darwin.nix else ../pkgs/t3code-nightly.nix
-      ) { })
-      (callPackage ../pkgs/command-code { })
+      # Aus pkgs/ (Overlay in flake.nix)
+      t3code-nightly
+      command-code
       datagrip
       jetbrains.idea
       bruno
@@ -36,10 +35,6 @@ in
     };
   };
 
-  programs.claude-code = {
-    enable = true;
-    package = pkgs.claude-code.override {
-      manifest = lib.importJSON ../pkgs/claude-code.json;
-    };
-  };
+  # pkgs.claude-code in der Version aus pkgs/claude-code.json (Overlay in flake.nix)
+  programs.claude-code.enable = true;
 }

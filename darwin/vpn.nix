@@ -2,9 +2,6 @@
 # Die CLIs bleiben: tailscale/netbird up|down|status
 { lib, pkgs, ... }:
 
-let
-  tailscale-gui = pkgs.callPackage ../pkgs/tailscale-gui.nix { };
-in
 {
   # Tailscale als eigenständige App (tailscale-gui) statt tailscaled: Sie bringt eine eigene
   # Netzwerk-Systemerweiterung mit, beide zusammen kämen sich bei Routen und DNS in die Quere.
@@ -16,7 +13,7 @@ in
     install -o root -g wheel -m0555 -d /Applications/Tailscale.app
     ${lib.getExe pkgs.rsync} --checksum --copy-unsafe-links --archive --delete --chmod=-w \
       --no-group --no-owner \
-      ${tailscale-gui}/Applications/Tailscale.app/ /Applications/Tailscale.app
+      ${pkgs.tailscale-gui}/Applications/Tailscale.app/ /Applications/Tailscale.app
   '';
 
   # NetBird: App und Dienst aus dem offiziellen Release (pkgs/netbird-darwin.nix). Die App landet
@@ -24,7 +21,7 @@ in
   # /var/lib/netbird. Autostart der App in ihren Einstellungen einschalten
   services.netbird = {
     enable = true;
-    package = pkgs.callPackage ../pkgs/netbird-darwin.nix { };
+    package = pkgs.netbird-app;
   };
 
   environment.systemPackages = with pkgs; [
