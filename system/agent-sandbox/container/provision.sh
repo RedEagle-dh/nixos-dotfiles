@@ -15,9 +15,20 @@ ln -sf /opt/agent-sandbox/provision /usr/local/sbin/provision-agent
 if [ -d /run/user/1000/systemd ]; then
   runuser -u dev -- env XDG_RUNTIME_DIR=/run/user/1000 systemctl --user daemon-reload || true
 fi
-# Platzhalter auf 127.0.0.1:22 für "Open in Zed" in T3 (files.nix, open-in-zed.nix)
-systemctl daemon-reload
-systemctl enable --now t3-open-target.socket
+# sshd für Zed vom Mac (files.nix). Den früheren Platzhalter auf 127.0.0.1:22 vorher entfernen,
+# sonst bekommt sshd den Port nicht
+if [ -e /etc/systemd/system/t3-open-target.socket ]; then
+  systemctl disable --now t3-open-target.socket || true
+  rm -f /etc/systemd/system/t3-open-target.socket /etc/systemd/system/t3-open-target@.service
+  systemctl daemon-reload
+fi
+if ! dpkg -s openssh-server >/dev/null 2>&1; then
+  apt-get update
+  apt-get install -y openssh-server
+fi
+# Ubuntu 24.04 startet sshd per ssh.socket; ein laufender sshd liest geänderte Drop-ins erst so
+systemctl enable --now ssh.socket
+systemctl try-reload-or-restart ssh.service
 
 # Jeder Hook-Name zeigt auf dasselbe Skript, siehe /etc/git/hooks/run
 for hook in applypatch-msg pre-applypatch post-applypatch pre-commit pre-merge-commit \

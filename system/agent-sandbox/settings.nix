@@ -15,6 +15,12 @@
   t3Port = 3773;
   t3HostPort = 3774;
 
+  # Dürfen per SSH als dev in den Container (Zed vom Mac, container/files.nix). "Daves Key" aus
+  # 1Password, derselbe, mit dem der Mac auf den Desktop kommt
+  sshKeys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMZLL7Fxqp3qXS04JkBDvHzdV98LgpL/LQ9ln6yh2rmx Daves Key"
+  ];
+
   # ssh-agent des git-broker auf dem Host und sein Gegenstück im Container. /srv gibt es in jedem
   # Ubuntu-Image schon – das Verzeichnis muss existieren, bevor Incus dort den Socket anlegt
   hostAgentSocket = "/run/git-broker/ssh-agent.sock";

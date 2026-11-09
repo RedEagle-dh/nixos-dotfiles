@@ -13,7 +13,11 @@ let
   '';
 in
 {
-  home.sessionVariables.SOPS_AGE_KEY_CMD = "${sopsAgeKey}";
+  home.sessionVariables = {
+    SOPS_AGE_KEY_CMD = "${sopsAgeKey}";
+    # T3-Code-Desktop-App: liest das aus dem Shell-Profil, keine Nutzungsdaten und kein Relay-Tracing
+    T3CODE_TELEMETRY_ENABLED = "false";
+  };
 
   home.shellAliases = {
     cat = "bat";

@@ -60,6 +60,8 @@ let
     [Service]
     Environment=PATH=/home/dev/.local/share/mise/shims:/home/dev/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     Environment=SSH_AUTH_SOCK=${s.containerAgentSocket}
+    # Keine Nutzungsdaten an T3 (ingest.t3.codes, PostHog) und kein Relay-Tracing (Axiom)
+    Environment=T3CODE_TELEMETRY_ENABLED=false
   '';
 
   # Dasselbe für Login-Shells (incus exec t3 -- su - dev)
@@ -77,26 +79,16 @@ let
     exec "$home/runtime/versions/$v/t3" "$@"
   '';
 
-  # Für "Open in Zed" in T3 (open-in-zed.nix): T3 bietet das nur an, wenn auf Port 22 etwas lauscht,
-  # und prüft dabei nur den Verbindungsaufbau. Kein sshd: nur im Container erreichbar, und jede
-  # Verbindung schließt sofort wieder
-  openTargetSocket = ''
-    [Unit]
-    Description=Platzhalter auf Port 22, damit T3 "Open in Zed" anbietet
-
-    [Socket]
-    ListenStream=127.0.0.1:22
-    Accept=yes
-
-    [Install]
-    WantedBy=sockets.target
-  '';
-  openTargetService = ''
-    [Unit]
-    Description=Verbindung zum Platzhalter auf Port 22 sofort schließen
-
-    [Service]
-    ExecStart=/bin/true
+  # sshd für Zed über SSH vom Mac (ProxyJump über den Desktop, home/darwin/ssh.nix). T3 bietet
+  # "Open in Zed" nur an, wenn auf Port 22 etwas lauscht (open-in-zed.nix). Erreichbar ist der
+  # Container nur über den Desktop (NAT hinter incusbr0), rein kommt nur dev mit s.sshKeys
+  sshdConfig = ''
+    PasswordAuthentication no
+    KbdInteractiveAuthentication no
+    PermitRootLogin no
+    AllowUsers dev
+    AllowAgentForwarding no
+    X11Forwarding no
   '';
 
   # Nix im Container (provision.sh): Flakes an, die Repos nutzen sie
@@ -177,12 +169,13 @@ let
       text = t3ServiceEnv;
     }
     {
-      target = "/etc/systemd/system/t3-open-target.socket";
-      text = openTargetSocket;
+      target = "/etc/ssh/sshd_config.d/50-agent.conf";
+      text = sshdConfig;
     }
     {
-      target = "/etc/systemd/system/t3-open-target@.service";
-      text = openTargetService;
+      target = "/home/dev/.ssh/authorized_keys";
+      text = lib.concatLines s.sshKeys;
+      mode = "0600";
     }
     {
       target = "/home/dev/.config/nix/nix.conf";

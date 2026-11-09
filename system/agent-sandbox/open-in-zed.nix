@@ -3,14 +3,17 @@
 # sieht. ~/developer liegt im Container aber unter demselben Pfad wie auf dem Host (incus.nix), also
 # öffnet Zed hier einfach den Ordner auf dem Host, ganz ohne SSH:
 #
-#   1. Im Container lauscht ein Platzhalter auf 127.0.0.1:22 (container/files.nix). T3 prüft nur, ob
-#      sich dort eine Verbindung aufbauen lässt, und meldet dann dev@t3.local als Ziel
+#   1. Im Container lauscht sshd auf Port 22 (container/files.nix). T3 prüft nur, ob sich dort eine
+#      Verbindung aufbauen lässt, und meldet dann dev@t3.local als Ziel
 #   2. Die Desktop-App ruft zed://ssh/dev@t3.local/<pfad> auf
 #   3. Der Handler unten öffnet <pfad> mit dem Zed des Hosts. Andere zed://-Links gehen wie bisher
 #      direkt an Zed
 #
 # Worktrees, die T3 unter ~/.t3/worktrees anlegt, gibt es nur im Container. Wer die auch öffnen will:
-# in T3 unter Einstellungen das Worktree-Verzeichnis nach ~/developer legen
+# in T3 unter Einstellungen das Worktree-Verzeichnis nach ~/developer legen.
+#
+# Auf dem Mac gibt es keinen Handler: dort öffnet Zed dev@t3.local wirklich per SSH, der Host-Block
+# in home/darwin/ssh.nix springt über den Desktop in den Container (auch Worktrees)
 {
   lib,
   pkgs,
