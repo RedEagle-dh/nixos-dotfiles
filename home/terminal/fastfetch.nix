@@ -40,6 +40,28 @@ let
             "text": "free -m | awk 'NR==2{printf \"%.2f GiB / %.2f GiB\",$3/1024,$2/1024}'",
             "format": "{$3}{>22}{$1} │"
         }'';
+  # Das packages-Modul zählt die Nix-Pakete bei jedem Start neu (~55 ms von ~70 ms) – daher die Zahl
+  # zwischenspeichern, neu gezählt wird nur, wenn sich System- oder Nutzerprofil geändert haben
+  pkgCountConfig = pkgs.writeText "fastfetch-pkg-count.jsonc" ''
+    { "logo": null, "display": { "key": { "type": "none" } }, "modules": [{ "type": "packages", "format": "{all}" }] }
+  '';
+  pkgCount = pkgs.writeShellScript "fastfetch-pkg-count" ''
+    cache="''${XDG_CACHE_HOME:-$HOME/.cache}/fastfetch/pkg-count"
+    key=$(readlink -f /run/current-system "/etc/profiles/per-user/$USER" | tr '\n' ' ')
+    if [ -r "$cache" ] && [ "$(head -n1 "$cache")" = "$key" ]; then
+      tail -n1 "$cache"
+      exit
+    fi
+    n=$(fastfetch -c ${pkgCountConfig} --pipe true)
+    mkdir -p "''${cache%/*}" && printf '%s\n%s\n' "$key" "$n" > "$cache"
+    echo "$n"
+  '';
+  # Auf dem Mac zählt das Modul auch Homebrew mit – dort bleibt es beim eingebauten
+  pkgsModule =
+    if isDarwin then
+      ''{ "type": "packages", "key": "│   pkgs  ", "format": "{all>22} │" }''
+    else
+      ''{ "type": "command", "key": "│   pkgs  ", "text": "${pkgCount}", "format": "{>22} │" }'';
   hostnameCmd = if isDarwin then "scutil --get LocalHostName" else "hostnamectl hostname";
   distroIcon = if isDarwin then "" else "󰻀";
 
@@ -82,7 +104,7 @@ in
             ${uptimeModule},
             { "type": "shell", "key": "│ {$2}{$1}  shell ", "format": "{$2}{pretty-name>22}{$1} │" },
             ${memModule},
-            { "type": "packages", "key": "│   pkgs  ", "format": "{all>22} │" },
+            ${pkgsModule},
             { "type": "command", "key": "│ {$2}{$1}  user  ", "text": "echo $USER", "format": "{$2}{>22}{$1} │" },
             { "type": "command", "key": "│   hname ", "text": "${hostnameCmd}", "format": "{>22} │" },
             { "type": "os", "key": "│ {$4}${distroIcon}{$1}  distro", "format": "{$4}{pretty-name>22}{$1} │" },
@@ -92,7 +114,9 @@ in
     }
   '';
 
-  programs.zsh.initContent = lib.mkOrder 1500 ''
+  # Vor compinit und den Plugins (ab 550), damit die Ausgabe nicht erst nach dem ganzen Init kommt;
+  # nach den Farbsequenzen von caelestia (400)
+  programs.zsh.initContent = lib.mkOrder 450 ''
     printf '${builtins.replaceStrings [ "\\u001b" ] [ "\\e" ] (color "primary")}'
     command cat <<'EOF'
     ${banner}EOF

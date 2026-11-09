@@ -110,14 +110,34 @@ in
       {
         "caelestia/templates/gtk3.css".text = css.gtk3;
         "caelestia/templates/gtk4.css".text = css.gtk4;
+        # Dieselben Farben wie sequences.txt (gen_sequences in caelestia/utils/theme.py), damit ein neues
+        # kitty-Fenster gleich im aktuellen Schema startet, statt erst mit den festen Farben aus kitty.nix
+        "caelestia/templates/kitty.conf".text = ''
+          foreground ${m3 "onSurface"}
+          background ${m3 "surface"}
+          cursor ${m3 "secondary"}
+          selection_background ${m3 "secondary"}
+          ${
+            lib.concatMapStrings (i: "color${toString i} ${m3 "term${toString i}"}\n") (lib.range 0 15)
+          }color16 ${m3 "primary"}
+          color17 ${m3 "secondary"}
+          color18 ${m3 "tertiary"}
+        '';
       };
+
+    # Fehlt die Datei noch, überspringt kitty sie nur mit einer Log-Zeile (globinclude ginge nur relativ
+    # zu ~/.config/kitty); caelestiaDefaults unten legt sie an
+    programs.kitty.extraConfig = ''
+      include ${themeDir}/kitty.conf
+    '';
 
     gtk = {
       gtk3.extraCss = ''@import url("file://${themeDir}/gtk3.css");'';
       gtk4.extraCss = ''@import url("file://${themeDir}/gtk4.css");'';
     };
 
-    programs.zsh.initContent = lib.mkOrder 1400 ''
+    # Ganz vorn (vor compinit und den Plugins), damit Farben und fastfetch sofort erscheinen
+    programs.zsh.initContent = lib.mkOrder 400 ''
       [[ -r "${stateDir}/sequences.txt" ]] && command cat "${stateDir}/sequences.txt"
     '';
 
@@ -136,6 +156,7 @@ in
         run ${cli}/bin/caelestia scheme set -n dynamic || true
       elif [ ! -f "${config.xdg.configHome}/Equicord/themes/caelestia.theme.css" ] \
         || [ ! -f "${themeDir}/fuzzel.ini" ] \
+        || [ ! -f "${themeDir}/kitty.conf" ] \
         || [ ! -f "${config.xdg.configHome}/zed/themes/caelestia.json" ]; then
         run ${cli}/bin/caelestia scheme set -m "$(${cli}/bin/caelestia scheme get -m)" || true
       fi

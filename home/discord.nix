@@ -54,7 +54,10 @@ in
   # Discord überschreibt seine settings.json selbst (Fenstergröße usw.) und ersetzt dabei den Symlink
   # des Moduls durch eine echte Datei – beim nächsten Switch scheitert Home Manager dann an der
   # schon vorhandenen .hm-backup. Daher nicht linken, sondern die Modul-Settings hineinmischen
-  home.file."${config.xdg.configHome}/discord/settings.json".enable = lib.mkIf isLinux false;
+  # mkIf um das ganze Attrset: sonst entstünde auf dem Mac ein home.file-Eintrag ohne source
+  home.file = lib.mkIf isLinux {
+    "${config.xdg.configHome}/discord/settings.json".enable = false;
+  };
 
   home.activation.discordSettings = lib.mkIf isLinux (
     lib.hm.dag.entryAfter [ "linkGeneration" ] (
