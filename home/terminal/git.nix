@@ -38,7 +38,7 @@ in
       inherit key;
       signByDefault = true;
       # Linux: Pfad ändert sich bei jedem 1Password-Update – nicht fest eintragen.
-      # Mac: nix-darwin kopiert die App immer nach /Applications (darwin/1password.nix)
+      # Mac: der Cask legt die App immer nach /Applications (darwin/1password.nix)
       signer =
         if pkgs.stdenv.hostPlatform.isDarwin then
           "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"

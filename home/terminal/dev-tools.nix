@@ -1,9 +1,9 @@
 # Entwicklungswerkzeuge auf Desktop und Mac. Gibt es ein Home-Manager-Modul, dann darüber.
 # Versionen pro Projekt kommen aus dessen Flake, hier steht nur der globale Stand
-{ lib, pkgs, ... }:
+{ pkgs, ... }:
 
 let
-  inherit (pkgs.stdenv.hostPlatform) isLinux isDarwin;
+  inherit (pkgs.stdenv.hostPlatform) isDarwin;
 
   # nixpkgs hat für opencodes node_modules einen falschen Hash (Hash mismatch auf beiden Systemen),
   # behoben in NixOS/nixpkgs#582675. Greift nur, solange der alte Hash drinsteht – nach einem
@@ -24,79 +24,80 @@ let
       pkgs.opencode;
 in
 {
-  home.packages =
-    with pkgs;
-    [
-      # Sprachen, Build – Java, Maven und Gradle in neovim/default.nix
-      bun
-      nodejs
-      rustup
-      cmake
-      protobuf
-      pipx
+  # Unter Linux aus nixpkgs, auf dem Mac aus Homebrew (home/packages.nix):
+  # nixpkgs-Attribut = Homebrew-Formel, null = derselbe Name
+  shared.tools = {
+    # Sprachen, Build
+    bun = null;
+    nodejs = "node";
+    rustup = null;
+    cmake = null;
+    protobuf = null;
+    pipx = null;
+    maven = null;
+    gradle = null;
 
-      # Kubernetes
-      kubectl
-      kubernetes-helm
-      helmfile
-      kind
-      stern
-      kubectx
-      kn
+    # Kubernetes
+    kubectl = "kubernetes-cli";
+    kubernetes-helm = "helm";
+    helmfile = null;
+    kind = null;
+    stern = null;
+    kubectx = null;
+    kn = null;
 
-      # Container
-      dive
-      hadolint
-      trivy
+    # Container
+    dive = null;
+    hadolint = null;
+    trivy = null;
 
-      # Cloud, Secrets, Git-Hosting
-      openstackclient
-      stripe-cli
-      terraform
-      mcp-grafana
-      sops
-      age
-      forgejo-cli
+    # Cloud, Secrets, Git-Hosting
+    openstackclient = null;
+    stripe-cli = null;
+    terraform = "hashicorp/tap/terraform"; # homebrew/core führt es wegen der BSL-Lizenz nicht mehr
+    mcp-grafana = null;
+    sops = null;
+    age = null;
+    forgejo-cli = null;
 
-      # Prüfen, Messen
-      actionlint
-      shellcheck
-      k6
-      tokei
-      httpie
+    # Prüfen, Messen
+    actionlint = null;
+    shellcheck = null;
+    k6 = null;
+    tokei = null;
+    httpie = null;
 
-      # Medien, Dateien
-      ffmpeg
-      exiftool
-      libjxl
-      poppler-utils
-      tree
-      yq-go
-      wget
+    # Medien, Dateien
+    ffmpeg = null;
+    exiftool = null;
+    libjxl = "jpeg-xl";
+    poppler-utils = "poppler";
+    tree = null;
+    yq-go = "yq";
+    wget = null;
 
-      # Netzwerk, Hardware
-      nmap
-      iperf3
-      mtr
-      socat
-      lftp
-      mediamtx
-      smartmontools
-      squashfsTools
-      dtc
+    # Netzwerk, Hardware
+    nmap = null;
+    iperf3 = null;
+    mtr = null;
+    socat = null;
+    lftp = null;
+    mediamtx = null;
+    smartmontools = null;
+    squashfsTools = "squashfs";
+    dtc = null;
+    ubootTools = "u-boot-tools"; # mkimage
+    librealsense = null;
 
-      # KI
-      ollama
-    ]
-    # Auf dem Mac aus brew (darwin/homebrew.nix), nixpkgs baut sie dort nicht
-    ++ lib.optionals isLinux [
-      ubootTools # mkimage
-      librealsense # hängt an v4l-utils
-    ]
-    ++ lib.optionals isDarwin [
-      docker-client # Linux: kommt mit virtualisation.docker
-      watch # Linux: Teil von procps
-    ];
+    # KI
+    ollama = null;
+  };
+
+  # Nur Mac: unter Linux kommt docker mit virtualisation.docker, watch mit procps
+  brew.formulas = [
+    "docker"
+    "watch"
+  ];
 
   programs = {
     go.enable = true;
@@ -111,5 +112,7 @@ in
       enable = true;
       package = opencode;
     };
+    # JDK für Maven, Gradle und Projekte ohne eigenes
+    java.enable = true;
   };
 }

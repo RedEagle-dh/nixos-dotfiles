@@ -43,8 +43,18 @@
     };
 
     # Installiert Homebrew selbst, Version über flake.lock. Pakete regelt nix-darwins homebrew-Modul.
-    # Fremd-Taps kämen als weitere Inputs dazu (flake = false), siehe darwin/homebrew.nix
+    # Fremd-Taps als weitere Inputs (flake = false), eingebunden in darwin/homebrew.nix
     nix-homebrew.url = "github:zhaofengli/nix-homebrew";
+
+    homebrew-hashicorp = {
+      url = "github:hashicorp/homebrew-tap";
+      flake = false;
+    };
+
+    homebrew-netbird = {
+      url = "github:netbirdio/homebrew-tap";
+      flake = false;
+    };
   };
 
   outputs =
@@ -60,12 +70,13 @@
 
       user = "dave";
 
-      # Eigene Pakete aus pkgs/ in pkgs – auf beiden Systemen
+      # Eigene Pakete aus pkgs/ in pkgs. Auf dem Mac nur für nhs (Überspringen), Programme kommen dort
+      # aus Homebrew
       ownPackages = {
         nixpkgs.overlays = [ (import ./pkgs) ];
       };
 
-      # Dieselben Pakete als Flake-Ausgabe, aus dem pkgs des jeweiligen Systems: `nix build .#<name>`
+      # Dieselben Pakete als Flake-Ausgabe, aus dem pkgs des Desktops: `nix build .#<name>`
       # (nhu prüft damit Updates, nhs findet darüber die Pakete außerhalb der Paketlisten)
       packagesOf =
         { pkgs, ... }:
@@ -113,9 +124,6 @@
         ];
       };
 
-      packages = {
-        x86_64-linux = packagesOf self.nixosConfigurations.baron;
-        aarch64-darwin = packagesOf self.darwinConfigurations.elder;
-      };
+      packages.x86_64-linux = packagesOf self.nixosConfigurations.baron;
     };
 }

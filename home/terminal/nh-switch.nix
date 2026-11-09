@@ -11,7 +11,7 @@ let
     config.environment.systemPackages
     ++ lib.concatMap (user: user.home.packages) (lib.attrValues config.home-manager.users);
 
-  # tailscale-gui und netbird-app stehen in keiner Paketliste (Aktivierungsskript, launchd)
+  # Eigene Pakete aus pkgs/ auch dann, wenn sie in keiner Paketliste stehen (etwa nur in einem Dienst)
   own = lib.attrValues (
     builtins.intersectAttrs (flake.packages.${pkgs.stdenv.hostPlatform.system} or { }) pkgs
   );

@@ -1,10 +1,9 @@
-# Homebrew nur als Ausweg: hier steht nur, wofür es keinen Nix-Weg gibt – weder in nixpkgs für
-# aarch64-darwin noch als Flake. Gibt es ein Modul (nix-darwin, Home Manager), dann das nehmen,
-# sonst das Paket. Auch Apps mit Systemerweiterung gehen über Nix (Karabiner, 1Password, Tailscale …)
-# Verfügbarkeit prüfen: search.nixos.org, Plattform aarch64-darwin, oder
-#   nix eval nixpkgs#legacyPackages.aarch64-darwin.<name>.meta.platforms
-# Vorsicht: Pakete ohne Plattformangabe gelten überall als verfügbar, sind aber oft Linux-Builds
-# (z. B. steam) – im Zweifel src im Paket ansehen
+# Homebrew ist auf dem Mac der einzige Paketmanager: Nix schreibt nur die Konfiguration (nix-darwin,
+# Home Manager) und baut nichts. Was der Mac installiert, kommt hier zusammen:
+#   - shared.tools / shared.apps (home/packages.nix): dieselben Werkzeuge wie unter Linux
+#   - home/darwin/brew.nix: die Programme der Home-Manager-Module (git, starship, kitty, …)
+#   - brew.formulas / brew.casks aus home/, homebrew.* aus darwin/: nur Mac
+# Namen prüfen: brew search <name> oder formulae.brew.sh
 {
   config,
   lib,
@@ -13,6 +12,9 @@
   ...
 }:
 
+let
+  home = config.home-manager.users.${user};
+in
 {
   imports = [ inputs.nix-homebrew.darwinModules.nix-homebrew ];
 
@@ -24,34 +26,43 @@
     # Einmalig vorher Library/Taps beiseitelegen, sonst bricht die Aktivierung ab (siehe unten: Taps)
     autoMigrate = true;
 
-    # Taps nur aus Flake-Inputs, Stand über flake.lock – `brew tap` geht nicht mehr. Derzeit keine nötig,
-    # homebrew/core und homebrew/cask kommen über Homebrews API. Neuer Tap: Input in flake.nix
-    # (flake = false) und hier z. B. "user/homebrew-repo" = inputs.homebrew-repo;
+    # Taps nur aus Flake-Inputs, Stand über flake.lock (nhu aktualisiert sie) – `brew tap` geht nicht
+    # mehr. homebrew/core und homebrew/cask kommen über Homebrews API. Neuer Tap: Input in flake.nix
+    # (flake = false) und hier "user/homebrew-repo" = inputs.homebrew-repo;
     mutableTaps = false;
-    taps = { };
+    taps = {
+      "hashicorp/homebrew-tap" = inputs.homebrew-hashicorp; # terraform
+      "netbirdio/homebrew-tap" = inputs.homebrew-netbird; # netbird-ui
+    };
 
     # Sonst setzt `brew shellenv` /opt/homebrew/bin vor die Nix-Pfade
     enableZshIntegration = false;
   };
 
-  # Hinter den Nix-Profilen, vor /usr/bin: Programme aus Casks bleiben erreichbar, Nix gewinnt.
-  # `brew` selbst liegt als Starter in /run/current-system/sw/bin
-  environment.systemPath = lib.mkOrder 1100 [ "${config.homebrew.prefix}/bin" ];
+  # Vor /usr/local/bin und /usr/bin, damit git & Co. aus Homebrew vor denen von macOS kommen. Die
+  # Nix-Profile davor enthalten nur noch Nix selbst, nh und kleine Skripte. `brew` liegt als Starter in
+  # /run/current-system/sw/bin. rustup verlinkt Homebrew nicht (keg-only, kollidiert mit rust)
+  environment.systemPath = lib.mkOrder 1100 [
+    "${config.homebrew.prefix}/bin"
+    "${config.homebrew.prefix}/sbin"
+    "${config.homebrew.prefix}/opt/rustup/bin"
+  ];
 
   homebrew = {
     enable = true;
 
     onActivation = {
-      # Vorerst "none": die CLI-Werkzeuge kommen noch aus brew, bis sie in Nix stehen.
-      # Danach "uninstall" – nie "zap": das löscht bei Casks auch App-Daten unter ~/Library,
-      # und die nach Nix umgezogenen Apps (Chrome, Zed, …) benutzen dieselben Daten weiter
+      # "none": was nicht in den Listen steht, bleibt installiert. Erst prüfen, was sonst ginge (ohne
+      # --force nur Anzeige), Gewolltes eintragen, dann "uninstall" – danach entfernt jedes nhs, was
+      # aus den Listen verschwindet:
+      #   brew bundle cleanup --file=$(grep -om1 '/nix/store/[a-z0-9]*-Brewfile' /run/current-system/activate)
+      # Nie "zap": das löscht bei Casks auch die App-Daten unter ~/Library
       cleanup = "none";
 
-      # Bei jedem nhs veraltete Casks, Formeln und App-Store-Apps von unten aktualisieren. Was neu ist,
-      # weiß brew erst nach `brew update` – das läuft in nhu (pkgs/update.sh). autoUpdate hier bliebe
+      # Bei jedem nhs veraltete Formeln, Casks und App-Store-Apps aus den Listen aktualisieren. Was neu
+      # ist, weiß brew erst nach `brew update` – das läuft in nhu (pkgs/update.sh). autoUpdate hier bliebe
       # wirkungslos: nix-homebrew setzt bei festen Taps immer HOMEBREW_NO_AUTO_UPDATE.
-      # Casks, die sich selbst aktualisieren (auto_updates), lässt brew dabei aus – die halten sich selbst
-      # aktuell. Nicht erfasst: brew-Pakete, die nicht unten stehen (`brew upgrade` von Hand)
+      # Casks, die sich selbst aktualisieren (auto_updates, die meisten Apps), lässt brew dabei aus
       upgrade = true;
     };
 
@@ -60,20 +71,17 @@
       builtins.attrNames config.nix-homebrew.taps
     );
 
-    # Unter Linux aus nixpkgs (home/terminal/dev-tools.nix)
-    brews = [
-      "librealsense" # pkgs.librealsense hängt an v4l-utils, das es nur für Linux gibt
-      "u-boot-tools" # mkimage – ubootTools baut nixpkgs nur für Linux
-    ];
+    # Formeln aus Fremd-Taps voll qualifiziert ("user/repo/name"), siehe taps oben
+    brews = lib.unique home.brew.formulas;
 
     # Casks aus Fremd-Taps voll qualifiziert ("user/repo/cask"): nix-darwin vertraut dann nur dem Cask,
-    # nicht dem ganzen Tap.
+    # nicht dem ganzen Tap. Hier nur Apps ohne Gegenstück unter Linux, die übrigen kommen aus home/.
     # Eine schon von Hand installierte App bricht `brew bundle` ab ("already an App at …"). --adopt
     # scheitert an macOS' App-Verwaltungsschutz – stattdessen die App löschen und frisch per Cask
     # installieren; Einstellungen unter ~/Library bleiben. Vorher prüfen, ob der Cask dieselbe App ist
     # Nicht hier: Compositor – der Cask "compositor" ist eine andere App (com.microlarge) als die
     # installierte (com.wonderassembly), für die gibt es keinen Cask
-    casks = [
+    casks = lib.unique home.brew.casks ++ [
       "arduino-ide" # pkgs.arduino-ide nur für Linux
       "claude"
       "figma"
@@ -95,7 +103,7 @@
 
     # Mac App Store, IDs über `mas list` bzw. `mas search <name>`. Braucht eine Anmeldung im App Store.
     # Nur Installation – was hier verschwindet, deinstalliert brew bundle nicht.
-    # Nicht hier: WireGuard (networking.wg-quick). GeoGebra bleibt: pkgs.geogebra6 ist "Classic 6",
+    # Nicht hier: WireGuard (darwin/vpn.nix). GeoGebra bleibt: pkgs.geogebra6 ist "Classic 6",
     # eine andere App als der Graphing Calculator
     masApps = {
       "Amphetamine" = 937984704;

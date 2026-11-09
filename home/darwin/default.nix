@@ -3,6 +3,7 @@
 
 {
   imports = [
+    ./brew.nix
     ./terminal.nix
     ./ssh.nix
     ./apps.nix

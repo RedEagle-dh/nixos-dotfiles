@@ -57,10 +57,11 @@ done
 
 # ---- Eigene Pakete
 
-# Was es davon für dieses System gibt (packages in flake.nix) – nur das lässt sich hier bauen
-if ! buildable=$(nix eval --json "$flake#packages.$system" --apply builtins.attrNames); then
+# Was es davon für dieses System gibt (packages in flake.nix) – nur das lässt sich hier bauen. Die
+# Pakete braucht nur der Desktop, auf dem Mac aktualisiert nhu nur ihre Versionen
+if ! buildable=$(nix eval --json "$flake#packages" --apply "p: builtins.attrNames (p.\"$system\" or { })"); then
   buildable='[]'
-  notes+=("Pakete nicht testweise gebaut: packages.$system lässt sich nicht auswerten (Fehler oben)")
+  notes+=("Pakete nicht testweise gebaut: packages lässt sich nicht auswerten (Fehler oben)")
 fi
 
 # package <Name> <Attribut in packages> <Funktion> <Datei mit .version> [weitere Dateien …]
@@ -129,7 +130,7 @@ claude_code() {
 }
 
 t3code() {
-  local repo=pingdotgg/t3code release tag sha mac_sha
+  local repo=pingdotgg/t3code release tag sha
   release=$(gh_api "https://api.github.com/repos/$repo/releases?per_page=30" |
     jq '[.[] | select(.tag_name | test("^v.*-nightly\\."))][0]')
   tag=$(jq -r .tag_name <<<"$release")
@@ -141,11 +142,7 @@ t3code() {
       "$(jq -r --arg name "$1" '.assets[] | select(.name == $name) | .url' <<<"$release")"
   }
   sha=$(asset nightly-linux.yml | sed -n 's/^sha512: //p')
-  # Mac: der Hash der arm64-zip steht in der Zeile nach ihrer url
-  mac_sha=$(asset nightly-mac.yml |
-    awk '/arm64\.zip$/ { getline; sub(/^ *sha512: /, ""); print; exit }')
-  printf '{\n  "version": "%s",\n  "hash": "sha512-%s",\n  "darwinHash": "sha512-%s"\n}\n' \
-    "${tag#v}" "${sha:?}" "${mac_sha:?}" >t3code-nightly.json
+  printf '{\n  "version": "%s",\n  "hash": "sha512-%s"\n}\n' "${tag#v}" "${sha:?}" >t3code-nightly.json
 }
 
 command_code() {
@@ -163,31 +160,9 @@ command_code() {
     --arg npmDepsHash "$npm_deps_hash" '{$version, $hash, $npmDepsHash}' >command-code/source.json
 }
 
-# Mac-Apps aus den Installern der Hersteller. Die Hashes liefern beide ohne Download mit:
-# NetBird über die GitHub-API (digest), Tailscale als .sha256 neben dem Installer
-netbird() {
-  local nb version sha hash
-  nb=$(gh_api https://api.github.com/repos/netbirdio/netbird/releases/latest)
-  version=$(jq -r '.tag_name | ltrimstr("v")' <<<"$nb")
-  sha=$(jq -r --arg name "netbird_${version}_darwin_arm64.pkg" \
-    '.assets[] | select(.name == $name) | .digest | ltrimstr("sha256:")' <<<"$nb")
-  hash=$(nix hash convert --hash-algo sha256 --to sri "${sha:?}")
-  jq -n --arg version "$version" --arg hash "$hash" '{$version, $hash}' >netbird-darwin.json
-}
-
-tailscale() {
-  local version sha hash
-  version=$(curl -fsSL 'https://pkgs.tailscale.com/stable/?mode=json&os=darwin' | jq -r .MacZipsVersion)
-  sha=$(curl -fsSL "https://pkgs.tailscale.com/stable/Tailscale-$version-macos.pkg.sha256" | cut -d' ' -f1)
-  hash=$(nix hash convert --hash-algo sha256 --to sri "${sha:?}")
-  jq -n --arg version "$version" --arg hash "$hash" '{$version, $hash}' >tailscale-gui.json
-}
-
 package claude-code claude-code claude_code claude-code.json
 package t3code t3code-nightly t3code t3code-nightly.json
 package command-code command-code command_code command-code/source.json command-code/package-lock.json
-package netbird netbird-app netbird netbird-darwin.json
-package tailscale tailscale-gui tailscale tailscale-gui.json
 
 # ---- Außerhalb von Nix
 

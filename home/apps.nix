@@ -4,25 +4,29 @@ let
   inherit (pkgs.stdenv.hostPlatform) isLinux;
 in
 {
-  home.packages =
+  # Unter Linux aus nixpkgs, auf dem Mac als Cask (home/packages.nix)
+  shared.apps = {
+    t3code-nightly = "t3-code@nightly"; # Linux: pkgs/ (Overlay in flake.nix)
+    datagrip = null;
+    "jetbrains.idea" = "intellij-idea";
+    bruno = null;
+    lmstudio = "lm-studio";
+  };
+
+  home.packages = lib.optionals isLinux (
     with pkgs;
     [
-      # Aus pkgs/ (Overlay in flake.nix)
-      t3code-nightly
+      # Aus pkgs/ (Overlay in flake.nix). Homebrew hat es nicht – auf dem Mac `npm i -g command-code`
       command-code
-      datagrip
-      jetbrains.idea
-      bruno
-      lmstudio
-    ]
-    # Unter macOS übernehmen das Vorschau, TextEdit und Finder
-    ++ lib.optionals isLinux [
+
+      # Unter macOS übernehmen das Vorschau, TextEdit und Finder
       loupe
       papers
       gnome-text-editor
       file-roller
       hyprmod
-    ];
+    ]
+  );
 
   programs.mpv = {
     enable = true;
@@ -35,6 +39,6 @@ in
     };
   };
 
-  # pkgs.claude-code in der Version aus pkgs/claude-code.json (Overlay in flake.nix)
+  # Linux: pkgs.claude-code in der Version aus pkgs/claude-code.json (Overlay in flake.nix)
   programs.claude-code.enable = true;
 }

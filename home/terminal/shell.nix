@@ -3,8 +3,8 @@
 { lib, pkgs, ... }:
 
 let
-  # `op` aus dem PATH: unter NixOS der setgid-Wrapper, auf dem Mac /usr/local/bin/op –
-  # nur diese akzeptiert die 1Password-App für die CLI-Anbindung
+  # `op` aus dem PATH: unter NixOS der setgid-Wrapper – nur den akzeptiert die 1Password-App dort für
+  # die CLI-Anbindung –, auf dem Mac der aus Homebrew
   sopsAgeKey = pkgs.writeShellScript "sops-age-key" ''
     op read "op://Homelab/sops-admin/password"
     status=$?

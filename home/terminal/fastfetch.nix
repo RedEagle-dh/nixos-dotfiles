@@ -64,7 +64,7 @@ let
   );
 in
 {
-  home.packages = [ pkgs.fastfetch ];
+  shared.tools.fastfetch = null;
 
   xdg.configFile."fastfetch/config.jsonc".text = ''
     {

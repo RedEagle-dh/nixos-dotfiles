@@ -1,21 +1,18 @@
-# Nur Mac: Apps ohne Linux-Fassung in nixpkgs und Werkzeuge für Apple-Plattformen.
-# Systemnahe Apps (Helfer, Bedienungshilfen) in darwin/apps.nix, Casks in darwin/homebrew.nix
-{ pkgs, ... }:
+# Nur Mac: Apps ohne Linux-Fassung und Werkzeuge für Apple-Plattformen, aus Homebrew.
+# Systemnahe Apps (Helfer, Bedienungshilfen) in darwin/apps.nix, weitere Casks in darwin/homebrew.nix
+{ ... }:
 
 {
-  home.packages = with pkgs; [
-    tableplus
-    whatsapp-for-mac
-    chatgpt
-
-    # Xcode-Projekte
-    xcodegen
-    cocoapods
+  brew.casks = [
+    "tableplus"
+    "whatsapp"
+    "chatgpt"
+    "mactex-no-gui" # komplettes TeX Live
   ];
 
-  # Ersatz für MacTeX (komplettes TeX Live)
-  programs.texlive = {
-    enable = true;
-    extraPackages = tpkgs: { inherit (tpkgs) scheme-full; };
-  };
+  # Xcode-Projekte
+  brew.formulas = [
+    "xcodegen"
+    "cocoapods"
+  ];
 }

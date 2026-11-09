@@ -84,6 +84,38 @@
         "type": "github"
       }
     },
+    "homebrew-hashicorp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793856958,
+        "narHash": "sha256-5k30tbYcGjIPDjlzRiAzzFW2LI+h6dmkQHszW2Z3vu4=",
+        "owner": "hashicorp",
+        "repo": "homebrew-tap",
+        "rev": "ead93b057af70f0dcf0271123b44750ca9a847ed",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hashicorp",
+        "repo": "homebrew-tap",
+        "type": "github"
+      }
+    },
+    "homebrew-netbird": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793286037,
+        "narHash": "sha256-QmQ/LY8Y3JGAUjGpTduXY70Ugty5+qRUSv8MVjI+O98=",
+        "owner": "netbirdio",
+        "repo": "homebrew-tap",
+        "rev": "44adef122c0b615e4b61aec9926f3dfaa49abe68",
+        "type": "github"
+      },
+      "original": {
+        "owner": "netbirdio",
+        "repo": "homebrew-tap",
+        "type": "github"
+      }
+    },
     "m3shapes": {
       "inputs": {
         "nixpkgs": [
@@ -205,6 +237,8 @@
       "inputs": {
         "caelestia-shell": "caelestia-shell",
         "home-manager": "home-manager",
+        "homebrew-hashicorp": "homebrew-hashicorp",
+        "homebrew-netbird": "homebrew-netbird",
         "nix-darwin": "nix-darwin",
         "nix-homebrew": "nix-homebrew",
         "nix-index-database": "nix-index-database",

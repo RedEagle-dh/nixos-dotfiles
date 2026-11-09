@@ -190,5 +190,6 @@ in
     text = staticTheme;
   };
 
-  home.shellAliases.zed = "zeditor";
+  # nixpkgs nennt das Programm zeditor, der Cask auf dem Mac zed
+  home.shellAliases = lib.mkIf pkgs.stdenv.hostPlatform.isLinux { zed = "zeditor"; };
 }

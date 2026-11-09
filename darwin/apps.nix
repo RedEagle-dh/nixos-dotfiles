@@ -1,12 +1,11 @@
-# Systemnahe Mac-Apps mit Helfern oder Bedienungshilfe-Rechten – systemweit, landen als Kopie unter
-# /Applications/Nix Apps. Alle sind die unveränderte, signierte App des Herstellers
-{ pkgs, ... }:
+# Systemnahe Mac-Apps mit Helfern oder Bedienungshilfe-Rechten, aus Homebrew
+{ ... }:
 
 {
-  environment.systemPackages = with pkgs; [
-    orbstack
-    aldente
-    raycast
-    mos
+  homebrew.casks = [
+    "orbstack"
+    "aldente"
+    "raycast"
+    "mos"
   ];
 }

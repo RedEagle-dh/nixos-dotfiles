@@ -1,5 +1,6 @@
-# Eigene Pakete als Overlay (flake.nix), auf beiden Systemen: pkgs.t3code-nightly, pkgs.command-code, …
-# Versionen und Hashes setzt update.sh (nhu), einzeln bauen mit `nix build .#<name>`.
+# Eigene Pakete als Overlay (flake.nix): pkgs.t3code-nightly, pkgs.command-code, pkgs.claude-code.
+# Nur der Desktop installiert sie, der Mac nimmt Homebrew. Versionen und Hashes setzt update.sh (nhu),
+# einzeln bauen mit `nix build .#<name>`.
 #
 # nhs (home/terminal/nh-switch.sh): Scheitert der Bau an einzelnen Paketen, baut es das System noch
 # einmal ohne sie. Deren Store-Pfade kommen als NHS_SKIP und wirken nur mit --impure – im normalen,
@@ -10,7 +11,7 @@ let
   inherit (prev) lib;
 
   skipped = lib.filter (path: path != "") (lib.splitString " " (builtins.getEnv "NHS_SKIP"));
-  # tryEval: Pakete fürs andere System (netbird-app unter Linux) lassen sich gar nicht auswerten
+  # tryEval: Pakete fürs andere System (t3code-nightly auf dem Mac) lassen sich gar nicht auswerten
   isSkipped =
     pkg:
     let
@@ -22,22 +23,13 @@ let
   orUpstream = own: upstream: if isSkipped own then upstream else own;
 in
 {
-  t3code-nightly = final.callPackage (
-    if final.stdenv.hostPlatform.isDarwin then ./t3code-nightly-darwin.nix else ./t3code-nightly.nix
-  ) { };
+  t3code-nightly = final.callPackage ./t3code-nightly.nix { };
 
   command-code = final.callPackage ./command-code { };
 
   claude-code = orUpstream (prev.claude-code.override {
     manifest = lib.importJSON ./claude-code.json;
   }) prev.claude-code;
-
-  tailscale-gui = orUpstream (final.callPackage ./tailscale-gui.nix {
-    inherit (prev) tailscale-gui;
-  }) prev.tailscale-gui;
-
-  # Ersatz ist die Vorgabe von services.netbird: Dienst und CLI laufen, die Menüleisten-App fehlt
-  netbird-app = orUpstream (final.callPackage ./netbird-darwin.nix { }) prev.netbird;
 }
 // lib.optionalAttrs (skipped != [ ]) {
   # Übersprungene Pakete aus allen Umgebungen nehmen: system-path, home-manager-path, Nix Apps.
