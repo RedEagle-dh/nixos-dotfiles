@@ -41,16 +41,14 @@ let
       pkgs.equicord;
 in
 {
-  programs.discord = {
+  # Auf dem Mac kommt Discord aus dem Homebrew-Cask; das Modul würde dort settings.json nach
+  # ~/Library/Application Support/discord linken, und das blockiert macOS ("Operation not permitted")
+  programs.discord = lib.mkIf isLinux {
     enable = true;
-    package =
-      if isLinux then
-        pkgs.discord.override {
-          withEquicord = true;
-          inherit equicord;
-        }
-      else
-        pkgs.discord;
+    package = pkgs.discord.override {
+      withEquicord = true;
+      inherit equicord;
+    };
   };
 
   # Equicord schreibt selbst in settings.json – nur diese Werte hineinmischen. Das Theme selbst legt
