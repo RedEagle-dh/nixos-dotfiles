@@ -23,6 +23,18 @@ let
     </svg>
   '';
 
+  # RAM-Riegel für den Memtest86+-Eintrag
+  memtestLogo = pkgs.writeText "memtest.svg" ''
+    <svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+      <path fill="#${c.foam}" fill-rule="evenodd"
+            d="M40 80h176a6 6 0 0 1 6 6v84H134v-12h-12v12H34V86a6 6 0 0 1 6-6z
+               M52 98v40h28V98z M90 98v40h28V98z M138 98v40h28V98z M176 98v40h28V98z"/>
+      <g stroke="#${c.foam}" stroke-width="6">
+        <path d="M48 170v14M62 170v14M76 170v14M90 170v14M104 170v14M152 170v14M166 170v14M180 170v14M194 170v14M208 170v14"/>
+      </g>
+    </svg>
+  '';
+
   selection =
     size:
     let
@@ -73,6 +85,7 @@ pkgs.runCommand "refind-theme"
     resvg --width 176 --height 176 ${nixosLogo} logo.png
     magick logo.png -background none -gravity center -extent ${toString iconSize}x${toString iconSize} $out/os_nixos.png
     resvg ${windowsLogo} $out/os_windows.png
+    resvg ${memtestLogo} $out/tool_memtest.png
 
     resvg ${selection selectionSize} $out/selection_big.png
     resvg ${selection 64} $out/selection_small.png

@@ -47,6 +47,13 @@ let
         loader /EFI/Microsoft/Boot/bootmgfw.efi
         graphics on
     }
+
+    # Die EFI-Datei legt systemd-boot.memtest86 auf die ESP
+    menuentry "Memtest86+" {
+        icon /${refindDir}/theme/tool_memtest.png
+        loader /efi/memtest86/memtest.efi
+        graphics on
+    }
   '';
 
   refindUpdate = pkgs.writeShellApplication {
@@ -128,6 +135,7 @@ in
   boot.loader.systemd-boot = {
     enable = true;
     configurationLimit = 10;
+    memtest86.enable = true;
 
     extraFiles = {
       "${refindDir}/refind_x64.efi" = "${refind}/share/refind/refind_x64.efi";
@@ -142,6 +150,7 @@ in
           "background.png"
           "os_nixos.png"
           "os_windows.png"
+          "tool_memtest.png"
           "selection_big.png"
           "selection_small.png"
           "font.png"
