@@ -1,5 +1,6 @@
 {
   config,
+  osConfig,
   lib,
   pkgs,
   ...
@@ -17,6 +18,9 @@ let
     text = ''
       flake=${lib.escapeShellArg flake}
       platform=${if isDarwin then "darwin" else "os"}
+      # Fest aus der Konfiguration: macOS hängt bei einem Namenskonflikt im Netz "-2" an den
+      # LocalHostName, dann gäbe es darwinConfigurations.elder-2 nicht
+      darwin_host=${lib.escapeShellArg (osConfig.networking.localHostName or "")}
       analysis=${./nh-switch.nix}
     ''
     + builtins.readFile ./nh-switch.sh;

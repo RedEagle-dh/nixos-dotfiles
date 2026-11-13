@@ -19,7 +19,7 @@ in
     enable = true;
     enableDefaultConfig = false;
 
-    # Ein Block pro Gerät aus inventory.nix. Name und IP: `ssh 192.168.188.20` greift genauso wie
+    # Ein Block pro Gerät aus inventory.nix. Name und IP: `ssh 10.1.20.5` greift genauso wie
     # `ssh nexus`. Alle Schlüssel aus 1Password, der Agent wird mitgenommen – außer aufs Gateway, dort
     # ist man root auf fremder Firmware
     settings =

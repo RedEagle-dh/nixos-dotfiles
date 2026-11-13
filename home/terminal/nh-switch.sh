@@ -1,11 +1,11 @@
 # nhs: nh os|darwin switch, das Pakete überspringt, deren Bau scheitert. Dann sucht es die Pakete, die
 # nicht gebaut wurden, baut das System ohne sie (NHS_SKIP, siehe pkgs/default.nix) und schaltet
 # trotzdem um. Welche fehlen, steht am Ende – das nächste nhs versucht sie wieder.
-# flake, platform (os|darwin) und analysis (nh-switch.nix) setzt nh.nix davor
+# flake, platform (os|darwin), darwin_host und analysis (nh-switch.nix) setzt nh.nix davor
 
 if [ "$platform" = darwin ]; then
   configs=darwinConfigurations
-  host=$(scutil --get LocalHostName)
+  host=$darwin_host
 else
   configs=nixosConfigurations
   host=$(uname -n)

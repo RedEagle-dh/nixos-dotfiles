@@ -67,11 +67,11 @@ in
       # Nie "zap": das löscht bei Casks auch die App-Daten unter ~/Library
       cleanup = "none";
 
-      # Bei jedem nhs veraltete Formeln, Casks und App-Store-Apps aus den Listen aktualisieren. Was neu
-      # ist, weiß brew erst nach `brew update` – das läuft in nhu (pkgs/update.sh). autoUpdate hier bliebe
-      # wirkungslos: nix-homebrew setzt bei festen Taps immer HOMEBREW_NO_AUTO_UPDATE.
-      # Casks, die sich selbst aktualisieren (auto_updates, die meisten Apps), lässt brew dabei aus
-      upgrade = true;
+      # nhs installiert nur, was fehlt – aktualisiert wird in nhu (pkgs/update.sh: brew update und
+      # brew upgrade). Ein Upgrade hier machte jedes nhs minutenlang, Casks mit sudo-Schritten
+      # (netbird-ui, tailscale-app, nordvpn) fragten einzeln nach dem Passwort, und ein gescheitertes
+      # Upgrade ließ die ganze Aktivierung scheitern
+      upgrade = false;
     };
 
     # brew kennt Taps ohne "homebrew-": aus "user/homebrew-repo" wird "user/repo"

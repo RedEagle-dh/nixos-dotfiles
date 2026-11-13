@@ -25,6 +25,13 @@
 
   users.users.${user}.home = "/Users/${user}";
 
+  # sudo per Touch ID statt Passwort (/etc/pam.d/sudo_local, übersteht macOS-Updates). reattach
+  # macht Touch ID auch in tmux/zellij möglich
+  security.pam.services.sudo_local = {
+    touchIdAuth = true;
+    reattach = true;
+  };
+
   # Wie unter Linux (home/appearance.nix): dunkel, Akzentfarbe Lila. Greift nach Ab- und Anmelden
   system.defaults.NSGlobalDomain.AppleInterfaceStyle = "Dark";
   system.defaults.CustomUserPreferences.NSGlobalDomain = {

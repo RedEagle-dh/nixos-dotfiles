@@ -6,12 +6,12 @@
     ip = "192.168.188.1";
     user = "root";
   };
-  blue.ip = "192.168.188.2";
-  red.ip = "192.168.188.3";
+  blue.ip = "10.1.20.2";
+  red.ip = "10.1.20.3";
   # pi5: Home Assistant, Caddy (t3.dave.haus) und der Forgejo-SSH-Proxy (git.dave.haus:2222)
-  nexus.ip = "192.168.188.20";
-  baron.ip = "192.168.188.35";
+  nexus.ip = "10.1.20.5";
+  baron.ip = "10.1.10.10";
   airsoft.ip = "192.168.188.73";
   # Homelab-Server: Backups (system/backup.nix) und Forgejo
-  inhibitor.ip = "192.168.188.81";
+  inhibitor.ip = "10.1.20.10";
 }

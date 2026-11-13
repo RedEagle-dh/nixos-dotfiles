@@ -166,11 +166,16 @@ package command-code command-code command_code command-code/source.json command-
 
 # ---- Außerhalb von Nix
 
-# Homebrew: aktuelle Liste der Formeln und Casks holen, das Upgrade selbst macht nhs
-# (homebrew.onActivation.upgrade in darwin/homebrew.nix)
+# Homebrew: aktuelle Liste der Formeln und Casks holen und Veraltetes aktualisieren – nicht in nhs
+# (homebrew.onActivation.upgrade in darwin/homebrew.nix). Casks, die sich selbst aktualisieren
+# (auto_updates, die meisten Apps), lässt brew upgrade aus
 if command -v brew >/dev/null; then
   printf '\n==> Homebrew\n' >&2
-  brew update || failed+=("Homebrew: brew update gescheitert")
+  if brew update; then
+    brew upgrade || failed+=("Homebrew: brew upgrade teilweise gescheitert (Fehler oben)")
+  else
+    failed+=("Homebrew: brew update gescheitert")
+  fi
 fi
 
 # T3-Server im Agent-Container (system/agent-sandbox) auf dieselbe Version wie die App. `t3 update`
