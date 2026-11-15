@@ -65,6 +65,7 @@ in
     shellcheck = null;
     k6 = null;
     tokei = null;
+    cloc = null;
     httpie = null;
 
     # Medien, Dateien
@@ -72,6 +73,7 @@ in
     exiftool = null;
     libjxl = "jpeg-xl";
     poppler-utils = "poppler";
+    pandoc = null;
     tree = null;
     yq-go = "yq";
     wget = null;

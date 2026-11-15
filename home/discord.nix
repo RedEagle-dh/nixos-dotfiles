@@ -51,6 +51,10 @@ in
     };
   };
 
+  # Nur Mac (home/packages.nix). Hier statt in home/darwin/brew.nix: dort zählen nur eingeschaltete
+  # Module, und dieses ist auf dem Mac aus
+  brew.casks = [ "discord" ];
+
   # Discord überschreibt seine settings.json selbst (Fenstergröße usw.) und ersetzt dabei den Symlink
   # des Moduls durch eine echte Datei – beim nächsten Switch scheitert Home Manager dann an der
   # schon vorhandenen .hm-backup. Daher nicht linken, sondern die Modul-Settings hineinmischen

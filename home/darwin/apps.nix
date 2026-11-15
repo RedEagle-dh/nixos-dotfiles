@@ -7,6 +7,7 @@
     "tableplus"
     "whatsapp"
     "chatgpt"
+    "caffeine"
     "mactex-no-gui" # komplettes TeX Live
   ];
 

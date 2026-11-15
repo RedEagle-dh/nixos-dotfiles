@@ -48,7 +48,6 @@ let
       formula = "direnv";
       bin = "direnv";
     };
-    discord.cask = "discord";
     eza.formula = "eza";
     fd.formula = "fd";
     fzf = {

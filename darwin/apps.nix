@@ -7,5 +7,6 @@
     "aldente"
     "raycast"
     "mos"
+    "wifiman" # WiFiman Desktop, bringt einen Netzwerk-Helfer mit
   ];
 }
