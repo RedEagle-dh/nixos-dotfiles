@@ -1,9 +1,10 @@
 # Alle Geräte im Heimnetz an einer Stelle: ändert sich eine IP, nur hier anpassen.
 # Wird per `import` geladen (wie system/agent-sandbox/settings.nix), kein Modul.
+# Nodes im Servernetz 10.1.20.0/24, Desktop im 10.1.10.0/24 (wie inventory.nix im Homelab-Repo).
 # user = SSH-Login, sonst dave (home/terminal/ssh.nix)
 {
   ucg = {
-    ip = "192.168.188.1";
+    ip = "10.1.10.1";
     user = "root";
   };
   blue.ip = "10.1.20.2";
