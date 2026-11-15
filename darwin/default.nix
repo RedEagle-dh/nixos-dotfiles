@@ -32,13 +32,6 @@
     reattach = true;
   };
 
-  # Wie unter Linux (home/appearance.nix): dunkel, Akzentfarbe Lila. Greift nach Ab- und Anmelden
-  system.defaults.NSGlobalDomain.AppleInterfaceStyle = "Dark";
-  system.defaults.CustomUserPreferences.NSGlobalDomain = {
-    AppleAccentColor = 5;
-    AppleHighlightColor = "0.968627 0.831373 1.000000 Purple";
-  };
-
   # Nie ändern – wie system.stateVersion unter NixOS
   system.stateVersion = 7;
 }
