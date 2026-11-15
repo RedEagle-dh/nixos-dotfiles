@@ -39,7 +39,7 @@ let
       bin = "bat";
     };
     btop.formula = "btop";
-    claude-code.cask = "claude-code";
+    claude-code.cask = "claude-code@latest";
     delta = {
       formula = "git-delta";
       bin = "delta";
