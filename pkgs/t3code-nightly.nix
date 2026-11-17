@@ -10,7 +10,7 @@ let
   inherit (lib.importJSON ./t3code-nightly.json) version hash;
 
   src = fetchurl {
-    url = "https://github.com/pingdotgg/t3code/releases/download/v${version}/T3-Code-${version}-x86_64.AppImage";
+    url = "https://github.com/pingdotgg/t3code/releases/download/v${version}/T3-Code-Nightly-x86_64.AppImage";
     inherit hash;
   };
 

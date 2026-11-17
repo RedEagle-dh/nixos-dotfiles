@@ -16,8 +16,10 @@ in
   home.packages = lib.optionals isLinux (
     with pkgs;
     [
-      # Aus pkgs/ (Overlay in flake.nix). Homebrew hat es nicht – auf dem Mac `npm i -g command-code`
-      command-code
+      # Aus pkgs/ (Overlay in flake.nix). Homebrew hat es nicht – auf dem Mac `npm i -g command-code`.
+      # hiPrio: stripe-cli aus nixpkgs liefert versehentlich auch ein bin/cmd (Release-Notes-Tool
+      # aus dem Stripe-Repo), das sonst mit dem cmd von command-code kollidiert
+      (lib.hiPrio command-code)
 
       # Unter macOS übernehmen das Vorschau, TextEdit und Finder
       loupe
