@@ -1,6 +1,6 @@
-# Desktop als T3-Code-Host auf Abruf: per Wake-on-LAN aufwecken und per SSH schlafen legen (Buttons
-# in Home Assistant auf dem pi5). Der t3-Dienst startet ohne Login, erreichbar über t3.dave.haus
-# (Caddy auf dem pi5). Den Dienst legt `t3 up --lan --no-connect` an (User-Unit t3code.service).
+# Desktop auf Abruf: per Wake-on-LAN aufwecken und per SSH schlafen legen (Buttons in Home Assistant
+# auf dem pi5). Der T3-Server läuft nicht mehr hier, sondern im Container t3 auf dem Homelab-Server
+# (Homelab-Repo, hosts/server/services/agent-sandbox); die App verbindet sich über t3.dave.haus.
 { user, ... }:
 
 let
@@ -12,13 +12,6 @@ in
   # Netzwerkkarte reagiert auf Magic Packets, auch aus Suspend und Soft-Off.
   # Zusätzlich im BIOS: "Power on by PCI-E" an, ErP aus
   networking.interfaces.enp14s0.wakeOnLan.enable = true;
-
-  # Opening port 3773 for caddy on pi5 only because of the t3.dave.haus domain.
-  # nftables syntax: Incus (agent-sandbox) needs the nftables firewall, iptables rules are gone.
-  # Remove after switching t3.dave.haus to the container (port 3774)
-  networking.firewall.extraInputRules = ''
-    ip saddr ${pi5} tcp dport 3773 accept
-  '';
 
   users.users.${user} = {
     # User-Dienste starten beim Booten statt erst beim Login (und laufen nach Logout weiter)

@@ -178,16 +178,19 @@ if command -v brew >/dev/null; then
   fi
 fi
 
-# T3-Server im Agent-Container (system/agent-sandbox) auf dieselbe Version wie die App. `t3 update`
-# lädt die Runtime aus demselben Release (t3-<version>-linux-x64.tar.gz) und startet den Dienst neu,
-# laufende Agent-Turns brechen dabei ab. Die App selbst bekommt die Version erst mit dem Rebuild
+# T3-Server im Agent-Container t3 auf dem Homelab-Server (Homelab-Repo, hosts/server/services/
+# agent-sandbox) auf dieselbe Version wie die App. `t3 update` lädt die Runtime aus demselben Release
+# (t3-<version>-linux-x64.tar.gz) und startet den Dienst neu, laufende Agent-Turns brechen dabei ab.
+# Die App selbst bekommt die Version erst mit dem Rebuild. incus per SSH, dave ist dort in
+# incus-admin; geht so vom Desktop und vom Mac. -n: ssh liest nicht von stdin
 t3_version=$(jq -r .version t3code-nightly.json)
-if command -v incus >/dev/null && incus info t3 >/dev/null 2>&1; then
+t3_host=inhibitor
+if ssh -n -o BatchMode=yes -o ConnectTimeout=5 "$t3_host" incus info t3 >/dev/null 2>&1; then
   printf '\n==> T3-Server\n' >&2
-  incus exec t3 -- runuser -l dev -c "t3 update $t3_version --yes" ||
+  ssh -n "$t3_host" "incus exec t3 -- runuser -l dev -c 't3 update $t3_version --yes'" ||
     failed+=("T3-Server: nicht auf $t3_version aktualisiert – später mit nhu erneut versuchen")
 else
-  notes+=("T3-Server nicht aktualisiert: kein incus oder kein Container t3 (nur auf dem Desktop möglich)")
+  notes+=("T3-Server nicht aktualisiert: $t3_host per SSH nicht erreichbar oder kein Container t3")
 fi
 
 # ---- Übersicht

@@ -37,6 +37,16 @@ in
           Port = 2222;
         };
 
+        # T3-Container auf dem Homelab-Server (Homelab-Repo, hosts/server/services/agent-sandbox, dort
+        # auch die IP), für Zed: `zed ssh://t3/<pfad>`. t3.local ist das Ziel, das T3 bei "Open in Zed"
+        # meldet. Der Container hängt per NAT hinter dem Server, also über ihn springen. Nur dieser
+        # Rechner authentifiziert sich, ProxyJump leitet keinen Agent weiter
+        "t3 t3.local" = {
+          HostName = "10.77.0.10";
+          User = "dev";
+          ProxyJump = "inhibitor";
+        };
+
         # In einer SSH-Sitzung den weitergeleiteten Agent nehmen statt des lokalen 1Password.
         # Muss vor "*" stehen, weil der erste IdentityAgent gewinnt
         forwarded-agent = lib.hm.dag.entryBefore [ "*" ] {
