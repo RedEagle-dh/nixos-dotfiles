@@ -18,6 +18,8 @@
   homebrew.brews = [
     "wireguard-tools"
     "wireguard-go" # macOS hat kein WireGuard im Kernel
+    "openvpn"
+    "vortix" # TUI für WireGuard und OpenVPN, Alias vpn unten
   ];
 
   # CLI der App, wie es Tailscales eigener Installer unter /usr/local/bin anlegt – der Cask tut es nicht
@@ -26,6 +28,9 @@
       exec /Applications/Tailscale.app/Contents/MacOS/Tailscale "$@"
     '')
   ];
+
+  # vortix (TUI für WireGuard und OpenVPN) braucht root für die Tunnel
+  environment.shellAliases.vpn = "sudo vortix";
 
   # WireGuard-Tunnel: Konfiguration nach /opt/homebrew/etc/wireguard/<name>.conf (root, 600), dann
   # `sudo wg-quick up <name>`
