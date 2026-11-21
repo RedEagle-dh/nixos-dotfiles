@@ -1,5 +1,4 @@
 {
-  inputs,
   lib,
   pkgs,
   theme,
@@ -7,46 +6,6 @@
 }:
 
 let
-  # Unter Linux schreibt caelestia das Theme passend zum Farbschema. Auf dem Mac gibt es kein caelestia:
-  # dieselbe Vorlage, fest mit Rosé Pine gefüllt (wie discord.nix). Links caelestias Farbnamen
-  template = builtins.readFile "${inputs.caelestia-shell.inputs.caelestia-cli}/src/caelestia/data/templates/zed.json";
-  colours = with theme.colors; {
-    surface = base;
-    surfaceContainer = surface;
-    surfaceContainerHigh = overlay;
-    onSurface = text;
-    onSurfaceVariant = subtle;
-    outline = muted;
-    outlineVariant = highlightMed;
-    primary = iris;
-    error = love;
-    success = pine;
-    red = love;
-    maroon = love;
-    pink = rose;
-    mauve = iris;
-    peach = gold;
-    yellow = gold;
-    green = pine;
-    teal = foam;
-    sky = foam;
-    sapphire = pine;
-    blue = foam;
-    subtext0 = subtle;
-    subtext1 = subtle;
-  };
-  staticTheme =
-    let
-      names = builtins.attrNames colours;
-      filled = builtins.replaceStrings ([ "{{ mode }}" ] ++ map (n: "{{ ${n}.hex }}") names) (
-        [ "dark" ] ++ map (n: colours.${n}) names
-      ) template;
-    in
-    assert lib.assertMsg (
-      !lib.hasInfix "{{" filled
-    ) "zed.nix: Die caelestia-Vorlage nutzt eine Farbe, die in `colours` fehlt";
-    filled;
-
   biome = {
     formatter.language_server.name = "biome";
     format_on_save = "on";
@@ -81,6 +40,7 @@ in
       "markdown-snippets"
       "material-icon-theme"
       "nix"
+      "palenight"
       "prisma"
       "proto"
       "sql"
@@ -90,12 +50,15 @@ in
       "tsgo"
     ];
 
-    # Als Objekt, weil Zeds Themenauswahl diese Form schreibt – sonst wäre nach dem Onboarding One Dark aktiv
     userSettings = {
+      # Festes Theme statt der Wallpaper-Farben: caelestia gleicht alle Syntaxfarben an den Farbton des
+      # Wallpapers an, bis sie kaum noch zu unterscheiden sind – und gleiche Farbe soll gleiche Bedeutung
+      # behalten. Palenight gibt es nur dunkel, daher für beide Modi.
+      # Als Objekt, weil Zeds Themenauswahl diese Form schreibt – sonst wäre nach dem Onboarding One Dark aktiv
       theme = {
         mode = "system";
-        light = "Caelestia";
-        dark = "Caelestia";
+        light = "Palenight Theme";
+        dark = "Palenight Theme";
       };
       icon_theme = "Material Icon Theme";
       base_keymap = "VSCode";
@@ -107,14 +70,6 @@ in
       # Kontrast wirkt auch über die Schrift: JetBrains Mono liegt als Medium bei, das bei 15 px
       # mehr Strichfläche hat als Regular. 400 = Regular, 500 = Medium, 600 = SemiBold.
       buffer_font_weight = 500;
-
-      # Kommentare im Caelestia-Theme sind kursiv – schräge Striche decken weniger Fläche ab und
-      # lesen sich auf dunklem Grund blasser. Nur die Schriftform, keine Farbe: greift damit auf
-      # jedes neu erzeugte Theme und verstellt die Palette nicht.
-      theme_overrides.Caelestia.syntax = {
-        comment.font_style = null;
-        "comment.doc".font_style = null;
-      };
 
       terminal = {
         font_size = 12;
@@ -184,10 +139,6 @@ in
         jdtls.settings.java_home = pkgs.jdk25.home;
       };
     };
-  };
-
-  xdg.configFile."zed/themes/caelestia.json" = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin {
-    text = staticTheme;
   };
 
   # nixpkgs nennt das Programm zeditor, der Cask auf dem Mac zed

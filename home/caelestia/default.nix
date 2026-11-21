@@ -62,7 +62,8 @@ in
         };
       };
 
-      # Aus, weil caelestia sonst von Nix verwaltete Dateien überschreibt (GTK und fuzzel haben eigene Vorlagen)
+      # Aus, weil caelestia sonst von Nix verwaltete Dateien überschreibt (GTK und fuzzel haben eigene Vorlagen).
+      # Zed hat ein festes Theme (zed.nix)
       cli.settings.theme =
         lib.genAttrs [
           "enableSpicetify"
@@ -76,12 +77,12 @@ in
           "enableWarp"
           "enableChromium"
           "enableCava"
+          "enableZed"
         ] (_: false)
         // {
           enableTerm = true;
           enableHypr = true;
           enableDiscord = true;
-          enableZed = true;
         };
     };
 
@@ -156,8 +157,7 @@ in
         run ${cli}/bin/caelestia scheme set -n dynamic || true
       elif [ ! -f "${config.xdg.configHome}/Equicord/themes/caelestia.theme.css" ] \
         || [ ! -f "${themeDir}/fuzzel.ini" ] \
-        || [ ! -f "${themeDir}/kitty.conf" ] \
-        || [ ! -f "${config.xdg.configHome}/zed/themes/caelestia.json" ]; then
+        || [ ! -f "${themeDir}/kitty.conf" ]; then
         run ${cli}/bin/caelestia scheme set -m "$(${cli}/bin/caelestia scheme get -m)" || true
       fi
     '';
